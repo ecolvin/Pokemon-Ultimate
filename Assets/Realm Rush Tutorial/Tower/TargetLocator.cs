@@ -8,12 +8,15 @@ public class TargetLocator : MonoBehaviour
     [SerializeField] ParticleSystem projectileSystem;
     [SerializeField] float range = 1.5f;
 
-    Transform target;
+    Transform target = null;
 
     void Update()
     {
         FindClosestTarget();
-        AimWeapon();
+        if(target != null)
+        {
+            AimWeapon();
+        }
     }
 
     void FindClosestTarget()

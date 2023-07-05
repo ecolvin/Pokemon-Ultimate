@@ -15,5 +15,6 @@ public class Node
     {
         coords = coordinates;
         isWalkable = walkable;
+        parent = null;
     }
 }

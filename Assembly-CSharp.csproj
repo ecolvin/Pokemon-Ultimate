@@ -53,21 +53,22 @@
     <UnityVersion>2021.3.3f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Assets\Realm Rush Tutorial\Bank\Bank.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Enemy\EnemyHealth.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Tower\Tower.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Enemy\Enemy.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Enemy\ObjectPool.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Enemy\EnemyMover.cs" />
     <Compile Include="Assets\Andtech\Star Pack\Samples\Star Pack Demo\Scripts\Spin.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Andtech\Star Pack\Samples\Star Pack Demo\Scripts\ActivateDepthRendering.cs" />
-    <Compile Include="Assets\Scripts\WildSpawning.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Environment\Scripts\CoordinateLabeler.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Environment\Scripts\Waypoint.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Enemy\EnemyMover.cs" />
+    <Compile Include="Assets\Scripts\WildSpawning.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Tower\TargetLocator.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Enemy\EnemyHealth.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Enemy\ObjectPool.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Enemy\Enemy.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Bank\Bank.cs" />
-    <Compile Include="Assets\Realm Rush Tutorial\Tower\Tower.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Pathfinding\Node.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Pathfinding\GridManager.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Pathfinding\Pathfinding.cs" />
+    <Compile Include="Assets\Realm Rush Tutorial\Environment\Scripts\Tile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
