@@ -13,7 +13,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Colliders
   - 
   - Tile
   - PostProcessing
@@ -33,13 +33,19 @@ TagManager:
   - 
   - 
   - 
+  - Ground
   - 
-  - 
-  - 
+  - Floor
   - 
   - 
   - 
   m_SortingLayers:
+  - name: Ground
+    uniqueID: 2478380631
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Obstacles
+    uniqueID: 1969755405
     locked: 0

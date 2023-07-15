@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Garchomp
+  m_EditorClassIdentifier: 
+  speciesName: Garchomp
+  description: It is said that when one runs at high speed, its wings create blades
+    of wind that can fell nearby trees.
+  classification: Mach Pokemon
+  dexNo: 445
+  type1: 15
+  type2: 9
+  ability1: Sand Veil
+  ability2: 
+  hiddenAbility: Rough Skin
+  baseStats: 6c000000820000005f000000500000005500000066000000
+  genderRatio: 0.5
+  eggGroup1: 1
+  eggGroup2: 13
+  hatchTime: 40
+  height: 1.9
+  weight: 95
+  baseHappiness: 50
+  catchRate: 45
+  baseXPYield: 270
+  levelingRate: 4
+  evYield: 000000000300000000000000000000000000000000000000
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: 2e85b880de83a604eb9888ed51e9b3b7, type: 3}
+  femaleSprite: {fileID: 21300000, guid: d681418d65f4c4d478a2a773ef1960fc, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: 8fd49793788165f4f919243215a841ab, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: 7c412688e08b76246997396bad55208c, type: 3}
+  learnset:
+  - moveBase: {fileID: 11400000, guid: fc9f114ec4c3d5847aae4943096d8649, type: 2}
+    levelLearned: -1
+  - moveBase: {fileID: 11400000, guid: 5e5e9b11599518446944fff3dfdcdc52, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: ad68ea1c9bb84bf4abbae80eda28e0bb, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 626b226e77884ca4e9bc3eabbb6195e0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: ac89773ab83aabb4b9585ebbdacf0e3f, type: 2}
+    levelLearned: 18
+  - moveBase: {fileID: 11400000, guid: 80f0e31cdf625a04ba2c44e8289bb296, type: 2}
+    levelLearned: 27
+  - moveBase: {fileID: 11400000, guid: 81148ba8d555e3242bd2eb2820086c6f, type: 2}
+    levelLearned: 34
+  - moveBase: {fileID: 11400000, guid: f5b8e47cb2f8ef14cbb56e9081552ae8, type: 2}
+    levelLearned: 42
+  - moveBase: {fileID: 11400000, guid: e158a141b116cec468114cf6549d8fa6, type: 2}
+    levelLearned: 52
+  - moveBase: {fileID: 11400000, guid: 8bcb224da84b4794eb57547b58a830d1, type: 2}
+    levelLearned: 62
+  - moveBase: {fileID: 11400000, guid: 2991b69003bedee448d8af1dfb0bb2b9, type: 2}
+    levelLearned: 72
+  - moveBase: {fileID: 11400000, guid: 04b83febecfb84e4cbc57cc37e5db832, type: 2}
+    levelLearned: 82
+  tmLearnset: []

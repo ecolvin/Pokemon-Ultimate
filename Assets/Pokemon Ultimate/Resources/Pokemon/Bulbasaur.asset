@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Bulbasaur
+  m_EditorClassIdentifier: 
+  speciesName: Bulbasaur
+  description: For some time after its birth, it grows by taking nourishment from
+    the seed on its back.
+  classification: Seed Pokemon
+  dexNo: 1
+  type1: 5
+  type2: 8
+  ability1: Overgrow
+  ability2: 
+  hiddenAbility: Chlorophyll
+  baseStats: 2d000000310000003100000041000000410000002d000000
+  genderRatio: 0.875
+  eggGroup1: 1
+  eggGroup2: 7
+  hatchTime: 40
+  height: 0.7
+  weight: 6.9
+  baseHappiness: 50
+  catchRate: 45
+  baseXPYield: 64
+  levelingRate: 3
+  evYield: 000000000000000000000000010000000000000000000000
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: a59c33df4aeaf114e91acc904101d242, type: 3}
+  femaleSprite: {fileID: 21300000, guid: a59c33df4aeaf114e91acc904101d242, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: 97fd073c1b622e94da9af23cf128ee90, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: 97fd073c1b622e94da9af23cf128ee90, type: 3}
+  learnset:
+  - moveBase: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 8724a09fc298dfd47b2683b6a997ade2, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 81faa6296264451408aeacb680ba4881, type: 2}
+    levelLearned: 3
+  - moveBase: {fileID: 11400000, guid: e1667ffeb49acfb4fb143c42875cea1c, type: 2}
+    levelLearned: 6
+  - moveBase: {fileID: 11400000, guid: 42528c06442011340838f3bd19899b51, type: 2}
+    levelLearned: 9
+  - moveBase: {fileID: 11400000, guid: 107c59b60e83e234fb40ad6d17428c6b, type: 2}
+    levelLearned: 12
+  - moveBase: {fileID: 11400000, guid: feb0cfc53cc2e824fbd4ccbac9ae0901, type: 2}
+    levelLearned: 15
+  - moveBase: {fileID: 11400000, guid: 92f74d1d4e033e949892cd71e5833474, type: 2}
+    levelLearned: 15
+  - moveBase: {fileID: 11400000, guid: ee3c09b84e1d97d449fed7ca46b17b7c, type: 2}
+    levelLearned: 18
+  - moveBase: {fileID: 11400000, guid: 2991b69003bedee448d8af1dfb0bb2b9, type: 2}
+    levelLearned: 21
+  - moveBase: {fileID: 11400000, guid: 975a0fd87b1968949b1f76e155fb2460, type: 2}
+    levelLearned: 24
+  - moveBase: {fileID: 11400000, guid: ea8db61721b9281498bc0d58c5e6308e, type: 2}
+    levelLearned: 27
+  - moveBase: {fileID: 11400000, guid: 5e606891c8b836b40a51fe06d72fcc09, type: 2}
+    levelLearned: 30
+  - moveBase: {fileID: 11400000, guid: ad4b7ef6c0d3b6f49b40bb82ac721365, type: 2}
+    levelLearned: 33
+  - moveBase: {fileID: 11400000, guid: 5d1e44a49f03a8146ba55d624ca4adac, type: 2}
+    levelLearned: 36
+  tmLearnset: []

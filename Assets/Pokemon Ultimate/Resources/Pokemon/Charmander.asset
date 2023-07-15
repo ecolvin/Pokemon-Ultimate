@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Charmander
+  m_EditorClassIdentifier: 
+  speciesName: Charmander
+  description: "The fire on the tip of its tail is a measure of its life. If the
+    Pok\xE9mon is healthy, its tail burns intensely."
+  classification: Lizard Pokemon
+  dexNo: 4
+  type1: 2
+  type2: 0
+  ability1: Blaze
+  ability2: 
+  hiddenAbility: Solar Power
+  baseStats: 27000000340000002b0000003c0000003200000041000000
+  genderRatio: 0.875
+  eggGroup1: 1
+  eggGroup2: 13
+  hatchTime: 20
+  height: 0.6
+  weight: 8.5
+  baseHappiness: 50
+  catchRate: 45
+  baseXPYield: 62
+  levelingRate: 3
+  evYield: 000000000000000000000000000000000000000001000000
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: a4a5f151c8fab474facb9417872de757, type: 3}
+  femaleSprite: {fileID: 21300000, guid: a4a5f151c8fab474facb9417872de757, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: 97f91e24f4e69a941a903e12c77184ff, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: 97f91e24f4e69a941a903e12c77184ff, type: 3}
+  learnset:
+  - moveBase: {fileID: 11400000, guid: 3f63b7ea7ae22e5419809656c433795a, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 8724a09fc298dfd47b2683b6a997ade2, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 3cdd8fa83e328a0488397c81ee05292a, type: 2}
+    levelLearned: 4
+  - moveBase: {fileID: 11400000, guid: f3b607f76f7a4e34da4cc9dc512cfcc7, type: 2}
+    levelLearned: 8
+  - moveBase: {fileID: 11400000, guid: ad68ea1c9bb84bf4abbae80eda28e0bb, type: 2}
+    levelLearned: 12
+  - moveBase: {fileID: 11400000, guid: aeb4c1735711cd14aacde1dbc22bacd0, type: 2}
+    levelLearned: 17
+  - moveBase: {fileID: 11400000, guid: 81148ba8d555e3242bd2eb2820086c6f, type: 2}
+    levelLearned: 20
+  - moveBase: {fileID: 11400000, guid: 0a3a8689f81639e48907b75c143ed877, type: 2}
+    levelLearned: 24
+  - moveBase: {fileID: 11400000, guid: ff8680d55bf704642a8aa12a83c67065, type: 2}
+    levelLearned: 28
+  - moveBase: {fileID: 11400000, guid: 714891ceb7761fc4a9332ad8890adc0c, type: 2}
+    levelLearned: 32
+  - moveBase: {fileID: 11400000, guid: 03436f04c16d5d349ba29573eb73e7fc, type: 2}
+    levelLearned: 36
+  - moveBase: {fileID: 11400000, guid: c1a157d8f412c504d8d30fd12489aafc, type: 2}
+    levelLearned: 40
+  tmLearnset: []
