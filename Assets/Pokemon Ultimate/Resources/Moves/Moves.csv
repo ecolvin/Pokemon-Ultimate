@@ -281,7 +281,7 @@
 281|Yawn|Normal|Status|10|—|—%|III
 282|Knock Off|Dark|Physical|20|65|100%|III
 283|Endeavor|Normal|Physical|5|—|100%|III
-284|Eruption|Fire|Special|5|150|100%|III
+284|Eruption|Fire|Special|5|—|100%|III
 285|Skill Swap|Psychic|Status|10|—|—%|III
 286|Imprison|Psychic|Status|10|—|—%|III
 287|Refresh|Normal|Status|20|—|—%|III
@@ -320,7 +320,7 @@
 320|Grass Whistle|Grass|Status|15|—|55%|III
 321|Tickle|Normal|Status|20|—|100%|III
 322|Cosmic Power|Psychic|Status|20|—|—%|III
-323|Water Spout|Water|Special|5|150|100%|III
+323|Water Spout|Water|Special|5|—|100%|III
 324|Signal Beam|Bug|Special|15|75|100%|III
 325|Shadow Punch|Ghost|Physical|20|60|—%|III
 326|Extrasensory|Psychic|Special|20|80|100%|III
@@ -497,7 +497,7 @@
 497|Echoed Voice|Normal|Special|15|40|100%|V
 498|Chip Away|Normal|Physical|20|70|100%|V
 499|Clear Smog|Poison|Special|15|50|—%|V
-500|Stored Power|Psychic|Special|10|20|100%|V
+500|Stored Power|Psychic|Special|10|—|100%|V
 501|Quick Guard|Fighting|Status|15|—|—%|V
 502|Ally Switch|Psychic|Status|15|—|—%|V
 503|Scald|Water|Special|15|80|100%|V
@@ -619,42 +619,24 @@
 619|Precipice Blades|Ground|Physical|10|120|85%|VI
 620|Dragon Ascent|Flying|Physical|5|120|100%|VI
 621|Hyperspace Fury|Dark|Physical|5|100|—%|VI
-622|Breakneck Blitz|Normal|Physical|1|—|—%|VII
-623|Breakneck Blitz|Normal|Special|1|—|—%|VII
-624|All-Out Pummeling|Fighting|Physical|1|—|—%|VII
-625|All-Out Pummeling|Fighting|Special|1|—|—%|VII
-626|Supersonic Skystrike|Flying|Physical|1|—|—%|VII
-627|Supersonic Skystrike|Flying|Special|1|—|—%|VII
-628|Acid Downpour|Poison|Physical|1|—|—%|VII
-629|Acid Downpour|Poison|Special|1|—|—%|VII
-630|Tectonic Rage|Ground|Physical|1|—|—%|VII
-631|Tectonic Rage|Ground|Special|1|—|—%|VII
-632|Continental Crush|Rock|Physical|1|—|—%|VII
-633|Continental Crush|Rock|Special|1|—|—%|VII
-634|Savage Spin-Out|Bug|Physical|1|—|—%|VII
-635|Savage Spin-Out|Bug|Special|1|—|—%|VII
-636|Never-Ending Nightmare|Ghost|Physical|1|—|—%|VII
-637|Never-Ending Nightmare|Ghost|Special|1|—|—%|VII
-638|Corkscrew Crash|Steel|Physical|1|—|—%|VII
-639|Corkscrew Crash|Steel|Special|1|—|—%|VII
-640|Inferno Overdrive|Fire|Physical|1|—|—%|VII
-641|Inferno Overdrive|Fire|Special|1|—|—%|VII
-642|Hydro Vortex|Water|Physical|1|—|—%|VII
-643|Hydro Vortex|Water|Special|1|—|—%|VII
-644|Bloom Doom|Grass|Physical|1|—|—%|VII
-645|Bloom Doom|Grass|Special|1|—|—%|VII
-646|Gigavolt Havoc|Electric|Physical|1|—|—%|VII
-647|Gigavolt Havoc|Electric|Special|1|—|—%|VII
-648|Shattered Psyche|Psychic|Physical|1|—|—%|VII
-649|Shattered Psyche|Psychic|Special|1|—|—%|VII
-650|Subzero Slammer|Ice|Physical|1|—|—%|VII
-651|Subzero Slammer|Ice|Special|1|—|—%|VII
-652|Devastating Drake|Dragon|Physical|1|—|—%|VII
-653|Devastating Drake|Dragon|Special|1|—|—%|VII
-654|Black Hole Eclipse|Dark|Physical|1|—|—%|VII
-655|Black Hole Eclipse|Dark|Special|1|—|—%|VII
-656|Twinkle Tackle|Fairy|Physical|1|—|—%|VII
-657|Twinkle Tackle|Fairy|Special|1|—|—%|VII
+622|Breakneck Blitz|Normal|???|1|—|—%|VII
+624|All-Out Pummeling|Fighting|???|1|—|—%|VII
+626|Supersonic Skystrike|Flying|???|1|—|—%|VII
+628|Acid Downpour|Poison|???|1|—|—%|VII
+630|Tectonic Rage|Ground|???|1|—|—%|VII
+632|Continental Crush|Rock|???|1|—|—%|VII
+634|Savage Spin-Out|Bug|???|1|—|—%|VII
+636|Never-Ending Nightmare|Ghost|???|1|—|—%|VII
+638|Corkscrew Crash|Steel|???|1|—|—%|VII
+640|Inferno Overdrive|Fire|???|1|—|—%|VII
+642|Hydro Vortex|Water|???|1|—|—%|VII
+644|Bloom Doom|Grass|???|1|—|—%|VII
+646|Gigavolt Havoc|Electric|???|1|—|—%|VII
+648|Shattered Psyche|Psychic|???|1|—|—%|VII
+650|Subzero Slammer|Ice|???|1|—|—%|VII
+652|Devastating Drake|Dragon|???|1|—|—%|VII
+654|Black Hole Eclipse|Dark|???|1|—|—%|VII
+656|Twinkle Tackle|Fairy|???|1|—|—%|VII
 658|Catastropika|Electric|Physical|1|210|—%|VII
 659|Shore Up|Ground|Status|5|—|—%|VII
 660|First Impression|Bug|Physical|10|90|100%|VII
@@ -678,7 +660,7 @@
 678|Psychic Terrain|Psychic|Status|10|—|—%|VII
 679|Lunge|Bug|Physical|15|80|100%|VII
 680|Fire Lash|Fire|Physical|15|80|100%|VII
-681|Power Trip|Dark|Physical|10|20|100%|VII
+681|Power Trip|Dark|Physical|10|—|100%|VII
 682|Burn Up|Fire|Special|5|130|100%|VII
 683|Speed Swap|Psychic|Status|10|—|—%|VII
 684|Smart Strike|Steel|Physical|10|70|—%|VII
@@ -817,7 +799,7 @@
 817|Wicked Blow|Dark|Physical|5|75|100%|VIII
 818|Surging Strikes|Water|Physical|5|25|100%|VIII
 819|Thunder Cage|Electric|Special|15|80|90%|VIII
-820|Dragon Energy|Dragon|Special|5|150|100%|VIII
+820|Dragon Energy|Dragon|Special|5|—|100%|VIII
 821|Freezing Glare|Psychic|Special|10|90|100%|VIII
 822|Fiery Wrath|Dark|Special|10|90|100%|VIII
 823|Thunderous Kick|Fighting|Physical|10|90|100%|VIII
@@ -898,3 +880,54 @@
 898|Noxious Torque|Poison|Physical|10|100|100%|IX
 899|Combat Torque|Fighting|Physical|10|100|100%|IX
 900|Magical Torque|Fairy|Physical|10|100|100%|IX
+G01|G-Max Wildfire|Fire|???|10|—|—%|VIII
+G02|G-Max Befuddle|Bug|???|10|—|—%|VIII
+G03|G-Max Volt Crash|Electric|???|10|—|—%|VIII
+G04|G-Max Gold Rush|Normal|???|10|—|—%|VIII
+G05|G-Max Chi Strike|Fighting|???|10|—|—%|VIII
+G06|G-Max Terror|Ghost|???|10|—|—%|VIII
+G07|G-Max Resonance|Ice|???|10|—|—%|VIII
+G08|G-Max Cuddle|Normal|???|10|—|—%|VIII
+G09|G-Max Replenish|Normal|???|10|—|—%|VIII
+G10|G-Max Malodor|Poison|???|10|—|—%|VIII
+G11|G-Max Stonesurge|Water|???|10|—|—%|VIII
+G12|G-Max Wind Rage|Flying|???|10|—|—%|VIII
+G13|G-Max Stun Shock|Electric|???|10|—|—%|VIII
+G14|G-Max Finale|Fairy|???|10|—|—%|VIII
+G15|G-Max Depletion|Dragon|???|10|—|—%|VIII
+G16|G-Max Gravitas|Psychic|???|10|—|—%|VIII
+G17|G-Max Volcalith|Rock|???|10|—|—%|VIII
+G18|G-Max Sandblast|Ground|???|10|—|—%|VIII
+G19|G-Max Snooze|Dark|???|10|—|—%|VIII
+G20|G-Max Tartness|Grass|???|10|—|—%|VIII
+G21|G-Max Sweetness|Grass|???|10|—|—%|VIII
+G22|G-Max Smite|Fairy|???|10|—|—%|VIII
+G23|G-Max Steelsurge|Steel|???|10|—|—%|VIII
+G24|G-Max Meltdown|Steel|???|10|—|—%|VIII
+G25|G-Max Foam Burst|Water|???|10|—|—%|VIII
+G26|G-Max Centiferno|Fire|???|10|—|—%|VIII
+G27|G-Max Vine Lash|Grass|???|10|—|—%|VIII
+G28|G-Max Cannonade|Water|???|10|—|—%|VIII
+G29|G-Max Drum Solo|Grass|???|10|160|—%|VIII
+G30|G-Max Fireball|Fire|???|10|160|—%|VIII
+G31|G-Max Hydrosnipe|Water|???|10|160|—%|VIII
+G32|G-Max One Blow|Dark|???|10|—|—%|VIII
+G33|G-Max Rapid Flow|Water|???|10|—|—%|VIII
+S56|Shadow Blitz|None|Physical|-1|40|100%|XD
+S57|Shadow Rush|None|Physical|-1|55|100%|XD
+S58|Shadow Break|None|Physical|-1|75|100%|XD
+S59|Shadow End|None|Physical|-1|120|60%|XD
+S60|Shadow Wave|None|Special|-1|50|100%|XD
+S61|Shadow Rave|None|Special|-1|70|100%|XD
+S62|Shadow Storm|None|Special|-1|95|100%|XD
+S63|Shadow Fire|None|Special|-1|75|100%|XD
+S64|Shadow Bolt|None|Special|-1|75|100%|XD
+S65|Shadow Chill|None|Special|-1|75|100%|XD
+S66|Shadow Blast|None|Physical|-1|80|100%|XD
+S67|Shadow Sky|None|Status|-1|—|100%|XD
+S68|Shadow Hold|None|Status|-1|—|80%|XD
+S69|Shadow Mist|None|Status|-1|—|100%|XD
+S70|Shadow Panic|None|Status|-1|—|60%|XD
+S71|Shadow Down|None|Status|-1|—|100%|XD
+S72|Shadow Shed|None|Status|-1|—|100%|XD
+S73|Shadow Half|None|Status|-1|—|100%|XD

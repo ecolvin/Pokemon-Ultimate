@@ -16,7 +16,7 @@ MonoBehaviour:
   description: The user attacks by swinging its tail as if it were a vicious wave
     in a raging storm.
   moveType: 3
-  category: 1
+  category: 2
   basePower: 90
   pp: 10
   accuracy: 90

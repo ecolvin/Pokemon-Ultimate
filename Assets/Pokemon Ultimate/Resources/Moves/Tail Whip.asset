@@ -16,16 +16,13 @@ MonoBehaviour:
   description: "The user wags its tail cutely, making opposing Pok\xE9mon less wary.
     This lowers their Defense stats."
   moveType: 1
-  category: 0
+  category: 1
   basePower: 0
   pp: 30
   accuracy: 100
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 5
-  recoilPercent: 0
-  SecondaryEffect: -1 Defense
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

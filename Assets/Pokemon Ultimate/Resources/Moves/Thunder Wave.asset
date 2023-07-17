@@ -15,16 +15,13 @@ MonoBehaviour:
   moveName: Thunder Wave
   description: The user launches a weak jolt of electricity that paralyzes the target.
   moveType: 4
-  category: 0
+  category: 1
   basePower: 0
   pp: 20
   accuracy: 90
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

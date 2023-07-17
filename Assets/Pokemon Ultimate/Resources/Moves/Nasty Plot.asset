@@ -16,16 +16,13 @@ MonoBehaviour:
   description: The user stimulates its brain by thinking bad thoughts. This sharply
     boosts the user's Sp. Atk stat.
   moveType: 16
-  category: 0
+  category: 1
   basePower: 0
   pp: 20
-  accuracy: 101
+  accuracy: -1
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 1
-  recoilPercent: 0
-  SecondaryEffect: +2 Special Attack
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

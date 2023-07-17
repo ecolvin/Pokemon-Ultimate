@@ -16,7 +16,7 @@ MonoBehaviour:
   description: The user attacks the target with an electrically charged tackle. This
     may also leave the target with paralysis.
   moveType: 4
-  category: 1
+  category: 2
   basePower: 65
   pp: 20
   accuracy: 100

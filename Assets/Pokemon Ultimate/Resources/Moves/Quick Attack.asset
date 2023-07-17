@@ -16,7 +16,7 @@ MonoBehaviour:
   description: The user lunges at the target to inflict damage, moving at blinding
     speed. This move always goes first.
   moveType: 1
-  category: 1
+  category: 2
   basePower: 40
   pp: 30
   accuracy: 100

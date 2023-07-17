@@ -16,16 +16,13 @@ MonoBehaviour:
   description: The user gazes at the target rather charmingly, making it less wary.
     This harshly lowers the target's Attack stat.
   moveType: 18
-  category: 0
+  category: 1
   basePower: 0
   pp: 20
   accuracy: 100
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: -2 Attack
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

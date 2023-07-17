@@ -16,7 +16,7 @@ MonoBehaviour:
   description: A physical attack in which the user charges and slams into the target
     with its whole body.
   moveType: 1
-  category: 1
+  category: 2
   basePower: 40
   pp: 0
   accuracy: 100

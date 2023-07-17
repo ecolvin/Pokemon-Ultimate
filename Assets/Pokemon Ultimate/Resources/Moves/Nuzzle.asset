@@ -16,7 +16,7 @@ MonoBehaviour:
   description: The user attacks by nuzzling its electrified cheeks against the target.
     This also leaves the target with paralysis.
   moveType: 4
-  category: 1
+  category: 2
   basePower: 20
   pp: 20
   accuracy: 100

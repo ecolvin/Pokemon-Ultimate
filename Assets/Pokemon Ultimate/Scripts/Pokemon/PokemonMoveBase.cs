@@ -23,17 +23,14 @@ public class PokemonMoveBase : ScriptableObject
     [Header("Battle Info")]
     [SerializeField] PokemonType moveType;
     [SerializeField] MoveCategory category;
-    [SerializeField] int basePower;
+    [SerializeField] [Range(-1, 250)] int basePower;
     [SerializeField] int pp;
     public int PP{get{return pp;}}
-    [SerializeField] int accuracy;
+    [SerializeField] [Range(-1,100)] int accuracy;
     [SerializeField] int priority;
-    [SerializeField] float critRate;
+    [Tooltip("-1: Can't crit (status or direct damage move); 0: Regular crit rate (1/24); 1: (1/8); 2: (1/2); 3: (1)")]
+    [SerializeField] [Range(-1,3)] int critRate;
     [SerializeField] MoveRange range;
-    [SerializeField] float recoilPercent;
-    [SerializeField] string SecondaryEffect;   //Will need to update this eventually
-    [Tooltip("-1 for a guaranteed effect")]
-    [SerializeField] [Range(-1,100)] int effectChance;
 
     [Header("Flags")]
     [SerializeField] bool contact;
@@ -58,6 +55,7 @@ public class PokemonMoveBase : ScriptableObject
 
 public enum MoveCategory
 {
+    None,
     Status,
     Physical,
     Special
@@ -65,16 +63,18 @@ public enum MoveCategory
 
 public enum MoveRange
 {
-    Target,
-    Self,
-    Ally,
-    SelfOrAlly,
     Adjacent,
-    AdjacentFoes,
-    All,
-    AllFoes,
+    User,
+    UserOrAdjacentAlly,
+    AdjacentAlly,
+    AdjacentFoe,
+    AnyOther,
+    UserAndAllies,
     AllAllies,
-    Team
+    AllFoes,
+    AllAdjacent,
+    AllAdjacentFoes,
+    AllPokemon
 }
 
 public enum NonVolatileStatus

@@ -16,16 +16,13 @@ MonoBehaviour:
   description: This attack can hit a target using a move such as Protect or Detect.
     This also lifts the effects of those moves.
   moveType: 1
-  category: 1
+  category: 2
   basePower: 30
   pp: 10
   accuracy: 100
   priority: 2
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Remove Protect/Detect
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

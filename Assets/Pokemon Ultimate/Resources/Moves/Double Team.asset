@@ -16,16 +16,13 @@ MonoBehaviour:
   description: By moving rapidly, the user makes illusory copies of itself to boost
     its evasiveness.
   moveType: 1
-  category: 0
+  category: 1
   basePower: 0
   pp: 15
-  accuracy: 101
+  accuracy: -1
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 1
-  recoilPercent: 0
-  SecondaryEffect: +1 Evasion
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

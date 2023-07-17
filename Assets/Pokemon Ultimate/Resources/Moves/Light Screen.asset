@@ -16,16 +16,13 @@ MonoBehaviour:
   description: A wondrous wall of light is put up to reduce damage from special moves
     for five turns.
   moveType: 11
-  category: 0
+  category: 1
   basePower: 0
   pp: 30
-  accuracy: 101
+  accuracy: -1
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 9
-  recoilPercent: 0
-  SecondaryEffect: Light Screen
-  effectChance: -1
   contact: 0
   isSound: 0
   isPunch: 0

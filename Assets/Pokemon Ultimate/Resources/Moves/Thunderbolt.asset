@@ -16,7 +16,7 @@ MonoBehaviour:
   description: The user attacks the target with a strong electric blast. This may
     also leave the target with paralysis.
   moveType: 4
-  category: 2
+  category: 3
   basePower: 90
   pp: 0
   accuracy: 100

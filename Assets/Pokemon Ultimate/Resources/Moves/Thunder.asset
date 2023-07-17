@@ -16,7 +16,7 @@ MonoBehaviour:
   description: A wicked thunderbolt is dropped on the target to inflict damage. This
     may also leave the target with paralysis.
   moveType: 4
-  category: 2
+  category: 3
   basePower: 110
   pp: 10
   accuracy: 70

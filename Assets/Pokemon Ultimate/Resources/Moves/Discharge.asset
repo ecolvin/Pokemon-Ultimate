@@ -16,7 +16,7 @@ MonoBehaviour:
   description: The user strikes everything around it by letting loose a flare of
     electricity. This may also leave those hit by the attack with paralysis.
   moveType: 4
-  category: 2
+  category: 3
   basePower: 80
   pp: 15
   accuracy: 100
