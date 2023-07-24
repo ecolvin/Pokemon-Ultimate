@@ -57,7 +57,9 @@
     <Compile Include="Assets\Realm Rush Tutorial\Enemy\EnemyHealth.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Tower\Tower.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Environment\Scripts\Tile.cs" />
+    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\MainBoxController.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Enemy\Enemy.cs" />
+    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\BattleHUD.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Enemy\ObjectPool.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Enemy\EnemyMover.cs" />
     <Compile Include="Assets\Andtech\Star Pack\Samples\Star Pack Demo\Scripts\Spin.cs" />
@@ -65,18 +67,17 @@
     <Compile Include="Assets\Pokemon Ultimate\Scripts\Player\PlayerMovement.cs" />
     <Compile Include="Assets\Pokemon Ultimate\Scripts\Pokemon\PokemonMoveBase.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Pathfinding\Pathfinding.cs" />
+    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\Battle.cs" />
     <Compile Include="Assets\Pokemon Ultimate\Scripts\Pokemon\PokemonMove.cs" />
     <Compile Include="Assets\Andtech\Star Pack\Samples\Star Pack Demo\Scripts\ActivateDepthRendering.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Environment\Scripts\CoordinateLabeler.cs" />
     <Compile Include="Assets\Pokemon Ultimate\Scripts\Player\WildSpawning.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Tower\TargetLocator.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Pathfinding\Node.cs" />
+    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\HPBar.cs" />
     <Compile Include="Assets\Realm Rush Tutorial\Pathfinding\GridManager.cs" />
     <Compile Include="Assets\Pokemon Ultimate\Scripts\Pokemon\PokemonSpecies.cs" />
-    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\HPBar.cs" />
-    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\BattleHUD.cs" />
-    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\Battle.cs" />
-    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\BattleTextBox.cs" />
+    <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\SideBoxController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

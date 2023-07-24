@@ -18,14 +18,11 @@ MonoBehaviour:
   moveType: 1
   category: 2
   basePower: 40
-  pp: 0
+  pp: 35
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: 
-  effectChance: 0
   contact: 1
   isSound: 0
   isPunch: 0

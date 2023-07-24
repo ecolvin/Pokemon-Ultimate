@@ -89,14 +89,14 @@ public class LearnableMove
     public int LevelLearned{get{return levelLearned;}}
 }
 
-public enum PokemonType
+public enum PokemonType     //DO NOT CHANGE THIS AGAIN OR IT WILL MESS UP THE TYPE CHART
 {   
     None,
     Normal,
     Fire,
     Water,
-    Electric,
     Grass,
+    Electric,
     Ice,
     Fighting,
     Poison,

@@ -12,11 +12,17 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] TextMeshProUGUI genderField;
     [SerializeField] TextMeshProUGUI hpNums;
 
+    [SerializeField] [Range(1, 100)] int damageSpeed = 10;
+
     //TODO: Replace with parameters
     [SerializeField] PokemonSpecies species;
+    
+    Pokemon pokemon;
 
-    public void generateBar(Pokemon pokemon)
+    public void GenerateBar(Pokemon pokemon)
     {
+        this.pokemon = pokemon;
+
         pokemonName.text = pokemon.Species.SpeciesName;
         level.text = "Lv." + pokemon.Level;
         if(pokemon.Gender == PokemonGender.Male)
@@ -32,28 +38,32 @@ public class BattleHUD : MonoBehaviour
         else
         {
             genderField.text = "";
-        }
-        updateHP(pokemon.CurHP, pokemon.Stats[0]);
+        }        
+        UpdateHP();
     }
 
-    public void updateHP(int curHP, int maxHP)
+    public IEnumerator UpdateHP()
     {
-        if(maxHP < 0)
+        int newHP = pokemon.CurHP;
+        int maxHP = pokemon.Stats[0];
+
+        if(maxHP <= 0)
         {
-            maxHP = 0;
+            maxHP = 1;
         }
-        if(curHP > maxHP)
+        if(newHP > maxHP)
         {
-            curHP = maxHP;
+            newHP = maxHP;
         }
-        if(curHP < 0)
+        if(newHP < 0)
         {
-            curHP = 0;
+            newHP = 0;
         }
+
+        yield return hpBar.SetHPSmoothly((float) newHP/ (float)maxHP);
         if(hpNums != null)
         {
-            hpNums.text = curHP + "/" + maxHP;
+            hpNums.text = newHP + "/" + maxHP;
         }
-        hpBar.setHP((float) curHP/ (float)maxHP);
     }
 }

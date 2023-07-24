@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Pokemon
 {
+    string nickname;
+    public string Nickname{get{return nickname;}}
     PokemonSpecies species;
     public PokemonSpecies Species{get{return species;}}
     int level;
@@ -12,47 +14,80 @@ public class Pokemon
     public PokemonGender Gender{get{return gender;}}
     bool isShiny;    
     string ability;
+    public string Ability{get{return ability;}}
     PokemonType teraType;
-
+    public PokemonType TeraType{get{return teraType;}}
     string heldItem = "";
+    public string HeldItem{get{return heldItem;}}
 
     PokemonNature nature;
     PokemonNature natureMint = PokemonNature.None;
-    int curHP;
-    public int CurHP{get{return curHP;}}
     int[] stats = new int[6];
     public int[] Stats{get{return stats;}}
-    int[] statChanges = new int [6];
     int[] evs = new int[6];
     int[] ivs = new int[6];
     bool[] hyperTrained = new bool[6];
+    
+    PokemonMove[] moves = new PokemonMove[4];
+    public PokemonMove[] Moves{get{return moves;}}
 
-    int accuracy = 0;
-    int evasion = 0;
-
+//-------------------In-battle Effects------------------
+//Lasts outside of battle
     NonVolatileStatus status;
+    public NonVolatileStatus Status{get{return status;}}    
+    int curHP;
+    public int CurHP{get{return curHP;}}
+    bool fainted = false;
+    public bool Fainted{get{return fainted;}}
 
+//Lasts when switched out but not outside of battle
+    bool isTera = false;
+    public bool IsTera{get{return isTera;}}
+
+//Wears off when switched out
+    int[] statChanges = new int [6];
+    int accuracy = 0;
+    public int Accuracy{get{return accuracy;}}
+    int evasion = 0;
+    public int Evasion{get{return evasion;}}  
+    bool nGas = false;     //Whether or not its ability has been neutralized
+    public bool NGas{get{return nGas;}}
+    bool tarShot = false;
+    public bool TarShot{get{return tarShot;}}
+    bool forestsCurse = false;
+    public bool ForestsCurse{get{return forestsCurse;}}
+    bool trickOrTreat = false;
+    public bool TrickOrTreat{get{return trickOrTreat;}}
+    bool soak = false;
+    public bool Soak{get{return soak;}}
+    bool laserFocus = false;
+    public bool LaserFocus{get{return laserFocus;}}
+    Dictionary<VolatileStatus,int> volatileStatus;
+    public Dictionary<VolatileStatus,int> VolatileStatus{get{return volatileStatus;}}
+
+//-------------Art-----------------
     GameObject model;
     Sprite sprite;
     public Sprite Sprite{get{return sprite;}}
 
-    PokemonMove[] moves = new PokemonMove[4];
+//-------------------------Constructors---------------------
 
     public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility)
     {
         this.species = species;
+        nickname = species.SpeciesName;
         this.level = level;
         this.isShiny = isShiny;
         
-        randomizeIVs();
-        randomizeNature();
-        randomizeTeraType(true);        
-        determineGender();
-        determineAbility(isHiddenAbility);
-        determineWildHeldItem();
-        determineMoves();
-        calculateStats();
-        setModelAndSprite();
+        RandomizeIVs();
+        RandomizeNature();
+        RandomizeTeraType(true);        
+        DetermineGender();
+        DetermineAbility(isHiddenAbility);
+        DetermineWildHeldItem();
+        DetermineMoves();
+        CalculateStats();
+        SetModelAndSprite();
     }
 
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
@@ -60,7 +95,9 @@ public class Pokemon
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
 
-    void randomizeIVs()
+//-------------------Initialization Functions------------------
+
+    void RandomizeIVs()
     {
         for(int i = 0; i < 6; i++)
         {
@@ -68,12 +105,12 @@ public class Pokemon
         }
     }
 
-    void randomizeNature()
+    void RandomizeNature()
     {
         nature = (PokemonNature) Random.Range(0,25); //25 not included = None is not possible
     }
 
-    void randomizeTeraType(bool limitTeraType)
+    void RandomizeTeraType(bool limitTeraType)
     {
         if(limitTeraType) //Choose only one of the pokemon's types
         {
@@ -94,7 +131,7 @@ public class Pokemon
         }
     }
 
-    void determineGender()
+    void DetermineGender()
     {
         float ratio = species.GenderRatio;
         float rand = Random.value;
@@ -112,7 +149,7 @@ public class Pokemon
         }
     }
 
-    void determineAbility(bool isHiddenAbility)
+    void DetermineAbility(bool isHiddenAbility)
     {
         if(isHiddenAbility)
         {
@@ -132,7 +169,7 @@ public class Pokemon
         }
     }
 
-    void determineWildHeldItem()
+    void DetermineWildHeldItem()
     {
         List<(string,int)> items = species.WildHeldItems;
         if(items != null && items.Count > 0)
@@ -151,7 +188,7 @@ public class Pokemon
         }
     }
 
-    void determineMoves()
+    void DetermineMoves()
     {
         Stack<LearnableMove> moveOptions = new Stack<LearnableMove>();
         foreach(LearnableMove move in species.Learnset)
@@ -169,7 +206,7 @@ public class Pokemon
         }
     }
 
-    void calculateStats()
+    void CalculateStats()
     {
         stats[0] = HPFormula();        
         if(species.SpeciesName == "Shedinja") 
@@ -199,13 +236,13 @@ public class Pokemon
             iv = 31;
         }
 
-        int natBonus = getNatBonus(index);
+        int natBonus = GetNatBonus(index);
 
         int stat = ((((((2*species.BaseStats[index]) + iv + (evs[index]/4)) * level) / 100) + 5) * natBonus) / 100;
         return stat;
     }
 
-    int getNatBonus(int index)
+    int GetNatBonus(int index)
     {
         PokemonNature nat = nature;
         if(natureMint != PokemonNature.None)
@@ -235,7 +272,7 @@ public class Pokemon
         }
     }
 
-    void setModelAndSprite()
+    void SetModelAndSprite()
     {
         if(isShiny)
         {
@@ -264,6 +301,54 @@ public class Pokemon
             }
         }
     }
+
+//--------------------------Battle Functions------------------------------
+    public void PC()
+    {
+        curHP = stats[0];
+        status = NonVolatileStatus.None;
+        foreach(PokemonMove move in moves)
+        {
+            move.CurPP = move.MaxPP;
+        }
+    }
+
+    public void SwitchOut()
+    {
+        statChanges = new int [6];
+        accuracy = 0;
+        evasion = 0;
+        nGas = false;
+        tarShot = false;
+        forestsCurse = false;
+        trickOrTreat = false;
+        soak = false;
+        laserFocus = false;
+    }
+
+    public void EndBattle()
+    {
+        isTera = false;
+        SwitchOut();
+    }
+    
+    public bool TakeDamage(int damage)
+    {
+        curHP -= damage;
+        if(curHP <= 0)
+        {
+            curHP = 0;
+            fainted = true; //fainted
+        }
+        return fainted;
+    }
+
+    public void Terastalize()
+    {
+        isTera = true;
+    }
+
+
 }
 
 public enum PokemonGender
@@ -306,4 +391,39 @@ public enum PokemonNature
     Serious = 55,
 
     None = 66
+}
+
+public enum NonVolatileStatus
+{
+    None,
+    Burn,
+    Freeze,
+    Paralysis,
+    Poison,
+    BadlyPoisoned,
+    Sleep,
+    Frostbite,
+    Drowsy
+}
+
+public enum VolatileStatus
+{
+    Bound,
+    Trapped,
+    Confused,
+    Curse,
+    Drowsy,
+    Embargo,
+    Encore,
+    Flinch,
+    Grounded,
+    HealBlock,
+    Identified,
+    Infatuation,
+    Nightmare,
+    PerishSong,
+    Seeded,
+    Taunt,
+    Telekinesis,
+    Tormented
 }

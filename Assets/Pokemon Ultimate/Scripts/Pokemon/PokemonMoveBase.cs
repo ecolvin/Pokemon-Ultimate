@@ -17,19 +17,26 @@ public class PokemonMoveBase : ScriptableObject
 {
     [Header("Metadata")]
     [SerializeField] string moveName;
+    public string MoveName{get{return moveName;}}
     [TextArea]
     [SerializeField] string description;
 
     [Header("Battle Info")]
     [SerializeField] PokemonType moveType;
+    public PokemonType MoveType{get{return moveType;}}
     [SerializeField] MoveCategory category;
+    public MoveCategory Category{get{return category;}}
     [SerializeField] [Range(-1, 250)] int basePower;
+    public int BasePower{get{return basePower;}}
     [SerializeField] int pp;
     public int PP{get{return pp;}}
     [SerializeField] [Range(-1,100)] int accuracy;
+    public int Accuracy{get{return accuracy;}}
     [SerializeField] int priority;
+    public int Priority{get{return priority;}}
     [Tooltip("-1: Can't crit (status or direct damage move); 0: Regular crit rate (1/24); 1: (1/8); 2: (1/2); 3: (1)")]
     [SerializeField] [Range(-1,3)] int critRate;
+    public int CritRate{get{return critRate;}}
     [SerializeField] MoveRange range;
 
     [Header("Flags")]
@@ -75,15 +82,4 @@ public enum MoveRange
     AllAdjacent,
     AllAdjacentFoes,
     AllPokemon
-}
-
-public enum NonVolatileStatus
-{
-    None,
-    Burn,
-    Freeze,
-    Paralysis,
-    Poison,
-    BadlyPoisoned,
-    Sleep
 }

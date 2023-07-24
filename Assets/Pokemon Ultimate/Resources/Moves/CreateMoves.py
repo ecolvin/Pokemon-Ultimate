@@ -4,7 +4,7 @@
 #Use a separate program to update all the .meta files with the correct 
 from enum import Enum
 
-Types = Enum('Types', ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'])
+Types = Enum('Types', ['Normal', 'Fire', 'Water', 'Grass', 'Electric', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'])
 Categories = Enum('Categories', ['???', 'Status', 'Physical', 'Special'])
 
 def getTypeID(type):
