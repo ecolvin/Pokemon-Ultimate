@@ -22,7 +22,13 @@ MonoBehaviour:
   ability1: Snow Cloak
   ability2: 
   hiddenAbility: Ice Body
-  baseStats: 410000003c0000006e000000820000005f00000041000000
+  baseStats:
+    hp: 65
+    atk: 60
+    def: 110
+    spa: 130
+    spd: 95
+    spe: 65
   genderRatio: 0.875
   eggGroup1: 5
   eggGroup2: 0
@@ -33,7 +39,13 @@ MonoBehaviour:
   catchRate: 45
   baseXPYield: 184
   levelingRate: 2
-  evYield: 000000000000000000000000020000000000000000000000
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 2
+    spd: 0
+    spe: 0
   maleModel: {fileID: 0}
   femaleModel: {fileID: 0}
   maleModelShiny: {fileID: 0}

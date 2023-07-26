@@ -4,53 +4,36 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum BattleState {Intro, Ready, ActionSelection, MoveSelection, Bag, Pokemon, Battle}
+public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Switching, Battle}
 public enum Weather {None, Sun, HarshSun, Rain, HeavyRain, Sand, Hail, Snow, Shadow, Fog, Wind}
 public enum Terrain {None, Electric, Misty, Psychic, Grassy}
 public enum FieldEffect {None, Spikes, ToxicSpikes, Rocks, Webs, Reflect, LightScreen, Tailwind, LuckyChant}
 
 public class Battle : MonoBehaviour
 {
-    public float[][] TYPE_CHART = 
-    {
-        new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f},
-        new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,0.0f,1.0f,1.0f,0.5f,1.0f},
-        new float[19]{1.0f,1.0f,0.5f,0.5f,2.0f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,1.0f,2.0f,1.0f},
-        new float[19]{1.0f,1.0f,2.0f,0.5f,0.5f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f,1.0f},
-        new float[19]{1.0f,1.0f,0.5f,2.0f,0.5f,1.0f,1.0f,1.0f,0.5f,2.0f,0.5f,1.0f,0.5f,2.0f,1.0f,0.5f,1.0f,0.5f,1.0f},
-        new float[19]{1.0f,1.0f,1.0f,2.0f,0.5f,0.5f,1.0f,1.0f,1.0f,0.0f,2.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f},
-        new float[19]{1.0f,1.0f,0.5f,0.5f,2.0f,1.0f,0.5f,1.0f,1.0f,2.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f},
-        new float[19]{1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,0.5f,0.5f,0.5f,2.0f,0.0f,1.0f,2.0f,2.0f,0.5f},
-        new float[19]{1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,0.5f,0.5f,1.0f,1.0f,1.0f,0.5f,0.5f,1.0f,1.0f,0.0f,2.0f},
-        new float[19]{1.0f,1.0f,2.0f,1.0f,0.5f,2.0f,1.0f,1.0f,2.0f,1.0f,0.0f,1.0f,0.5f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f},
-        new float[19]{1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,1.0f,1.0f,0.5f,1.0f},
-        new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,2.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,1.0f,0.0f,0.5f,1.0f},
-        new float[19]{1.0f,1.0f,0.5f,1.0f,2.0f,1.0f,1.0f,0.5f,0.5f,1.0f,0.5f,2.0f,1.0f,1.0f,0.5f,1.0f,2.0f,0.5f,0.5f},
-        new float[19]{1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,2.0f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f},
-        new float[19]{1.0f,0.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f},
-        new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,0.0f},
-        new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,0.5f},
-        new float[19]{1.0f,1.0f,0.5f,0.5f,1.0f,0.5f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,0.5f,2.0f},
-        new float[19]{1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,2.0f,0.5f,1.0f}
-    };
+    [SerializeField] Party player;
 
     [SerializeField] BattleHUD enemyHUD;
     [SerializeField] BattleHUD playerHUD;
     [SerializeField] MainBoxController mainBox;
     [SerializeField] SideBoxController sideBox;
+    [SerializeField] PartyScreen partyScreen;
+
 
     //TODO: Replace with parameters
     [SerializeField] Image background;
-    [SerializeField] Image enemySprite;
-    [SerializeField] Image playerSprite;
+    [SerializeField] BattleSprite enemySprite;
+    [SerializeField] BattleSprite playerSprite;
 
-    //TODO: Replace with parameters
-    [SerializeField] PokemonSpecies enemySpecies;
-    [SerializeField] PokemonSpecies playerSpecies;
+    public event Action<bool> OnBattleOver;
 
     BattleState state;
     int curBattleOption = 0;
     int curMoveOption = 0;
+
+    int fleeAttempts = 0;
+
+    bool switchBecauseFainted = false;
 
     Pokemon playerPokemon;
     Pokemon enemyPokemon;
@@ -79,16 +62,28 @@ public class Battle : MonoBehaviour
     //waterSport - last until the user switches out
     bool airLock = false; //Whether or not pokemon with Cloud Nine/Air Lock is on the field
 
-    void Start() 
+    void Start()
+    {
+        partyScreen.OnClose += ClosePokemon;
+    }
+
+    public void StartBattle(Pokemon wildPokemon)
     {   
-        playerPokemon = new Pokemon(playerSpecies, 5, true, false);
-        enemyPokemon = new Pokemon(enemySpecies, 5, true, false);
+        playerPokemon = player.GetLeadPokemon();
+        if(playerPokemon == null)
+        {
+            Debug.Log("The player is out of useable pokemon!");
+            return;
+        }
+        enemyPokemon = wildPokemon;
         state = BattleState.Intro;
         InitField();
         StartCoroutine(InitBattle(playerPokemon, enemyPokemon));
     }
 
-    void Update() 
+    //public void StartTrainerBattle(Trainer trainer){}
+
+    public void HandleUpdate()
     {
         HandleInput();
     }
@@ -98,8 +93,23 @@ public class Battle : MonoBehaviour
         foreach(int i in Enum.GetValues(typeof(FieldEffect)))
         {
             FieldEffect fe = (FieldEffect) i;
-            playerField.Add(fe, -1);
-            enemyField.Add(fe,-1);
+            if(!playerField.ContainsKey(fe))
+            {
+                playerField.Add(fe, -1);
+            }
+            else
+            {
+                playerField[fe] = -1;
+            }
+
+            if(!enemyField.ContainsKey(fe))
+            {
+                enemyField.Add(fe, -1);
+            }
+            else
+            {
+                enemyField[fe] = -1;
+            }
         }
     }
 
@@ -126,36 +136,72 @@ public class Battle : MonoBehaviour
 
     void Pokemon()
     {
-        mainBox.NotImplemented();
+        state = BattleState.Pokemon;
+        partyScreen.SetPartyMembers(player.PartyPokemon);
+        partyScreen.gameObject.SetActive(true);
+    }
+
+    void ClosePokemon(Pokemon pokemon)
+    {
+        if(switchBecauseFainted)
+        {
+            if(pokemon != null && !pokemon.Fainted)
+            {
+                partyScreen.gameObject.SetActive(false);
+                StartCoroutine(SwitchPokemon(pokemon, true));
+                switchBecauseFainted = false;
+            }
+        }
+        else
+        {
+            if(pokemon == null)
+            {
+                partyScreen.gameObject.SetActive(false);
+                state = BattleState.ActionSelection;
+            }
+            else if(!pokemon.Fainted)
+            {
+                partyScreen.gameObject.SetActive(false);
+                StartCoroutine(SwitchPokemon(pokemon, false));
+            }
+        }
     }
 
     void Run()
     {
-        mainBox.NotImplemented();
+        StartCoroutine(RunAttempt());
     }
 
 //----------------------Timed Coroutines (and helper functions)------------------------
 
     public IEnumerator InitBattle(Pokemon playerPokemon, Pokemon enemyPokemon)
     {
-        playerSprite.sprite = playerPokemon.Sprite;
-        enemySprite.sprite = enemyPokemon.Sprite;
-        enemyHUD.GenerateBar(enemyPokemon);
-        playerHUD.GenerateBar(playerPokemon);
+        sideBox.Clear();
+        
+        playerSprite.Set(playerPokemon);
+        enemySprite.Set(enemyPokemon);
+        playerPokemon.IsActive = true;
+        
+        partyScreen.Init();
 
+        StartCoroutine(enemySprite.Entrance());
         yield return mainBox.WildPokemonIntro(enemyPokemon.Species.SpeciesName);
         yield return mainBox.PauseAfterText();
-        state = BattleState.Ready;
+
+        enemyHUD.GenerateBar(enemyPokemon);
         enemyHUD.gameObject.SetActive(true);
+        StartCoroutine(playerSprite.Entrance());
         yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
-        playerSprite.gameObject.SetActive(true);
         yield return mainBox.PauseAfterText();
+
+        playerHUD.GenerateBar(playerPokemon);
         playerHUD.gameObject.SetActive(true);
         PlayerSelection();
     }
 
     IEnumerator ChooseMove(PokemonMove move)
     {
+        sideBox.Clear();
         state = BattleState.Battle;
 
         PokemonMove enemyMove = getEnemyMove();
@@ -164,45 +210,69 @@ public class Battle : MonoBehaviour
         int playerSpeed = GetEffectiveSpeed(playerPokemon, playerField[FieldEffect.Tailwind] > 0);
         int enemySpeed = GetEffectiveSpeed(enemyPokemon, enemyField[FieldEffect.Tailwind] > 0);       
         
+        bool playerFirst = false;
+
         if(playerPriority > enemyPriority)
         {
-            yield return UseMove(move, playerPokemon, enemyPokemon, true);
-            yield return UseMove(move, enemyPokemon, playerPokemon, false);
+            playerFirst = true;
         }
         else if(playerPriority < enemyPriority)
         {
-            yield return UseMove(move, enemyPokemon, playerPokemon, false);
-            yield return UseMove(move, playerPokemon, enemyPokemon, true);
+            playerFirst = false;
         }
         else if((playerSpeed > enemySpeed && !trickRoom) || (playerSpeed < enemySpeed && trickRoom))
         {
-            yield return UseMove(move, playerPokemon, enemyPokemon, true);
-            yield return UseMove(move, enemyPokemon, playerPokemon, false);
+            playerFirst = true;
         }
         else if((playerSpeed < enemySpeed && !trickRoom) || (playerSpeed > enemySpeed && trickRoom))
         {
-            yield return UseMove(move, enemyPokemon, playerPokemon, false);
-            yield return UseMove(move, playerPokemon, enemyPokemon, true);
+            playerFirst = false;
         }
         else if(UnityEngine.Random.Range(0,2) == 0)
         {            
-            yield return UseMove(move, playerPokemon, enemyPokemon, true);
-            yield return UseMove(move, enemyPokemon, playerPokemon, false);
+            playerFirst = true;
         }
         else
         {
-            yield return UseMove(move, enemyPokemon, playerPokemon, false);
+            playerFirst = false;
+        }
+
+        if(playerFirst)
+        {
             yield return UseMove(move, playerPokemon, enemyPokemon, true);
+            yield return UseMove(enemyMove, enemyPokemon, playerPokemon, false);
+        }
+        else
+        {
+            yield return UseMove(enemyMove, enemyPokemon, playerPokemon, false);
+            if(!switchBecauseFainted)
+            {
+                yield return UseMove(move, playerPokemon, enemyPokemon, true);
+            }
         }
 
         yield return EndRound();
 
-        PlayerSelection();
+        if(switchBecauseFainted)
+        {
+            if(player.GetLeadPokemon() == null)
+            {
+                yield return mainBox.WhiteOut();
+                yield return mainBox.PauseAfterText();
+                CleanupBattle();
+                OnBattleOver(false);
+            }
+            Pokemon();
+        }
+        else
+        {
+            PlayerSelection();
+        }
     }
 
     int GetEffectiveSpeed(Pokemon pokemon, bool tailwind)
     {
-        int speed = pokemon.Stats[5];
+        int speed = pokemon.Stats.Spe;
         if(tailwind)
         {
             speed *= 2;
@@ -216,36 +286,78 @@ public class Battle : MonoBehaviour
 
     IEnumerator UseMove(PokemonMove move, Pokemon attacker, Pokemon defender, bool isPlayerAttacking)
     {
+        if(attacker.Fainted)
+        {
+            yield break;
+        }
+
         yield return mainBox.UseMove(attacker, move);
         yield return mainBox.PauseAfterText();
 
-        bool fail = false;
-        bool miss = false;
-        bool immune = false;
+        //Failure check
         //Accuracy check
-        //Immunity check
+
+        float type = CalculateTypeAdvantage(move.MoveBase.MoveType, move, defender, attacker);
+        Debug.Log($"Move: {move.MoveBase.MoveName}; Type: {move.MoveBase.MoveType}; Defender Types: {defender.Species.Type1}/{defender.Species.Type2}; Effectiveness: {type}");        
+        if(type == 0f)
+        {
+            yield return mainBox.Immune();
+            yield return mainBox.PauseAfterText();
+            yield break;
+        }
+
+        if(isPlayerAttacking)
+        {
+            yield return playerSprite.Attack();
+            yield return playerSprite.Attack();
+            yield return enemySprite.Hit();
+            yield return enemySprite.Hit();
+        }
+        else
+        {
+            yield return enemySprite.Attack();
+            yield return enemySprite.Attack();
+            yield return playerSprite.Hit();
+            yield return playerSprite.Hit();
+        }
+
         if(move.MoveBase.Category != MoveCategory.Status)
         {
-            //Refactor to make CalculateDamage an IEnumerator
             yield return CalculateDamage(move, attacker, defender, isPlayerAttacking);
         }
         yield return CalculateEffects(move, attacker, defender, isPlayerAttacking);
         //yield return CalculateOther()          -Thinks like contact for abilities and whatnot
+
+        if(defender.Fainted)
+        {
+            if(isPlayerAttacking)
+            {
+                yield return enemySprite.Faint();
+                yield return mainBox.Fainted(enemyPokemon.Nickname);
+                yield return mainBox.PauseAfterText();
+                CleanupBattle();
+                OnBattleOver(true);
+            }
+            else
+            {
+                yield return playerSprite.Faint();
+                yield return mainBox.Fainted(playerPokemon.Nickname);
+                yield return mainBox.PauseAfterText();
+                switchBecauseFainted = true;
+            }
+        } 
     }
 
     IEnumerator CalculateEffects(PokemonMove move, Pokemon attacker, Pokemon defender, bool isPlayerAttacking)
     {
-        yield return mainBox.HandlingEffects();
-        yield return mainBox.PauseAfterText();
-
+        if(!defender.Fainted)
+        {
+            yield return mainBox.HandlingEffects();
+            yield return mainBox.PauseAfterText();
+        }
     }
 
     IEnumerator UseItem(string itemName)
-    {
-        yield return null;
-    }
-
-    IEnumerator SwapPokemon(Pokemon newPokemon)
     {
         yield return null;
     }
@@ -334,10 +446,148 @@ public class Battle : MonoBehaviour
         }
     }
 
+    IEnumerator EnemySoloTurn()
+    {
+        state = BattleState.Battle;
+        PokemonMove enemyMove = getEnemyMove();
+        yield return UseMove(enemyMove, enemyPokemon, playerPokemon, false);        
+        yield return EndRound();
+
+        if(switchBecauseFainted)
+        {            
+            if(player.GetLeadPokemon() == null)
+            {
+                yield return mainBox.WhiteOut();
+                yield return mainBox.PauseAfterText();
+                CleanupBattle();
+                OnBattleOver(false);
+            }
+            Pokemon();
+        }
+        else
+        {
+            PlayerSelection();
+        }
+    }
+
+    IEnumerator SwitchPokemon(Pokemon pokemon, bool isFree)
+    {
+        state = BattleState.Switching;
+
+        sideBox.Clear();
+
+        playerHUD.gameObject.SetActive(false);
+        if(!playerPokemon.Fainted)
+        {
+            yield return mainBox.PlayerPokemonReturn(playerPokemon.Nickname);
+            yield return playerSprite.Return();
+            yield return mainBox.PauseAfterText();
+        }
+
+        playerPokemon.IsActive = false;
+        playerPokemon = pokemon;
+        playerPokemon.IsActive = true;
+
+        playerSprite.Set(playerPokemon);
+        yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
+        yield return playerSprite.Entrance();
+        yield return mainBox.PauseAfterText();
+
+        playerHUD.GenerateBar(playerPokemon);
+        playerHUD.gameObject.SetActive(true);
+    
+        if(!isFree)
+        {       
+            yield return EnemySoloTurn();
+        }
+        else
+        {     
+            PlayerSelection();
+        }
+    }
+
+    IEnumerator RunAttempt()
+    {
+        if(playerPokemon.Species.Type1 == PokemonType.Ghost || playerPokemon.Species.Type1 == PokemonType.Ghost)
+        {
+            yield return RunSuccess();
+        }
+        if(enemyPokemon.Ability == "Arena Trap")
+        {
+            //yield return mainBox.FleePrevention()
+            yield return mainBox.PauseAfterText();
+        }
+
+        if(playerPokemon.Stats.Spe >= enemyPokemon.Stats.Spe)
+        {
+            yield return RunSuccess();
+        }
+        else
+        {
+            //ToDo: Rework to check if run is successful or not
+            yield return RunSuccess();
+            yield return EnemySoloTurn();
+        }        
+    }
+
+    IEnumerator RunSuccess()
+    {
+        yield return mainBox.Run();
+        yield return mainBox.PauseAfterText();
+        CleanupBattle();
+        OnBattleOver(false);
+        yield return null;
+    }
+
+    IEnumerator RunFailure()
+    {
+        yield return null;
+    }
+
+    void CleanupBattle()
+    {
+        foreach(int i in Enum.GetValues(typeof(FieldEffect)))
+        {
+            FieldEffect fe = (FieldEffect) i;
+            playerField[fe] = -1;
+            enemyField[fe] = -1;
+        }
+        weather = Weather.None;
+        weatherCounter = -1;
+        terrain = Terrain.None;
+        terrainCounter = -1;
+        trickRoom = false;
+        trickRoomCounter = -1;
+        magicRoom = false;
+        magicRoomCounter = -1;
+        wonderRoom = false;
+        wonderRoomCounter = -1;
+        gravity = false;
+        gravityCounter = -1;
+        fairyLock = false;
+        fairyLockCounter = -1;
+        ionDeluge = false;
+
+        fleeAttempts = 0;
+
+        playerHUD.gameObject.SetActive(false);
+        enemyHUD.gameObject.SetActive(false);
+
+        enemyPokemon.IsActive = false;
+        playerPokemon.IsActive = false;
+    }
 //----------------------Damage Calculations-----------------------
 
     IEnumerator CalculateDamage(PokemonMove move, Pokemon attacker, Pokemon defender, bool isPlayerAttacking)
-    {
+    {   
+        Debug.Log($"Attacker is {attacker.Nickname}");
+        attacker.Stats.print();
+        attacker.Ivs.print();
+        Debug.Log("-------------");
+        Debug.Log($"Defender is {defender.Nickname}");
+        defender.Stats.print();
+        defender.Ivs.print();
+
         PokemonType moveType = move.MoveBase.MoveType;
         int level = attacker.Level;
         int power = move.MoveBase.BasePower;
@@ -345,13 +595,13 @@ public class Battle : MonoBehaviour
         int D = 1;
         if(move.MoveBase.Category == MoveCategory.Physical)
         {
-            A = attacker.Stats[1]; //Physical Attack
-            D = defender.Stats[2];
+            A = attacker.Stats.Atk; //Physical Attack
+            D = defender.Stats.Def;
         }
         else if(move.MoveBase.Category == MoveCategory.Special)
         {
-            A = attacker.Stats[3]; //Special Attack
-            D = defender.Stats[4];
+            A = attacker.Stats.SpA; //Special Attack
+            D = defender.Stats.SpD;
         }
         
         //Calculate variable power moves
@@ -371,6 +621,8 @@ public class Battle : MonoBehaviour
 
         //Calclate variable move type (HP, Tera Blast, Weather Ball, etc...)
 
+        Debug.Log($"Level = {level}; Power = {power}; A = {A}; D = {D}; Crit = {critical}");
+
         //-----------------Modifiers-------------------------------
         float targets = 1f;    //Implement with double/triple battles
 
@@ -379,7 +631,6 @@ public class Battle : MonoBehaviour
         float weather = CalculateWeatherBoost(move, moveType);
         if(weather == 0f)
         {
-            //return -1;
             yield return mainBox.Failed();
             yield return mainBox.PauseAfterText();
             yield break;
@@ -388,17 +639,10 @@ public class Battle : MonoBehaviour
         float glaiveRush = 1f; //Implement with Glaive Rush Attack\
 
         float random = (UnityEngine.Random.Range(85,101))/100f;
-        Debug.Log($"Random factor: {random}");
 
         float stab = CalculateStab(moveType, attacker);
 
         float type = CalculateTypeAdvantage(moveType, move, defender, attacker);
-        if(type == 0f)
-        {
-            yield return mainBox.Immune();
-            yield return mainBox.PauseAfterText();
-            yield break;
-        }
 
         float burn = 1f;
         if(attacker.Status == NonVolatileStatus.Burn && attacker.Ability != "Guts" && move.MoveBase.Category == MoveCategory.Physical && move.MoveBase.MoveName != "Facade")
@@ -410,6 +654,7 @@ public class Battle : MonoBehaviour
         float zMove = 1f;
         float teraShield = 1f;
 
+        Debug.Log($"Targets: {targets}; PB: {pb}; Weather: {weather}; Glaive Rush: {glaiveRush}; Random: {random}; STAB: {stab}; Type: {type}; Burn: {burn}; Other: {other}; Zmove: {zMove}; Tera Shield: {teraShield}");
 
         //-----------------Formula---------------------------
 
@@ -434,19 +679,19 @@ public class Battle : MonoBehaviour
         {
             damage = 1;
         }
-        
-        bool ko = false;
 
+        Debug.Log($"Level Calc: {levelCalc}; Top: {top}; Base Damage: {baseDamage}; Damage: {damage}");
+    
         if(isPlayerAttacking)
         {
             int startHP = enemyPokemon.CurHP;
-            ko = enemyPokemon.TakeDamage(damage);
+            enemyPokemon.TakeDamage(damage);
             yield return enemyHUD.UpdateHP();
         }
         else
         {
             int startHP = playerPokemon.CurHP;
-            ko = playerPokemon.TakeDamage(damage);
+            playerPokemon.TakeDamage(damage);
             yield return playerHUD.UpdateHP();
         }
 
@@ -468,18 +713,6 @@ public class Battle : MonoBehaviour
             yield return mainBox.NotVeryEffective();
             yield return mainBox.PauseAfterText();
         }       
-
-        if(ko)
-        {
-            if(isPlayerAttacking)
-            {
-
-            }
-            else
-            {
-
-            }
-        } 
     }
 
     int Round(float f)  //Round to nearest with .5 rounding down
@@ -647,19 +880,19 @@ public class Battle : MonoBehaviour
         if(t1 != PokemonType.None)
         {
             CheckExceptions(move, moveType, t1, defender, attacker);
-            typeAdv *= TYPE_CHART[(int) moveType][(int) t1];
+            typeAdv *= TypeChart.GetTypeEffectiveness(moveType, t1);
         }
         if(t2 != PokemonType.None)
         {
-            typeAdv *= TYPE_CHART[(int) moveType][(int) t2];
+            typeAdv *= TypeChart.GetTypeEffectiveness(moveType, t2);
         }
         if(defender.TrickOrTreat)
         {
-            typeAdv *= TYPE_CHART[(int) moveType][(int) PokemonType.Ghost];
+            typeAdv *= TypeChart.GetTypeEffectiveness(moveType, PokemonType.Ghost);
         }   
         else if(defender.ForestsCurse)
         {
-            typeAdv *= TYPE_CHART[(int) moveType][(int) PokemonType.Ghost];
+            typeAdv *= TypeChart.GetTypeEffectiveness(moveType, PokemonType.Ghost);
         }
         return typeAdv;
     }
@@ -673,7 +906,7 @@ public class Battle : MonoBehaviour
                 return 1f;
             }
         }
-        if(defender.HeldItem == "Ring Target" && TYPE_CHART[(int) moveType][(int) type] == 0.0f)
+        if(defender.HeldItem == "Ring Target" && TypeChart.GetTypeEffectiveness(moveType, type) == 0.0f)
         {
             return 1f;
         }
@@ -687,9 +920,9 @@ public class Battle : MonoBehaviour
         }
         if(move.MoveBase.MoveName == "Flying Press")
         {
-            return TYPE_CHART[(int)moveType][(int)type] * TYPE_CHART[(int)PokemonType.Flying][(int)type];
+            return TypeChart.GetTypeEffectiveness(moveType, type) * TypeChart.GetTypeEffectiveness(PokemonType.Flying, type);
         }
-        if(type == PokemonType.Flying && weather == Weather.Wind && TYPE_CHART[(int)moveType][(int)type] > 1f)
+        if(type == PokemonType.Flying && weather == Weather.Wind && TypeChart.GetTypeEffectiveness(moveType, type) > 1f)
         {
             return 1f;
         }
@@ -721,6 +954,11 @@ public class Battle : MonoBehaviour
 
     void HandleInput()
     {
+        if(state == BattleState.Pokemon)
+        {
+            partyScreen.HandleInput(switchBecauseFainted);
+            return;
+        }
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             if(curBattleOption < 2 && state == BattleState.ActionSelection)

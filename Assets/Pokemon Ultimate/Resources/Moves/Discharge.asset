@@ -15,17 +15,14 @@ MonoBehaviour:
   moveName: Discharge
   description: The user strikes everything around it by letting loose a flare of
     electricity. This may also leave those hit by the attack with paralysis.
-  moveType: 4
+  moveType: 5
   category: 3
   basePower: 80
   pp: 15
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 4
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: 30
   contact: 0
   isSound: 0
   isPunch: 0

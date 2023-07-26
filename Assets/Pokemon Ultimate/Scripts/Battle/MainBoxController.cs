@@ -18,7 +18,15 @@ public class MainBoxController : MonoBehaviour
     [SerializeField] float textDelay = .04f;     //Dynamically change in gameSettings eventually
     [SerializeField] float pauseDuration = 1f;
 
+    bool typing = false;
+
 //---------------Dialog Box Options------------------
+
+    void OnEnable()
+    {
+        typing = false;
+        battleText.text = "";
+    }
 
     public IEnumerator WildPokemonIntro(string pokemonName)
     {
@@ -38,6 +46,13 @@ public class MainBoxController : MonoBehaviour
     public IEnumerator Fainted(string pokemonName)
     {
         yield return SlowText($"{pokemonName} fainted...");   //Get exact text
+    }
+
+    public IEnumerator WhiteOut()
+    {
+        yield return SlowText("You have run out of useable pokemon.");
+        yield return PauseAfterText();
+        yield return SlowText("You whited out.");
     }
 
     public IEnumerator UseMove(Pokemon pokemon, PokemonMove move)
@@ -95,6 +110,11 @@ public class MainBoxController : MonoBehaviour
         yield return SlowText($"Handling Effects Now!");
     }
 
+    public IEnumerator Run()
+    {
+        yield return SlowText("Got away safely!");
+    }
+
     public void NotImplemented()
     {
         battleText.text = "This feature has not been implemented yet.";
@@ -136,7 +156,12 @@ public class MainBoxController : MonoBehaviour
     }
 
     IEnumerator SlowText(string text)
-    {        
+    {
+        if(typing)
+        {
+            yield break;
+        }
+        typing = true;  
         moveOptions.SetActive(false);
         battleText.text = "";
         battleText.enabled = true;
@@ -145,6 +170,7 @@ public class MainBoxController : MonoBehaviour
             battleText.text += letter;
             yield return new WaitForSeconds(textDelay);
         }
+        typing = false;
     }
 
 //----------Battle States--------------    

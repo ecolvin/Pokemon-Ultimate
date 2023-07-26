@@ -15,17 +15,14 @@ MonoBehaviour:
   moveName: Thunder
   description: A wicked thunderbolt is dropped on the target to inflict damage. This
     may also leave the target with paralysis.
-  moveType: 4
+  moveType: 5
   category: 3
   basePower: 110
   pp: 10
   accuracy: 70
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: 30
   contact: 0
   isSound: 0
   isPunch: 0

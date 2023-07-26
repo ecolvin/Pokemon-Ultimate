@@ -17,12 +17,18 @@ MonoBehaviour:
     the pouches in its cheeks.
   classification: Mouse Pokemon
   dexNo: 25
-  type1: 4
+  type1: 5
   type2: 0
   ability1: Static
   ability2: 
   hiddenAbility: Lightning Rod
-  baseStats: 23000000370000002800000032000000320000005a000000
+  baseStats:
+    hp: 35
+    atk: 55
+    def: 40
+    spa: 50
+    spd: 50
+    spe: 90
   genderRatio: 0.5
   eggGroup1: 5
   eggGroup2: 6
@@ -33,7 +39,13 @@ MonoBehaviour:
   catchRate: 190
   baseXPYield: 112
   levelingRate: 2
-  evYield: 000000000000000000000000000000000000000002000000
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 2
   maleModel: {fileID: 0}
   femaleModel: {fileID: 0}
   maleModelShiny: {fileID: 0}

@@ -15,17 +15,14 @@ MonoBehaviour:
   moveName: Nuzzle
   description: The user attacks by nuzzling its electrified cheeks against the target.
     This also leaves the target with paralysis.
-  moveType: 4
+  moveType: 5
   category: 2
   basePower: 20
   pp: 20
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: 100
   contact: 1
   isSound: 0
   isPunch: 0

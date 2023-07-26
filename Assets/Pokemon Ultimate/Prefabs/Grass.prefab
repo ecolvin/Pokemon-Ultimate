@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6354642779710057943}
   - component: {fileID: 1005593331160490177}
   - component: {fileID: 6193846978487535806}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Grass Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,9 +93,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7622956908286519311}
   - component: {fileID: 3995212903966717984}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Grass
-  m_TagString: Spawner
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

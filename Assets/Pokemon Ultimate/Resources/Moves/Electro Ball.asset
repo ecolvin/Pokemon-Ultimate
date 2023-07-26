@@ -15,17 +15,14 @@ MonoBehaviour:
   moveName: Electro Ball
   description: The user hurls an electric orb at the target. The faster the user
     is than the target, the greater the move's power.
-  moveType: 4
+  moveType: 5
   category: 3
   basePower: 1
   pp: 10
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: 
-  effectChance: 0
   contact: 0
   isSound: 0
   isPunch: 0

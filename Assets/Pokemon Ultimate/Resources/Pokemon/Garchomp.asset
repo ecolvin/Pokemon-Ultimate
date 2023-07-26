@@ -22,7 +22,13 @@ MonoBehaviour:
   ability1: Sand Veil
   ability2: 
   hiddenAbility: Rough Skin
-  baseStats: 6c000000820000005f000000500000005500000066000000
+  baseStats:
+    hp: 108
+    atk: 130
+    def: 95
+    spa: 80
+    spd: 85
+    spe: 102
   genderRatio: 0.5
   eggGroup1: 1
   eggGroup2: 13
@@ -33,7 +39,13 @@ MonoBehaviour:
   catchRate: 45
   baseXPYield: 270
   levelingRate: 4
-  evYield: 000000000300000000000000000000000000000000000000
+  evYield:
+    hp: 0
+    atk: 3
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 0
   maleModel: {fileID: 0}
   femaleModel: {fileID: 0}
   maleModelShiny: {fileID: 0}

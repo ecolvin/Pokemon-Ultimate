@@ -17,12 +17,18 @@ MonoBehaviour:
     the seed on its back.
   classification: Seed Pokemon
   dexNo: 1
-  type1: 5
+  type1: 4
   type2: 8
   ability1: Overgrow
   ability2: 
   hiddenAbility: Chlorophyll
-  baseStats: 2d000000310000003100000041000000410000002d000000
+  baseStats:
+    hp: 45
+    atk: 49
+    def: 49
+    spa: 65
+    spd: 65
+    spe: 45
   genderRatio: 0.875
   eggGroup1: 1
   eggGroup2: 7
@@ -33,7 +39,13 @@ MonoBehaviour:
   catchRate: 45
   baseXPYield: 64
   levelingRate: 3
-  evYield: 000000000000000000000000010000000000000000000000
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 1
+    spd: 0
+    spe: 0
   maleModel: {fileID: 0}
   femaleModel: {fileID: 0}
   maleModelShiny: {fileID: 0}

@@ -10,22 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
-  m_Name: Thunder Shock
+  m_Name: Sand Attack
   m_EditorClassIdentifier: 
-  moveName: Thunder Shock
-  description: The user attacks the target with a jolt of electricity. This may also
-    leave the target with paralysis.
-  moveType: 4
-  category: 3
-  basePower: 40
-  pp: 30
+  moveName: Sand Attack
+  description: Sand is hurled in the target's face, lowering the target's accuracy.
+  moveType: 9
+  category: 1
+  basePower: 0
+  pp: 15
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: -1
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: 10
   contact: 0
   isSound: 0
   isPunch: 0
@@ -38,7 +34,7 @@ MonoBehaviour:
   metronome: 1
   gravity: 0
   defrosts: 0
-  isReflected: 0
+  isReflected: 1
   isProtected: 1
   copyable: 1
   hitsFlyBounceSkyDrop: 0

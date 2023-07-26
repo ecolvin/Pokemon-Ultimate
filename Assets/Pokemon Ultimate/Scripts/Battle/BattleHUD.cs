@@ -12,8 +12,6 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] TextMeshProUGUI genderField;
     [SerializeField] TextMeshProUGUI hpNums;
 
-    [SerializeField] [Range(1, 100)] int damageSpeed = 10;
-
     //TODO: Replace with parameters
     [SerializeField] PokemonSpecies species;
     
@@ -21,6 +19,7 @@ public class BattleHUD : MonoBehaviour
 
     public void GenerateBar(Pokemon pokemon)
     {
+        Debug.Log($"Generating HUD for {pokemon.Nickname}");
         this.pokemon = pokemon;
 
         pokemonName.text = pokemon.Species.SpeciesName;
@@ -38,14 +37,19 @@ public class BattleHUD : MonoBehaviour
         else
         {
             genderField.text = "";
-        }        
-        UpdateHP();
+        }     
+
+        if(hpNums != null)
+        {
+            hpNums.text = pokemon.CurHP + "/" + pokemon.Stats.HP;
+        }
+        hpBar.SetHP((float)pokemon.CurHP/(float)pokemon.Stats.HP);
     }
 
     public IEnumerator UpdateHP()
     {
         int newHP = pokemon.CurHP;
-        int maxHP = pokemon.Stats[0];
+        int maxHP = pokemon.Stats.HP;
 
         if(maxHP <= 0)
         {
@@ -61,6 +65,7 @@ public class BattleHUD : MonoBehaviour
         }
 
         yield return hpBar.SetHPSmoothly((float) newHP/ (float)maxHP);
+        Debug.Log($"HP Nums: {hpNums != null}; New HP: {newHP}; Max HP: {maxHP}");
         if(hpNums != null)
         {
             hpNums.text = newHP + "/" + maxHP;

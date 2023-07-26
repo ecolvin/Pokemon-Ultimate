@@ -15,17 +15,14 @@ MonoBehaviour:
   moveName: Thunderbolt
   description: The user attacks the target with a strong electric blast. This may
     also leave the target with paralysis.
-  moveType: 4
+  moveType: 5
   category: 3
   basePower: 90
   pp: 0
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: 10
   contact: 0
   isSound: 0
   isPunch: 0

@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{6F6F0943-AADA-F980-A691-1F28C30525C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{658356F5-CFE5-7B59-EF09-478DEA37463A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Andtech.StarPack.Editor", "Andtech.StarPack.Editor.csproj", "{0832520A-43C0-40C8-2A4F-89F89B7799F2}"
 EndProject
 Global
@@ -15,6 +17,10 @@ Global
 		{6F6F0943-AADA-F980-A691-1F28C30525C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F6F0943-AADA-F980-A691-1F28C30525C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F6F0943-AADA-F980-A691-1F28C30525C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{658356F5-CFE5-7B59-EF09-478DEA37463A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{658356F5-CFE5-7B59-EF09-478DEA37463A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{658356F5-CFE5-7B59-EF09-478DEA37463A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{658356F5-CFE5-7B59-EF09-478DEA37463A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0832520A-43C0-40C8-2A4F-89F89B7799F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0832520A-43C0-40C8-2A4F-89F89B7799F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0832520A-43C0-40C8-2A4F-89F89B7799F2}.Release|Any CPU.ActiveCfg = Release|Any CPU

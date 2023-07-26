@@ -24,8 +24,11 @@ public class PokemonSpecies : ScriptableObject
     public string Ability2{get{return ability2;}}
     [SerializeField] string hiddenAbility;
     public string HiddenAbility{get{return hiddenAbility;}}
-    [SerializeField] int[] baseStats = new int[6];
-    public int[] BaseStats{get{return baseStats;}}
+    [SerializeField] StatBlock baseStats;
+    public StatBlock BaseStats{get{return baseStats;}}
+
+    //[SerializeField] int[] baseStats = new int[6];
+    //public int[] BaseStats{get{return baseStats;}}
 
     [Header("Breeding Info")]
     [Tooltip("Percent chance of being male; Use a negative number if genderless")]
@@ -45,7 +48,8 @@ public class PokemonSpecies : ScriptableObject
     [SerializeField] int catchRate;
     [SerializeField] int baseXPYield;
     [SerializeField] LevelingRate levelingRate;
-    [SerializeField] int[] evYield = new int[6];
+    [SerializeField] StatBlock evYield;
+
     //TODO: Rework wildHeldItems to be serializable
     [SerializeField] List<(string, int)> wildHeldItems;
     public List<(string, int)> WildHeldItems{get{return wildHeldItems;}}
@@ -87,6 +91,77 @@ public class LearnableMove
     [Tooltip("Use -1 if learned when it evolves and 0 if it's a starting move")]
     [SerializeField] [Range(-1,100)] int levelLearned;
     public int LevelLearned{get{return levelLearned;}}
+}
+
+[System.Serializable]
+public class StatBlock
+{
+    [SerializeField] int hp;
+    [SerializeField] int atk;
+    [SerializeField] int def;
+    [SerializeField] int spa;
+    [SerializeField] int spd;
+    [SerializeField] int spe;
+
+    public int HP{get{return hp;}set{hp=value;}}  //HP
+    public int Atk{get{return atk;}set{atk=value;}} //Attack
+    public int Def{get{return def;}set{def=value;}} //Defense
+    public int SpA{get{return spa;}set{spa=value;}} //Sepcial Attack
+    public int SpD{get{return spd;}set{spd=value;}} //Special Defense
+    public int Spe{get{return spe;}set{spe=value;}} //Speed
+
+    public StatBlock(int hp, int atk, int def, int spa, int spd, int spe)
+    {
+        HP = hp;
+        Atk = atk;
+        Def = def;
+        SpA = spa;
+        SpD = spd;
+        Spe = spe;
+    }
+
+    public void print()
+    {
+        Debug.Log($"HP: {HP}; Atk: {Atk}; Def: {Def}; SpA: {SpA}; SpD: {SpD}; Spe: {Spe}");
+    }
+}
+
+public class TypeChart
+{
+    static float [][] chart =
+    {
+        new float[18]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,0.0f,1.0f,1.0f,0.5f,1.0f},
+        new float[18]{1.0f,0.5f,0.5f,2.0f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,1.0f,2.0f,1.0f},
+        new float[18]{1.0f,2.0f,0.5f,0.5f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f,1.0f},
+        new float[18]{1.0f,0.5f,2.0f,0.5f,1.0f,1.0f,1.0f,0.5f,2.0f,0.5f,1.0f,0.5f,2.0f,1.0f,0.5f,1.0f,0.5f,1.0f},
+        new float[18]{1.0f,1.0f,2.0f,0.5f,0.5f,1.0f,1.0f,1.0f,0.0f,2.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f},
+        new float[18]{1.0f,0.5f,0.5f,2.0f,1.0f,0.5f,1.0f,1.0f,2.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f},
+        new float[18]{2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,0.5f,0.5f,0.5f,2.0f,0.0f,1.0f,2.0f,2.0f,0.5f},
+        new float[18]{1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,0.5f,0.5f,1.0f,1.0f,1.0f,0.5f,0.5f,1.0f,1.0f,0.0f,2.0f},
+        new float[18]{1.0f,2.0f,1.0f,0.5f,2.0f,1.0f,1.0f,2.0f,1.0f,0.0f,1.0f,0.5f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f},
+        new float[18]{1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,1.0f,1.0f,0.5f,1.0f},
+        new float[18]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,2.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,1.0f,0.0f,0.5f,1.0f},
+        new float[18]{1.0f,0.5f,1.0f,2.0f,1.0f,1.0f,0.5f,0.5f,1.0f,0.5f,2.0f,1.0f,1.0f,0.5f,1.0f,2.0f,0.5f,0.5f},
+        new float[18]{1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,2.0f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f},
+        new float[18]{0.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f},
+        new float[18]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,0.0f},
+        new float[18]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,0.5f},
+        new float[18]{1.0f,0.5f,0.5f,1.0f,0.5f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,0.5f,2.0f},
+        new float[18]{1.0f,0.5f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,2.0f,0.5f,1.0f}
+    };
+
+    public static float GetTypeEffectiveness(PokemonType attackType, PokemonType defenseType)
+    {
+        if(attackType == PokemonType.None || defenseType == PokemonType.None)
+        {
+            return 1f;
+        }
+
+        int row = (int) attackType - 1;
+        int col = (int) defenseType - 1;
+
+        return chart[row][col];
+    }
 }
 
 public enum PokemonType     //DO NOT CHANGE THIS AGAIN OR IT WILL MESS UP THE TYPE CHART
@@ -139,3 +214,26 @@ public enum LevelingRate
     Slow,
     Fluctuating
 }
+
+    // public float[][] TYPE_CHART = 
+    // {
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f},
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,0.0f,1.0f,1.0f,0.5f,1.0f},
+    //     new float[19]{1.0f,1.0f,0.5f,0.5f,2.0f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,1.0f,2.0f,1.0f},
+    //     new float[19]{1.0f,1.0f,2.0f,0.5f,0.5f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f,1.0f},
+    //     new float[19]{1.0f,1.0f,0.5f,2.0f,0.5f,1.0f,1.0f,1.0f,0.5f,2.0f,0.5f,1.0f,0.5f,2.0f,1.0f,0.5f,1.0f,0.5f,1.0f},
+    //     new float[19]{1.0f,1.0f,1.0f,2.0f,0.5f,0.5f,1.0f,1.0f,1.0f,0.0f,2.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f},
+    //     new float[19]{1.0f,1.0f,0.5f,0.5f,2.0f,1.0f,0.5f,1.0f,1.0f,2.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f},
+    //     new float[19]{1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,0.5f,0.5f,0.5f,2.0f,0.0f,1.0f,2.0f,2.0f,0.5f},
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,0.5f,0.5f,1.0f,1.0f,1.0f,0.5f,0.5f,1.0f,1.0f,0.0f,2.0f},
+    //     new float[19]{1.0f,1.0f,2.0f,1.0f,0.5f,2.0f,1.0f,1.0f,2.0f,1.0f,0.0f,1.0f,0.5f,2.0f,1.0f,1.0f,1.0f,2.0f,1.0f},
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,1.0f,1.0f,0.5f,1.0f},
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,2.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,1.0f,0.0f,0.5f,1.0f},
+    //     new float[19]{1.0f,1.0f,0.5f,1.0f,2.0f,1.0f,1.0f,0.5f,0.5f,1.0f,0.5f,2.0f,1.0f,1.0f,0.5f,1.0f,2.0f,0.5f,0.5f},
+    //     new float[19]{1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,0.5f,2.0f,1.0f,2.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f},
+    //     new float[19]{1.0f,0.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,1.0f},
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,0.5f,0.0f},
+    //     new float[19]{1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,2.0f,1.0f,0.5f,1.0f,0.5f},
+    //     new float[19]{1.0f,1.0f,0.5f,0.5f,1.0f,0.5f,2.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,1.0f,1.0f,1.0f,0.5f,2.0f},
+    //     new float[19]{1.0f,1.0f,0.5f,1.0f,1.0f,1.0f,1.0f,2.0f,0.5f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,2.0f,2.0f,0.5f,1.0f}
+    // };

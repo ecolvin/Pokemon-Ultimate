@@ -15,17 +15,14 @@ MonoBehaviour:
   moveName: Spark
   description: The user attacks the target with an electrically charged tackle. This
     may also leave the target with paralysis.
-  moveType: 4
+  moveType: 5
   category: 2
   basePower: 65
   pp: 20
   accuracy: 100
   priority: 0
-  critRate: 0.0417
+  critRate: 0
   range: 0
-  recoilPercent: 0
-  SecondaryEffect: Paralysis
-  effectChance: 30
   contact: 1
   isSound: 0
   isPunch: 0

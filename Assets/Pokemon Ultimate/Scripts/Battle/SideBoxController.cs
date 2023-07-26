@@ -21,6 +21,12 @@ public class SideBoxController : MonoBehaviour
 
 //----------------------Battle States-----------------------
 
+    public void Clear()
+    {
+        battleOptions.SetActive(false);
+        moveDetails.SetActive(false);
+    }
+
     public void PlayerSelection(int selection)
     {
         updateBattleSelection(selection);

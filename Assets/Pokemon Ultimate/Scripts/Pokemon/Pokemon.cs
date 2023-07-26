@@ -13,6 +13,8 @@ public class Pokemon
     PokemonGender gender;
     public PokemonGender Gender{get{return gender;}}
     bool isShiny;    
+    bool isWild = true;
+    public bool IsWild{get{return isWild;}}
     string ability;
     public string Ability{get{return ability;}}
     PokemonType teraType;
@@ -22,11 +24,12 @@ public class Pokemon
 
     PokemonNature nature;
     PokemonNature natureMint = PokemonNature.None;
-    int[] stats = new int[6];
-    public int[] Stats{get{return stats;}}
-    int[] evs = new int[6];
-    int[] ivs = new int[6];
-    bool[] hyperTrained = new bool[6];
+    StatBlock stats = new StatBlock(0,0,0,0,0,0);
+    public StatBlock Stats{get{return stats;}}
+    StatBlock evs = new StatBlock(0,0,0,0,0,0);
+    StatBlock ivs = new StatBlock(0,0,0,0,0,0);
+    public StatBlock Ivs{get{return ivs;}}
+    StatBlock hyperTrained = new StatBlock(0,0,0,0,0,0);
     
     PokemonMove[] moves = new PokemonMove[4];
     public PokemonMove[] Moves{get{return moves;}}
@@ -39,13 +42,14 @@ public class Pokemon
     public int CurHP{get{return curHP;}}
     bool fainted = false;
     public bool Fainted{get{return fainted;}}
+    public bool IsActive{get;set;}
 
 //Lasts when switched out but not outside of battle
     bool isTera = false;
     public bool IsTera{get{return isTera;}}
 
 //Wears off when switched out
-    int[] statChanges = new int [6];
+    StatBlock statChanges = new StatBlock(0,0,0,0,0,0);
     int accuracy = 0;
     public int Accuracy{get{return accuracy;}}
     int evasion = 0;
@@ -72,12 +76,13 @@ public class Pokemon
 
 //-------------------------Constructors---------------------
 
-    public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility)
+    public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility, bool isWild)
     {
         this.species = species;
         nickname = species.SpeciesName;
         this.level = level;
         this.isShiny = isShiny;
+        this.isWild = isWild;
         
         RandomizeIVs();
         RandomizeNature();
@@ -99,10 +104,14 @@ public class Pokemon
 
     void RandomizeIVs()
     {
-        for(int i = 0; i < 6; i++)
-        {
-            ivs[i] = Random.Range(0, 32);
-        }
+        int hp = Random.Range(0, 32);
+        int atk = Random.Range(0, 32);
+        int def = Random.Range(0, 32);
+        int spa = Random.Range(0, 32);
+        int spd = Random.Range(0, 32);
+        int spe = Random.Range(0, 32);
+
+        ivs = new StatBlock(hp, atk, def, spa, spd, spe);
     }
 
     void RandomizeNature()
@@ -208,37 +217,36 @@ public class Pokemon
 
     void CalculateStats()
     {
-        stats[0] = HPFormula();        
+        stats.HP = HPFormula();        
         if(species.SpeciesName == "Shedinja") 
         {
-            stats[0] = 1;
+            stats.HP = 1;
         }
-        curHP = stats[0];
+        curHP = stats.HP;
 
-        stats[1] = StatFormula(1);
-        stats[2] = StatFormula(2);
-        stats[3] = StatFormula(3);
-        stats[4] = StatFormula(4);
-        stats[5] = StatFormula(5);
+        stats.Atk = StatFormula(species.BaseStats.Atk, ivs.Atk, evs.Atk, hyperTrained.Atk, 1);
+        stats.Def = StatFormula(species.BaseStats.Def, ivs.Def, evs.Def, hyperTrained.Def, 2);
+        stats.SpA = StatFormula(species.BaseStats.SpA, ivs.SpA, evs.SpA, hyperTrained.SpA, 3);
+        stats.SpD = StatFormula(species.BaseStats.SpD, ivs.SpD, evs.SpD, hyperTrained.SpD, 4);
+        stats.Spe = StatFormula(species.BaseStats.Spe, ivs.Spe, evs.Spe, hyperTrained.Spe, 5);
     }
 
     int HPFormula()
     {
-        int hp = ((((2*species.BaseStats[0]) + ivs[0]+ (evs[0]/4)) * level)/100) + level + 10;
+        int hp = ((((2*species.BaseStats.HP) + ivs.HP + (evs.HP/4)) * level)/100) + level + 10;
         return hp;
     }
 
-    int StatFormula(int index)
+    int StatFormula(int baseStat, int iv, int ev, int hyperTrained, int index)
     {
-        int iv = ivs[index];
-        if(hyperTrained[index])
+        if(hyperTrained > 0)
         {
             iv = 31;
         }
 
         int natBonus = GetNatBonus(index);
 
-        int stat = ((((((2*species.BaseStats[index]) + iv + (evs[index]/4)) * level) / 100) + 5) * natBonus) / 100;
+        int stat = ((((((2*baseStat) + iv + (ev/4)) * level) / 100) + 5) * natBonus) / 100;
         return stat;
     }
 
@@ -305,7 +313,7 @@ public class Pokemon
 //--------------------------Battle Functions------------------------------
     public void PC()
     {
-        curHP = stats[0];
+        curHP = stats.HP;
         status = NonVolatileStatus.None;
         foreach(PokemonMove move in moves)
         {
@@ -315,7 +323,7 @@ public class Pokemon
 
     public void SwitchOut()
     {
-        statChanges = new int [6];
+        statChanges = new StatBlock(0,0,0,0,0,0);
         accuracy = 0;
         evasion = 0;
         nGas = false;
@@ -332,7 +340,7 @@ public class Pokemon
         SwitchOut();
     }
     
-    public bool TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         curHP -= damage;
         if(curHP <= 0)
@@ -340,7 +348,6 @@ public class Pokemon
             curHP = 0;
             fainted = true; //fainted
         }
-        return fainted;
     }
 
     public void Terastalize()

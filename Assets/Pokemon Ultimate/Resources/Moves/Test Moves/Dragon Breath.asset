@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
-  m_Name: Thunder Wave
+  m_Name: Dragon Breath
   m_EditorClassIdentifier: 
-  moveName: Thunder Wave
-  description: The user launches a weak jolt of electricity that paralyzes the target.
-  moveType: 4
-  category: 1
-  basePower: 0
+  moveName: Dragon Breath
+  description: The user exhales a mighty gust that inflicts damage. This may also
+    leave the target with paralysis.
+  moveType: 15
+  category: 3
+  basePower: 60
   pp: 20
-  accuracy: 90
+  accuracy: 100
   priority: 0
-  critRate: -1
+  critRate: 0
   range: 0
   contact: 0
   isSound: 0
@@ -34,7 +35,7 @@ MonoBehaviour:
   metronome: 1
   gravity: 0
   defrosts: 0
-  isReflected: 1
+  isReflected: 0
   isProtected: 1
   copyable: 1
   hitsFlyBounceSkyDrop: 0
