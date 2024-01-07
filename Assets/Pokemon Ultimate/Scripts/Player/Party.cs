@@ -11,9 +11,9 @@ public class Party : MonoBehaviour
 
     void Awake() 
     {
-        partyPokemon.Add(new Pokemon(species[0], 5, true, true, false)); 
-        partyPokemon.Add(new Pokemon(species[1], 5, true, true, false));
-        partyPokemon.Add(new Pokemon(species[2], 5, true, true, false));
+        partyPokemon.Add(new Pokemon(species[0], 5, true, true, false, true)); 
+        partyPokemon.Add(new Pokemon(species[1], 5, true, true, false, true));
+        partyPokemon.Add(new Pokemon(species[2], 5, true, true, false, true));
         //partyPokemon.Add(new Pokemon(species[3], 5, true, true, false));
         //partyPokemon.Add(new Pokemon(species[4], 5, true, true, false));
         //partyPokemon.Add(new Pokemon(species[5], 5, true, true, false));   

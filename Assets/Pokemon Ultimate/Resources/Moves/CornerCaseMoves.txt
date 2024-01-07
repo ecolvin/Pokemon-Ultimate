@@ -1,0 +1,74 @@
+Acrobatics (stronger with no item)
+Acupressure (random stat changes)
+After You (make the target pokemon the next move used)
+Ally Switch (Swap with teammate)
+Aqua Ring (repeated healing)
+Aromatherapy (cures all status conditions in party)
+Assist (Random move known by an ally)
+Assurance (Double damage if opp already took damage)
+Attract (Infatuation)
+Aura Wheel (Type change based on mode)
+Autotomize (Reduce weight)
+Baneful Bunker (Protect w/ poison on contact)
+Barb Barrage (Double damage if target is statused)
+Baton Pass (Pass stats to next pokemon)
+Beak Blast (Contact while heating beak = burn)
+Beat Up (All party pokemon attack)
+Behemoth Bash/Blade (Double damage if dnyamaxed)
+Belch (Requires a berry consumed)
+Bestow (Give held item to opp)
+Bide
+Bind (Bind effect)
+Bitter Malice (Double damage if target is statused)
+Body Press (Attack with defense)
+Bolt Beak (Doubled power if it moves first)
+Brine (Doubled power if opp < 50%)
+Bug Bite (Eat opponent's Berry)
+Burn Up (Lose Fire type)
+Burning Jealousy (Burn target with boosted stats)
+
+Z-moves
+
+-------Repeated Move Effects to implement----------
+-Health recovery (percentage)
+-Priority
+-Guaranteed Hit
+-High Crit Chance
+-Flinch chance
+-Stat Boosts/Drops
+-Prevent fleeing (Anchor Shot, Bind, Block,)
+-Multi-hit moves
+-Light Screen/Reflect
+-Double power if took damage first (Avalanche, Payback)
+-Recoil on miss
+-Recoil/Lose life (Belly Drum/Curse)
+-Recharge
+-Charge attacks
+-Breaks through screens
+-
+
+Done:
+A, B, 
+
+
+-------------Not Implemented Features For Manual Moves----------------
+-Baton Pass (Swap and Stat Pass)
+-Copycat (Use previous move used)
+-Covet (Steal item)
+-Dig (Invulnerability Turn)
+-Electro Ball (Variable Power)
+-Feint (Remove protect)
+-Growth (Doubled in sunlight)
+-Helping Hand (Power Boost)
+-Last Resort (Only usable if other moves used)
+-Mirror Coat (Everything - Power, Target, Type Effectiveness, etc...)
+-Protect (Protection & Fail Chance)
+-Rapid Spin (Removes bound condition and entry hazards)
+-Solar Beam (Charge turn)
+-Synthesis (Weather effects)
+-Worry Seed (Ability Change)
+
+
+Variable Power:
+Electro Ball
+Mirror Coat

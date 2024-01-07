@@ -14,8 +14,22 @@ public class BattleSprite : MonoBehaviour
     [SerializeField] float attackSpeed;
     [SerializeField] float faintSpeed;
     [SerializeField] float faintFadeSpeed;
-    [SerializeField] float hitSpeed;
+    [SerializeField] float hitSpeed = 15;
     [SerializeField] Color hitColor = Color.grey;
+    [SerializeField] float poisonSpeed = 10;
+    [SerializeField] Color poisonColor = new Color(100f, 50f, 150f, 255f);
+    [SerializeField] float burnSpeed = 10;
+    [SerializeField] Color burnColor = Color.red;
+    [SerializeField] float paraSpeed = 15;
+    [SerializeField] Color paraColor = Color.yellow;
+    [SerializeField] int paraPause = 30;
+    [SerializeField] float sleepSpeed = 3;
+    [SerializeField] Color sleepColor = new Color(0f, 0f, 100f, 255f);
+    [SerializeField] int sleepPause = 30;
+    [SerializeField] float freezeSpeed = 10;
+    [SerializeField] Color freezeColor = new Color(0f, 255f, 255f, 255f);
+    [SerializeField] int freezePause = 150;
+
 
     public Pokemon Pokemon {get;set;}
 
@@ -248,6 +262,352 @@ public class BattleSprite : MonoBehaviour
             curG += diffG * hitSpeed * Time.deltaTime;
             curB += diffB * hitSpeed * Time.deltaTime;
             curA += diffA * hitSpeed * Time.deltaTime;
+            if((targetR - curR) * diffR <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+    }
+
+    public IEnumerator Poison()
+    {
+        float curR = battleColor.r;
+        float curG = battleColor.g;
+        float curB = battleColor.b;
+        float curA = battleColor.a;
+        float targetR = poisonColor.r;
+        float targetG = poisonColor.g;
+        float targetB = poisonColor.b;
+        float targetA = poisonColor.a;
+
+        float diffR = targetR - curR;
+        float diffG = targetG - curG;
+        float diffB = targetB - curB;
+        float diffA = targetA - curA;
+        while(Mathf.Abs(targetR - curR) > Mathf.Epsilon)
+        {
+            curR += diffR * poisonSpeed * Time.deltaTime;
+            curG += diffG * poisonSpeed * Time.deltaTime;
+            curB += diffB * poisonSpeed * Time.deltaTime;
+            curA += diffA * poisonSpeed * Time.deltaTime;
+            if((targetR - curR) * diffR <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+
+        curR = poisonColor.r;
+        curG = poisonColor.g;
+        curB = poisonColor.b;
+        curA = poisonColor.a;
+        targetR = battleColor.r;
+        targetG = battleColor.g;
+        targetB = battleColor.b;
+        targetA = battleColor.a;
+
+        diffR = targetR - curR;
+        diffG = targetG - curG;
+        diffB = targetB - curB;
+        diffA = targetA - curA;
+
+        while(Mathf.Abs(targetR - curR) > Mathf.Epsilon)
+        {
+            curR += diffR * poisonSpeed * Time.deltaTime;
+            curG += diffG * poisonSpeed * Time.deltaTime;
+            curB += diffB * poisonSpeed * Time.deltaTime;
+            curA += diffA * poisonSpeed * Time.deltaTime;
+            if((targetR - curR) * diffR <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+    }
+
+    public IEnumerator Burn()
+    {
+        float curR = battleColor.r;
+        float curG = battleColor.g;
+        float curB = battleColor.b;
+        float curA = battleColor.a;
+        float targetR = burnColor.r;
+        float targetG = burnColor.g;
+        float targetB = burnColor.b;
+        float targetA = burnColor.a;
+
+        float diffR = targetR - curR;
+        float diffG = targetG - curG;
+        float diffB = targetB - curB;
+        float diffA = targetA - curA;
+
+        while(Mathf.Abs(targetG - curG) > Mathf.Epsilon)
+        {
+            curR += diffR * burnSpeed * Time.deltaTime;
+            curG += diffG * burnSpeed * Time.deltaTime;
+            curB += diffB * burnSpeed * Time.deltaTime;
+            curA += diffA * burnSpeed * Time.deltaTime;
+            if((targetG - curG) * diffG <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+
+        curR = burnColor.r;
+        curG = burnColor.g;
+        curB = burnColor.b;
+        curA = burnColor.a;
+        targetR = battleColor.r;
+        targetG = battleColor.g;
+        targetB = battleColor.b;
+        targetA = battleColor.a;
+
+        diffR = targetR - curR;
+        diffG = targetG - curG;
+        diffB = targetB - curB;
+        diffA = targetA - curA;
+
+        while(Mathf.Abs(targetG - curG) > Mathf.Epsilon)
+        {
+            curR += diffR * burnSpeed * Time.deltaTime;
+            curG += diffG * burnSpeed * Time.deltaTime;
+            curB += diffB * burnSpeed * Time.deltaTime;
+            curA += diffA * burnSpeed * Time.deltaTime;
+            if((targetG - curG) * diffG <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+    }
+    
+    public IEnumerator Paralyzed()
+    {
+        float curR = battleColor.r;
+        float curG = battleColor.g;
+        float curB = battleColor.b;
+        float curA = battleColor.a;
+        float targetR = paraColor.r;
+        float targetG = paraColor.g;
+        float targetB = paraColor.b;
+        float targetA = paraColor.a;
+
+        float diffR = targetR - curR;
+        float diffG = targetG - curG;
+        float diffB = targetB - curB;
+        float diffA = targetA - curA;
+
+        while(Mathf.Abs(targetB - curB) > Mathf.Epsilon)
+        {
+            curR += diffR * paraSpeed * Time.deltaTime;
+            curG += diffG * paraSpeed * Time.deltaTime;
+            curB += diffB * paraSpeed * Time.deltaTime;
+            curA += diffA * paraSpeed * Time.deltaTime;
+            if((targetB - curB) * diffB <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+
+        //Pause for a number of frames equal to paraPause
+        // for(int i = 0; i < paraPause; i++)
+        // {
+        //     yield return null;
+        // }
+        yield return Attack();
+        yield return Attack();
+
+        curR = paraColor.r;
+        curG = paraColor.g;
+        curB = paraColor.b;
+        curA = paraColor.a;
+        targetR = battleColor.r;
+        targetG = battleColor.g;
+        targetB = battleColor.b;
+        targetA = battleColor.a;
+
+        diffR = targetR - curR;
+        diffG = targetG - curG;
+        diffB = targetB - curB;
+        diffA = targetA - curA;
+
+        while(Mathf.Abs(targetB - curB) > Mathf.Epsilon)
+        {
+            curR += diffR * paraSpeed * Time.deltaTime;
+            curG += diffG * paraSpeed * Time.deltaTime;
+            curB += diffB * paraSpeed * Time.deltaTime;
+            curA += diffA * paraSpeed * Time.deltaTime;
+            if((targetB - curB) * diffB <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+    }
+    
+    public IEnumerator Sleep()
+    {
+        float curR = battleColor.r;
+        float curG = battleColor.g;
+        float curB = battleColor.b;
+        float curA = battleColor.a;
+        float targetR = sleepColor.r;
+        float targetG = sleepColor.g;
+        float targetB = sleepColor.b;
+        float targetA = sleepColor.a;
+
+        float diffR = targetR - curR;
+        float diffG = targetG - curG;
+        float diffB = targetB - curB;
+        float diffA = targetA - curA;
+
+        while(Mathf.Abs(targetR - curR) > Mathf.Epsilon)
+        {
+            curR += diffR * sleepSpeed * Time.deltaTime;
+            curG += diffG * sleepSpeed * Time.deltaTime;
+            curB += diffB * sleepSpeed * Time.deltaTime;
+            curA += diffA * sleepSpeed * Time.deltaTime;
+            if((targetR - curR) * diffR <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+
+        //Pause for a number of frames equal to sleepPause
+        for(int i = 0; i < sleepPause; i++)
+        {
+            yield return null;
+        }
+
+        curR = sleepColor.r;
+        curG = sleepColor.g;
+        curB = sleepColor.b;
+        curA = sleepColor.a;
+        targetR = battleColor.r;
+        targetG = battleColor.g;
+        targetB = battleColor.b;
+        targetA = battleColor.a;
+
+        diffR = targetR - curR;
+        diffG = targetG - curG;
+        diffB = targetB - curB;
+        diffA = targetA - curA;
+
+        while(Mathf.Abs(targetR - curR) > Mathf.Epsilon)
+        {
+            curR += diffR * sleepSpeed * Time.deltaTime;
+            curG += diffG * sleepSpeed * Time.deltaTime;
+            curB += diffB * sleepSpeed * Time.deltaTime;
+            curA += diffA * sleepSpeed * Time.deltaTime;
+            if((targetR - curR) * diffR <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+    }
+
+    public IEnumerator Freeze()
+    {
+        float curR = battleColor.r;
+        float curG = battleColor.g;
+        float curB = battleColor.b;
+        float curA = battleColor.a;
+        float targetR = freezeColor.r;
+        float targetG = freezeColor.g;
+        float targetB = freezeColor.b;
+        float targetA = freezeColor.a;
+
+        float diffR = targetR - curR;
+        float diffG = targetG - curG;
+        float diffB = targetB - curB;
+        float diffA = targetA - curA;
+            
+        while(Mathf.Abs(targetR - curR) > Mathf.Epsilon)
+        {
+            curR += diffR * freezeSpeed * Time.deltaTime;
+            curG += diffG * freezeSpeed * Time.deltaTime;
+            curB += diffB * freezeSpeed * Time.deltaTime;
+            curA += diffA * freezeSpeed * Time.deltaTime;
+
+            if((targetR - curR) * diffR <= 0)
+            {
+                curR = targetR;
+                curG = targetG;
+                curB = targetB;
+                curA = targetA;
+            }
+
+            image.color = new Color(curR, curG, curB, curA);
+            yield return null;
+        }
+
+        //Pause for a number of frames equal to freezePause
+        for(int i = 0; i < freezePause; i++)
+        {
+            yield return null;
+        }
+
+        curR = freezeColor.r;
+        curG = freezeColor.g;
+        curB = freezeColor.b;
+        curA = freezeColor.a;
+        targetR = battleColor.r;
+        targetG = battleColor.g;
+        targetB = battleColor.b;
+        targetA = battleColor.a;
+
+        diffR = targetR - curR;
+        diffG = targetG - curG;
+        diffB = targetB - curB;
+        diffA = targetA - curA;
+
+        while(Mathf.Abs(targetR - curR) > Mathf.Epsilon)
+        {
+            curR += diffR * freezeSpeed * Time.deltaTime;
+            curG += diffG * freezeSpeed * Time.deltaTime;
+            curB += diffB * freezeSpeed * Time.deltaTime;
+            curA += diffA * freezeSpeed * Time.deltaTime;
             if((targetR - curR) * diffR <= 0)
             {
                 curR = targetR;

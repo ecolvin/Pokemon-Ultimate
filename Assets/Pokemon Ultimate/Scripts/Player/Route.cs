@@ -28,7 +28,7 @@ public class Route : MonoBehaviour
         bool isHA = true;
         //int numPerfect = 3;
 
-        return new Pokemon(e.Species, level, isShiny, isHA, true);
+        return new Pokemon(e.Species, level, isShiny, isHA, true, false);
     }
 }
 

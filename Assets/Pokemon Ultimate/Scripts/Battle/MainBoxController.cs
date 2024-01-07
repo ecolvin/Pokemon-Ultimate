@@ -15,7 +15,7 @@ public class MainBoxController : MonoBehaviour
     
     [SerializeField] List<TextMeshProUGUI> moveOptionText;
 
-    [SerializeField] float textDelay = .04f;     //Dynamically change in gameSettings eventually
+    [SerializeField] float textDelay = .02f;     //Dynamically change in gameSettings eventually
     [SerializeField] float pauseDuration = 1f;
 
     bool typing = false;
@@ -27,27 +27,37 @@ public class MainBoxController : MonoBehaviour
         typing = false;
         battleText.text = "";
     }
-
+    //-----------------Pokemon I/O---------------
     public IEnumerator WildPokemonIntro(string pokemonName)
     {
         yield return SlowText($"A wild {pokemonName} has appeared!");
     }
 
-    public IEnumerator PlayerPokemonIntro(string pokemonName)  //Randomize message???
+    //Confirmed
+    public IEnumerator PlayerPokemonIntro(string pokemonName)
     {
-        yield return SlowText($"{pokemonName}, I choose you!!!");
+        string [] intros = {
+            $"Go, {pokemonName}!", 
+            $"Go for it, {pokemonName}!", 
+            $"You're in charge, {pokemonName}!"
+        };
+        yield return SlowText(intros[Random.Range(0, intros.Length)]);
     }    
 
+    //Confirmed
     public IEnumerator PlayerPokemonReturn(string pokemonName)
     {
-        yield return SlowText($"{pokemonName}, return!");
+        yield return SlowText($"{pokemonName}, come back!");
     }
 
-    public IEnumerator Fainted(string pokemonName)
+    //Confirmed
+    public IEnumerator Fainted(Pokemon pokemon)
     {
-        yield return SlowText($"{pokemonName} fainted...");   //Get exact text
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} fainted!");
     }
 
+    //-!-UNCONFIRMED-!-
     public IEnumerator WhiteOut()
     {
         yield return SlowText("You have run out of useable pokemon.");
@@ -55,29 +65,49 @@ public class MainBoxController : MonoBehaviour
         yield return SlowText("You whited out.");
     }
 
+    public IEnumerator Run()
+    {
+        yield return SlowText("Got away safely!");
+    }
+    
+    //---GET CORRECT TEXT---
+    public IEnumerator RunFailure()
+    {
+        yield return SlowText("Failed to Run!");
+    }
+    //--------------------------------------------
+
+    //--------------Move Success and Type Matchups--------------
+    //Confirmed
     public IEnumerator UseMove(Pokemon pokemon, PokemonMove move)
     {
-        yield return SlowText($"{pokemon.Nickname} used {move.MoveBase.MoveName}");
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} used {move.MoveBase.MoveName}!");
     }
 
+    //Confirmed
     public IEnumerator CriticalHit()
     {
         yield return SlowText($"A critical hit!");
     }
     
+    //Confirmed
     public IEnumerator SuperEffective()
     {
         yield return SlowText($"It's super effective!");
     }
 
+    //Confirmed
     public IEnumerator NotVeryEffective()
     {
         yield return SlowText($"It's not very effective...");
     }
 
-    public IEnumerator Immune()
+    //Confirmed
+    public IEnumerator Immune(Pokemon pokemon)
     {
-        yield return SlowText($"But it had no effect...");    //Get exact text
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"It doesn't affect {pokemonName}");
     }
 
     public IEnumerator Failed()
@@ -94,10 +124,114 @@ public class MainBoxController : MonoBehaviour
     {
         yield return SlowText($"It's a one-hit KO!");
     }
+    //-----------------------------------------
+
+    //---------------Move Effects--------------
+    //Confirmed
+    public IEnumerator StatIncrease(Pokemon pokemon, string stat, bool sharp)
+    {
+        string sharply = sharp ? "sharply " : "";
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName}'s {stat} {sharply}rose!");
+    }
+
+    //Confirmed
+    public IEnumerator StatDecrease(Pokemon pokemon, string stat, bool harsh)
+    {
+        string harshly = harsh ? "harshly " : "";
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName}'s {stat} {harshly}fell!");
+    }
+
+    //Double Check Text
+    public IEnumerator CantGoHigher(Pokemon pokemon, string stat)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName}'s {stat} can't go any higher!"); 
+    }
+
+    //Double Check Text
+    public IEnumerator CantGoLower(Pokemon pokemon, string stat)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName}'s {stat} can't go any lower!");
         
+    }
+    
+    //Update for different conditions
+    public IEnumerator ReceiveCondition(Pokemon pokemon, NonVolatileStatus NVStatus)
+    {      
+        string conditioned = "was " + NVStatus.ToString().ToLower() + "ed";
+        if(NVStatus == NonVolatileStatus.Paralysis)
+        {
+            conditioned = "is paralyzed, so it may be unable to move";  //Verified
+        }
+        if(NVStatus == NonVolatileStatus.Freeze)
+        {
+            conditioned = "was frozen";
+        }
+        if(NVStatus == NonVolatileStatus.BadlyPoisoned)
+        {
+            conditioned = "was badly poisoned";
+        }
+        if(NVStatus == NonVolatileStatus.Sleep)
+        {
+            conditioned = "fell asleep";
+        }
+
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} {conditioned}!");        
+    }
+
+    public IEnumerator PoisonDamage(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} was hurt by its poisoning!");
+    }    
+    
+    public IEnumerator BurnDamage(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} was hurt by its burn!");
+    }
+
+    //Verified
+    public IEnumerator FullParalysis(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} couldn't move because it's paralyzed!");
+    }
+
+    public IEnumerator SleepTurn(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} is fast asleep!");
+    }
+
+    public IEnumerator WakeUp(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} woke up!");
+    }
+
+    public IEnumerator Thaw(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} thawed out!");
+    }
+
+    public IEnumerator FreezeTurn(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} is frozen solid!");
+    }
+    //----------------------------------------
+
+
     public IEnumerator WeatherExpire(Weather weather)
     {
         yield return SlowText($"The {weather} has worn off.");
+        //"The snow stopped"
     }
 
     public IEnumerator TerrainExpire(Terrain terrain)
@@ -105,16 +239,7 @@ public class MainBoxController : MonoBehaviour
         yield return SlowText($"The {terrain} has worn off.");
     }
 
-    public IEnumerator HandlingEffects()
-    {
-        yield return SlowText($"Handling Effects Now!");
-    }
-
-    public IEnumerator Run()
-    {
-        yield return SlowText("Got away safely!");
-    }
-
+    //---------Helper Functions------------
     public void NotImplemented()
     {
         battleText.text = "This feature has not been implemented yet.";
@@ -123,7 +248,7 @@ public class MainBoxController : MonoBehaviour
 
     public IEnumerator SetText(string text)
     {
-        yield return StartCoroutine(SlowText(text));
+        yield return SlowText(text);
     }
 
     public IEnumerator PauseAfterText()
@@ -172,6 +297,7 @@ public class MainBoxController : MonoBehaviour
         }
         typing = false;
     }
+    //-------------------------------------
 
 //----------Battle States--------------    
 
@@ -185,13 +311,13 @@ public class MainBoxController : MonoBehaviour
     {
         battleText.enabled = false;
         UpdateMoveNames(pokemon.Moves);
-        updateMoveSelection(selection);
+        UpdateMoveSelection(selection);
         moveOptions.SetActive(true);
     }
 
 //------------------Dynamic UI Updates-------------------------
 
-    public void updateMoveSelection(int selection)
+    public void UpdateMoveSelection(int selection)
     {
         int i = 0;
         foreach(TextMeshProUGUI option in moveOptionText)
@@ -223,3 +349,41 @@ public class MainBoxController : MonoBehaviour
         }
     }
 }
+
+
+//___ sent out ___!
+//Go! _____!
+//___ used ___!
+//A critical hit!
+//The opposing ___ was ___!  ***(poisoned, burned)***
+//___ went back to ___!    ***(U-turn used)***
+//Go for it, ___!
+//The opposing ___ used ___!
+//The opposing ___ was hurt by the Rocky Helmet!
+//The opposing ___ was hurt by its poisoning!
+//___ withdrew ___!     ***(Opponent switching)***
+//___ sent out ___!     ***(Opponent switching)***
+//It started to snow!
+//___ knocked off the opposing ___'s ___!
+//___, come back!
+//You're in charge, ___!
+//It's not very effective...
+//The opposing ___'s ___ harshly fell!
+//The snow stopped.
+//It's super effective!
+//___ fainted!
+//The opposing ___ fainted!
+//The opposing ___'s ___ weakened the Sp. Def of all surrounding Pokemon! ***(Chi Yu's Beads of Ruin)***
+//___ made the opposing team stronger against physical and special moves! ***(Aurora Veil)***
+//The opposing ___ lost some of its HP! ***(Life Orb)***
+//It doesn't affect the opposing ___...
+//The opposing team's ___ wore off!!! ***(Aurora Veil)***
+//___'s ___ fell! ***(User stat drop)***
+//The opposing ___ restored a little HP using its Leftovers!
+//The opposing ___ was hurt by its burn!
+//It doesn't affect ___...
+//The opposing ___'s ___ fell!
+//The opposing ___'s ___ rose!
+//The opposing ___ became fully charged due to its bond with its Trainer!
+//You defeated ___!
+//The ___ Berry weakened the damage to ___!

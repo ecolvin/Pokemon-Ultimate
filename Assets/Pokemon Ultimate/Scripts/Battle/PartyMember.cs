@@ -19,7 +19,9 @@ public class PartyMember : MonoBehaviour
         hud.gameObject.SetActive(true);
         spriteImage.gameObject.SetActive(true);
         hud.GenerateBar(pokemon);
+        Debug.Log("4");
         spriteImage.sprite = pokemon.Sprite;
+        Debug.Log("5");
     }
 
     public void Disable()

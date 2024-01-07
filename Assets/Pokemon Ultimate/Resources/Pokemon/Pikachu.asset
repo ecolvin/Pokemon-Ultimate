@@ -55,23 +55,23 @@ MonoBehaviour:
   maleSpriteShiny: {fileID: 21300000, guid: 7924be7e76179a74398c19e9f922431f, type: 3}
   femaleSpriteShiny: {fileID: 21300000, guid: 840536d3facc4eb4bbad5644d4789b39, type: 3}
   learnset:
+  - moveBase: {fileID: 11400000, guid: 1f1228d3b050c624ca0dcf73a386e046, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 9d78afe68ab6cc44491a9cfeb3c534c7, type: 2}
+    levelLearned: 0
   - moveBase: {fileID: 11400000, guid: 8410233c01d7bd445b02008e8d8affb4, type: 2}
     levelLearned: 0
   - moveBase: {fileID: 11400000, guid: 9d35be84830c7b347a0137cf97474ca7, type: 2}
     levelLearned: 0
   - moveBase: {fileID: 11400000, guid: 252bb56cd1d121e41b72040d083de30c, type: 2}
     levelLearned: 0
-  - moveBase: {fileID: 11400000, guid: 9d78afe68ab6cc44491a9cfeb3c534c7, type: 2}
-    levelLearned: 0
-  - moveBase: {fileID: 11400000, guid: 1f1228d3b050c624ca0dcf73a386e046, type: 2}
-    levelLearned: 0
-  - moveBase: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+  - moveBase: {fileID: 11400000, guid: 33f6b67ccef9d3847b2142dbed2c4de4, type: 2}
     levelLearned: 0
   - moveBase: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
     levelLearned: 0
-  - moveBase: {fileID: 11400000, guid: 33f6b67ccef9d3847b2142dbed2c4de4, type: 2}
-    levelLearned: 0
   - moveBase: {fileID: 11400000, guid: 8724a09fc298dfd47b2683b6a997ade2, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
     levelLearned: 0
   - moveBase: {fileID: 11400000, guid: eee6645a351ec2f4c9bdd1ed1558cc19, type: 2}
     levelLearned: 4
@@ -95,6 +95,10 @@ MonoBehaviour:
     levelLearned: 40
   - moveBase: {fileID: 11400000, guid: 07321f5381b96cd438a4293e637e9652, type: 2}
     levelLearned: 44
+  - moveBase: {fileID: 11400000, guid: feb0cfc53cc2e824fbd4ccbac9ae0901, type: 2}
+    levelLearned: 1
+  - moveBase: {fileID: 11400000, guid: aeb4c1735711cd14aacde1dbc22bacd0, type: 2}
+    levelLearned: 1
   tmLearnset:
   - {fileID: 0}
   - {fileID: 11400000, guid: 252bb56cd1d121e41b72040d083de30c, type: 2}

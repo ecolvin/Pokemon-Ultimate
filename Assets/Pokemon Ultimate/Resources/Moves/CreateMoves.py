@@ -41,7 +41,6 @@ def cleanPower(name, power):
             return 0
     return power
 
-
 def cleanAccuracy(acc):
     acc = acc.replace("%", "")
     if(acc == "—"):
@@ -467,6 +466,34 @@ def determineFlags(name):
         flags.append(0) 
 
     return flags
+
+def getSelfStatChanges(name):
+    statChanges = [(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)]
+    attackDrop1 = ["Superpower"]
+    defenseDrop1 = ["Armor Cannon", "Clanging Scales", "Close Combat", "Dragon Ascent", "Headlong Rush", "Hyperspace Fury", "Scale Shot", "Shell Smash", "Superpower", "V-create"]    
+    spaDrop1 = ["Make It Rain"]
+    spaDrop2 = ["Draco Meteor", "Fleur Cannon", "Leaf Storm", "Overheat", "Psycho Boost"]
+    spdDrop1 = ["Armor Cannon", "Close Combat", "Dragon Ascent", "Headlong Rush", "Shell Smash", "V-create"]
+    speDrop1 = ["Curse", "Hammer Arm", "Ice Hammer", "V-create"]
+    speDrop2 = ["Spin Out"]
+    attackInc1 = []
+    attackInc2 = []
+    attackInc6 = []
+    defenseInc1 = []
+    defenseInc2 = []
+    spaInc1 = []
+    spaInc2 = []
+    spdInc1 = []
+    spdInc2 = []
+    speInc1 = []
+    speInc2 = []
+
+    return 0
+
+def getEnemyStatChanges(name):
+    statChanges = {(0,0),(0,0),(0,0),(0,0),(0,0),(0,0)}
+
+    return 0
 
 with open('Moves.csv', 'r') as input:
     with open('Output.csv', 'w') as output:

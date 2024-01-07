@@ -15,8 +15,14 @@ public class Pokemon
     bool isShiny;    
     bool isWild = true;
     public bool IsWild{get{return isWild;}}
+    bool isPlayer = false;
+    public bool IsPlayer{get{return isPlayer;}}
     string ability;
     public string Ability{get{return ability;}}
+    PokemonType type1;
+    public PokemonType Type1{get{return type1;}}
+    PokemonType type2;
+    public PokemonType Type2{get{return type2;}}
     PokemonType teraType;
     public PokemonType TeraType{get{return teraType;}}
     string heldItem = "";
@@ -36,8 +42,21 @@ public class Pokemon
 
 //-------------------In-battle Effects------------------
 //Lasts outside of battle
-    NonVolatileStatus status;
-    public NonVolatileStatus Status{get{return status;}}    
+    NonVolatileStatus nvStatus;
+    public NonVolatileStatus Status{get{return nvStatus;}}
+    public int SleepCounter{get; set;}
+    int poisonCounter = 0;
+    public int PoisonCounter{
+        get{return poisonCounter;} 
+        set{
+            poisonCounter = value; 
+            if(poisonCounter > 15)
+            {
+                poisonCounter = 15;
+            } 
+        }
+    }
+
     int curHP;
     public int CurHP{get{return curHP;}}
     bool fainted = false;
@@ -50,6 +69,7 @@ public class Pokemon
 
 //Wears off when switched out
     StatBlock statChanges = new StatBlock(0,0,0,0,0,0);
+    public StatBlock StatChanges{get{return statChanges;}}
     int accuracy = 0;
     public int Accuracy{get{return accuracy;}}
     int evasion = 0;
@@ -76,14 +96,16 @@ public class Pokemon
 
 //-------------------------Constructors---------------------
 
-    public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility, bool isWild)
+    public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility, bool isWild, bool isPlayer)
     {
         this.species = species;
         nickname = species.SpeciesName;
         this.level = level;
         this.isShiny = isShiny;
         this.isWild = isWild;
+        this.isPlayer = isPlayer;
         
+        SetTypes();
         RandomizeIVs();
         RandomizeNature();
         RandomizeTeraType(true);        
@@ -92,6 +114,7 @@ public class Pokemon
         DetermineWildHeldItem();
         DetermineMoves();
         CalculateStats();
+        curHP = stats.HP;
         SetModelAndSprite();
     }
 
@@ -101,6 +124,12 @@ public class Pokemon
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
 
 //-------------------Initialization Functions------------------
+
+    void SetTypes()
+    {
+        type1 = species.Type1;
+        type2 = species.Type2;
+    }
 
     void RandomizeIVs()
     {
@@ -124,10 +153,10 @@ public class Pokemon
         if(limitTeraType) //Choose only one of the pokemon's types
         {
             
-            PokemonType t2 = species.Type2;
+            PokemonType t2 = type2;
             if(t2 == PokemonType.None || Random.Range(0,2) == 0)
             {
-                teraType = species.Type1;
+                teraType = type1;
             }
             else
             {
@@ -222,7 +251,6 @@ public class Pokemon
         {
             stats.HP = 1;
         }
-        curHP = stats.HP;
 
         stats.Atk = StatFormula(species.BaseStats.Atk, ivs.Atk, evs.Atk, hyperTrained.Atk, 1);
         stats.Def = StatFormula(species.BaseStats.Def, ivs.Def, evs.Def, hyperTrained.Def, 2);
@@ -310,11 +338,12 @@ public class Pokemon
         }
     }
 
+    
 //--------------------------Battle Functions------------------------------
     public void PC()
     {
         curHP = stats.HP;
-        status = NonVolatileStatus.None;
+        nvStatus = NonVolatileStatus.None;
         foreach(PokemonMove move in moves)
         {
             move.CurPP = move.MaxPP;
@@ -337,6 +366,7 @@ public class Pokemon
     public void EndBattle()
     {
         isTera = false;
+        SetTypes();
         SwitchOut();
     }
     
@@ -348,13 +378,119 @@ public class Pokemon
             curHP = 0;
             fainted = true; //fainted
         }
+        if(curHP > stats.HP)
+        {
+            curHP = stats.HP;
+        }
+    }
+
+    public void ChangeStats(StatBlock changes)
+    {   
+        statChanges.Atk = Mathf.Clamp(statChanges.Atk + changes.Atk, -6, 6);
+        statChanges.Def = Mathf.Clamp(statChanges.Def + changes.Def, -6, 6); 
+        statChanges.SpA = Mathf.Clamp(statChanges.SpA + changes.SpA, -6, 6);        
+        statChanges.SpD = Mathf.Clamp(statChanges.SpD + changes.SpD, -6, 6);        
+        statChanges.Spe = Mathf.Clamp(statChanges.Spe + changes.Spe, -6, 6);
+
+        CalculateStats();
+    }
+
+    public void ChangeAccuracy(int acc)
+    {
+        accuracy += acc;
+    }
+
+    public void ChangeEvasion(int eva)
+    {
+        evasion += eva;
+    }
+
+    public int ApplyNVStatus(NonVolatileStatus status)
+    {
+            Debug.Log("Applying NV Status - " + status.ToString());
+        if(nvStatus != NonVolatileStatus.None)
+        {
+            return -1;
+        }
+        if(status == NonVolatileStatus.Burn && (type1 == PokemonType.Fire || type2 == PokemonType.Fire))
+        {
+            return -2;
+        }        
+        if(status == NonVolatileStatus.Paralysis && (type1 == PokemonType.Electric || type2 == PokemonType.Electric))
+        {
+            return -2;
+        }
+        if(status == NonVolatileStatus.Freeze && (type1 == PokemonType.Ice || type2 == PokemonType.Ice))
+        {
+            return -2;
+        }
+        if((status == NonVolatileStatus.Poison || status == NonVolatileStatus.BadlyPoisoned) && 
+            (type1 == PokemonType.Poison || type2 == PokemonType.Poison || type1 == PokemonType.Steel || type2 == PokemonType.Steel))
+        {
+            return -2;
+        }
+        else if(status == NonVolatileStatus.BadlyPoisoned)
+        {
+            poisonCounter = 1;
+        }
+
+        if(status == NonVolatileStatus.Sleep)
+        {
+            SleepCounter = UnityEngine.Random.Range(1,4);
+        }
+        
+        nvStatus = status;
+        return 0;
+    }
+
+    public int ApplyVolatileStatus(VolatileStatus status)
+    {      
+        Debug.Log("Applying Volatile Status - " + status.ToString());  
+        //volatileStatus[status] = 1;
+        return 0;
+    }
+
+    public void ClearNVStatus()
+    {
+        nvStatus = NonVolatileStatus.None;
+    }
+
+    public void ModifyEVs(StatBlock evChanges)
+    {
+        evs.HP += evChanges.HP;
+        evs.Atk += evChanges.Atk;
+        evs.Def += evChanges.Def;
+        evs.SpA += evChanges.SpA;
+        evs.SpD += evChanges.SpD;
+        evs.Spe += evChanges.Spe;
+        CalculateStats();
     }
 
     public void Terastalize()
     {
         isTera = true;
+        type1 = teraType;
+        type2 = PokemonType.None;
     }
 
+    public string GetBattleMessageName()
+    {
+        if(isPlayer)
+        {
+            return nickname;
+        }
+        else
+        {
+            if(isWild)
+            {
+                return "The wild " + nickname;
+            }
+            else
+            {
+                return "The opposing " + nickname;
+            }
+        }
+    }
 
 }
 

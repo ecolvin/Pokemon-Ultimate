@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
 
 public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Switching, Battle}
 public enum Weather {None, Sun, HarshSun, Rain, HeavyRain, Sand, Hail, Snow, Shadow, Fog, Wind}
@@ -28,6 +29,7 @@ public class Battle : MonoBehaviour
     public event Action<bool> OnBattleOver;
 
     BattleState state;
+
     int curBattleOption = 0;
     int curMoveOption = 0;
 
@@ -38,7 +40,8 @@ public class Battle : MonoBehaviour
     Pokemon playerPokemon;
     Pokemon enemyPokemon;
 
-    Dictionary<FieldEffect, int> playerField = new Dictionary<FieldEffect, int>(), enemyField = new Dictionary<FieldEffect, int>();
+    Dictionary<FieldEffect, int> playerField = new Dictionary<FieldEffect, int>(); 
+    Dictionary<FieldEffect, int> enemyField = new Dictionary<FieldEffect, int>();
 
     //--------------Battle Conditions----------------------
     Weather weather = Weather.None;
@@ -69,6 +72,8 @@ public class Battle : MonoBehaviour
 
     public void StartBattle(Pokemon wildPokemon)
     {   
+        curBattleOption = 0;
+        curMoveOption = 0;
         playerPokemon = player.GetLeadPokemon();
         if(playerPokemon == null)
         {
@@ -148,8 +153,9 @@ public class Battle : MonoBehaviour
             if(pokemon != null && !pokemon.Fainted)
             {
                 partyScreen.gameObject.SetActive(false);
-                StartCoroutine(SwitchPokemon(pokemon, true));
+                StartCoroutine(SwitchPokemon(pokemon));
                 switchBecauseFainted = false;
+                PlayerSelection();
             }
         }
         else
@@ -162,14 +168,14 @@ public class Battle : MonoBehaviour
             else if(!pokemon.Fainted)
             {
                 partyScreen.gameObject.SetActive(false);
-                StartCoroutine(SwitchPokemon(pokemon, false));
+                StartCoroutine(ResolveTurn(BattleChoice.Switch, null, pokemon));
             }
         }
     }
 
     void Run()
     {
-        StartCoroutine(RunAttempt());
+        StartCoroutine(ResolveTurn(BattleChoice.Run, null, null));
     }
 
 //----------------------Timed Coroutines (and helper functions)------------------------
@@ -201,26 +207,27 @@ public class Battle : MonoBehaviour
 
     IEnumerator ChooseMove(PokemonMove move)
     {
+        yield return ResolveTurn(BattleChoice.Move, move, null);
+    }
+
+    //choice: 0-use a move, 1-use an item, 2-switch pokemon, 3-run attempt
+    IEnumerator ResolveTurn(BattleChoice choice, PokemonMove move, Pokemon pokemon)
+    {
         sideBox.Clear();
         state = BattleState.Battle;
 
+        BattleChoice enemyChoice = getEnemyChoice();
         PokemonMove enemyMove = getEnemyMove();
-        int playerPriority = move.MoveBase.Priority;
-        int enemyPriority = enemyMove.MoveBase.Priority;
+        
+        //Quick Claw/Custap Berry announcement
+
         int playerSpeed = GetEffectiveSpeed(playerPokemon, playerField[FieldEffect.Tailwind] > 0);
         int enemySpeed = GetEffectiveSpeed(enemyPokemon, enemyField[FieldEffect.Tailwind] > 0);       
         
         bool playerFirst = false;
 
-        if(playerPriority > enemyPriority)
-        {
-            playerFirst = true;
-        }
-        else if(playerPriority < enemyPriority)
-        {
-            playerFirst = false;
-        }
-        else if((playerSpeed > enemySpeed && !trickRoom) || (playerSpeed < enemySpeed && trickRoom))
+
+        if((playerSpeed > enemySpeed && !trickRoom) || (playerSpeed < enemySpeed && trickRoom))
         {
             playerFirst = true;
         }
@@ -237,20 +244,92 @@ public class Battle : MonoBehaviour
             playerFirst = false;
         }
 
-        if(playerFirst)
+        
+        if(choice == BattleChoice.Run) //Run Away
         {
-            yield return UseMove(move, playerPokemon, enemyPokemon, true);
-            yield return UseMove(enemyMove, enemyPokemon, playerPokemon, false);
+            yield return RunAttempt();
         }
-        else
+        if(enemyChoice == BattleChoice.Run)
         {
-            yield return UseMove(enemyMove, enemyPokemon, playerPokemon, false);
-            if(!switchBecauseFainted)
-            {
-                yield return UseMove(move, playerPokemon, enemyPokemon, true);
-            }
+            yield return RunAttempt(); //Update to use a different enemy run function
         }
 
+        if(choice == BattleChoice.Switch && enemyChoice == BattleChoice.Switch)
+        {
+            //Switch in speed order
+        }
+        else if(choice == BattleChoice.Switch) //Switch Pokemon
+        {
+            yield return SwitchPokemon(pokemon);            
+        }
+        else if(enemyChoice == BattleChoice.Switch)
+        {
+            //Switch enemy
+        }
+
+        //Handle Rotation
+        
+        if(choice == BattleChoice.Item && enemyChoice == BattleChoice.Item) //Use an Item
+        {
+
+        }
+        else if(choice == BattleChoice.Item)
+        {
+
+        }
+        else if (enemyChoice == BattleChoice.Item)
+        {
+
+        }
+        //Mega Evolution/Ultra Burst/Dynamax/Terastalization
+        //Focus Punch/Beak Blast/Shell Trap charging effects
+        //Move usage
+        //EOT Effects
+
+        if(choice == BattleChoice.Move && enemyChoice == BattleChoice.Move)
+        {
+            int playerPriority = move.MoveBase.Priority;
+            int enemyPriority = enemyMove.MoveBase.Priority;
+            if(playerPriority > enemyPriority)
+            {
+                playerFirst = true;
+            }
+            else if(playerPriority < enemyPriority)
+            {
+                playerFirst = false;
+            }
+            if(playerFirst)
+            {
+                Coroutine useMove = StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
+                yield return useMove;
+                if(!enemyPokemon.Fainted)
+                {
+                    useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
+                    yield return useMove;
+                }
+            }
+            else
+            {
+                Coroutine useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
+                yield return useMove;
+                if(!switchBecauseFainted)
+                {
+                    useMove = StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
+                    yield return useMove;
+                }
+            }
+        }
+        else if(choice == BattleChoice.Move)
+        {
+            Coroutine useMove = StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
+            yield return useMove;            
+        }
+        else if(enemyChoice == BattleChoice.Move)
+        {
+            Coroutine useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
+            yield return useMove;
+        }
+        
         yield return EndRound();
 
         if(switchBecauseFainted)
@@ -284,29 +363,383 @@ public class Battle : MonoBehaviour
         return speed;
     }
 
-    IEnumerator UseMove(PokemonMove move, Pokemon attacker, Pokemon defender, bool isPlayerAttacking)
+    IEnumerator UseMove(PokemonMove move, Pokemon attacker, Pokemon defender) 
     {
         if(attacker.Fainted)
         {
             yield break;
         }
 
+        //Recharge message
+
+        if(attacker.Status == NonVolatileStatus.Sleep)  //Sleep Check
+        {
+            //Rest Flag
+            if(attacker.SleepCounter > 0)
+            {
+                attacker.SleepCounter--;
+                if(attacker.IsPlayer)
+                {
+                    StartCoroutine(playerSprite.Sleep());
+                }
+                else
+                {
+                    StartCoroutine(enemySprite.Sleep());
+                }
+                yield return mainBox.SleepTurn(attacker);
+                yield return mainBox.PauseAfterText();
+                yield break;
+            }
+            else
+            {
+                yield return mainBox.WakeUp(attacker);
+                attacker.ClearNVStatus();
+                if(attacker.IsPlayer)
+                {
+                    playerHUD.UpdateStatus();
+                }
+                else
+                {
+                    enemyHUD.UpdateStatus();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+        }
+
+        if(attacker.Status == NonVolatileStatus.Freeze && !move.MoveBase.Defrosts)    //Freeze Check
+        {
+            if(UnityEngine.Random.Range(0,5) > 0)
+            {
+                if(attacker.IsPlayer)
+                {
+                    StartCoroutine(playerSprite.Freeze());
+                }
+                else
+                {
+                    StartCoroutine(enemySprite.Freeze());
+                }
+                yield return mainBox.FreezeTurn(attacker);
+                yield return mainBox.PauseAfterText();
+                yield break;
+            }
+            else
+            {
+                yield return mainBox.Thaw(attacker);
+                attacker.ClearNVStatus();
+                if(attacker.IsPlayer)
+                {
+                    playerHUD.UpdateStatus();
+                }
+                else
+                {
+                    enemyHUD.UpdateStatus();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+        }
+
+        //PP Check
+        //Disobedience
+        //Truant
+        //Focus Punch loses focus
+        //Flinch
+
+        //Disabled
+        //Heal Block
+        //Gravity/Throat Chop
+        //Choice Locked
+        //Taunt
+        //Imprison
+
+        //Confusion Self-Hit
+
+        if(attacker.Status == NonVolatileStatus.Paralysis)
+        {
+            //yield return mainBox.ParaCheck(attacker);
+            if(UnityEngine.Random.Range(0,1) == 0)
+            {
+                if(attacker.IsPlayer)
+                {
+                    StartCoroutine(playerSprite.Paralyzed());
+                }
+                else
+                {
+                    StartCoroutine(enemySprite.Paralyzed());
+                }
+                yield return mainBox.FullParalysis(attacker);
+                yield return mainBox.PauseAfterText();
+                yield break;
+            }
+        }
+
+        //Infatuation Check
+        //Z-Move Dance and Z-effect if status move
+        //--Move Disabled//Heal Block//Gravity//Throat Chop//Choice//Taunt//Imprison checks to be after z-dance
+
+        //Sleep Talk/Snore sleep announcement
+        //Submoves
+        //--announce the submove is occurring: "[Pokemon] used [move]!". Repeat check for Heal Block/Gravity/Throat Chop; if it passes, continue. Submove announcement guarantees PP deduction.
+        //----Copycat
+        //----Metronome
+        //----Nature Power
+        //----Sleep Talk as a submove
+        //----Sleep Talk with no eligible moves to call will fail at this point
+        //Autothaw Freeze (Flame Wheel, Sacred Fire, Flare Blitz, Fusion Flare, Scald, Steam Eruption, Burn Up, Pyro Ball, Scorching Sands, and Matcha Gotcha)
+        
+        if(move.MoveBase.Defrosts)
+        {
+            yield return mainBox.Thaw(attacker);
+            attacker.ClearNVStatus();
+            if(attacker.IsPlayer)
+            {
+                playerHUD.UpdateStatus();
+            }
+            else
+            {
+                enemyHUD.UpdateStatus();
+            }
+            yield return mainBox.PauseAfterText();
+        }
+        
+        //Stance Change
+
+        //Announce Move (Locked in through PP Deduction)
+        
         yield return mainBox.UseMove(attacker, move);
         yield return mainBox.PauseAfterText();
 
-        //Failure check
-        //Accuracy check
+        //----------Use UsedMove Class for type changes--------------
+        //|Check for move type change from abilities like Pixilate
+        //|Set Move type for Terrain Pulse/Hidden Power/Judgment/Multi-Attack/Natural Gift/Revelation Dance/Techno Blast/Weather Ball/Z-Weather Ball/Tera Blast
+        //|Check for move type change from Electrify/Ion Deluge/Plasma Fists
+        //|Check again for move type change from abilities like Pixilate
+        //|Set random target for any of the following
+        //|--Multi-turn moves (Outrage)
+        //|--Single-target moves called by a submove
+        //|--Ghost-type Curse
+        //|--Single-target move if player timed out in move selection
+        //|Set target redirection via Lightning Rod/Storm Drain
+        //|Set target redirection via Follow Me/Rage Powder/Spotlight/Z-Destiny Bond/Z-Grudge
+        //|Deduct the appropriate amount of PP
 
+        move.DecrementPP(false);  //calculate value for Pressure dynamically
+
+        //Set Choice lock or Gorilla Tactics locks
+        //Desolate Land/Primordial Sea blocking damaging moves
+        //Micle Berry's accuracy check consumed
+        //Move failure checks, part 1
+        //--Aura Wheel/Hypserspace Fury/Dark Void (when not an eligible pokemon)
+        //--Aurora Veil (when not hailing)
+        //--Bide (No energy to unleash)
+        //--Burn Up (not fire type)
+        //--Clangorous Soul (when not enough HP)
+        //--Counter/Mirror Coat/Metal Burst (when user hasn't been damaged)
+        //--Destiny Bond (when user has already been Destiny Bonded)
+        //--Encore (target hasn't used a move/has no PP left/move is exempt)
+        //--Fake Out/First Impression/Mat Block (After first turn)
+        //--Fling/Natural Gift (with no item or if Embargo/Magic Room)
+        //--Follow Me/Rage Powder (in singles)
+        //--Future Sight/Doom Desire (when a future attack is already pending)
+        //--Last Resort (when not the last move used)
+        //--No Retreat (when Can't Escape flag set from No Retreat)
+        //--Poltergeist (when target has no item)
+        //--Protect moves (successive use checks/other move already used)
+        //--Rest (if already asleep/at full hp/has insomnia or vital spirit)
+        //--Sucker Punch (target doesn't have eligible move pending)
+        //--Sleep Talk/Snore (not asleep)
+        //--Steel Roller (no terrain)
+        //--Stockpile (3 stockpiles already)
+        //--Stuff Cheeks (user has no berry)
+        //--Swallow/Spit UP (w/ 0 stockpiles)
+        //--Teleport (w/ no other pokemon)
+        //--Weight Moves into Dynamax
+        //Ability Failures Pt 1
+        //--Damp
+        //--Dazzling
+        //--Queenly Majesty
+        //Interruptable Moves
+        //--Future Sight/Doom Desire (move checks end here)
+        //--Pledge Move Combos (the user's move check ends here, and the partner picks up at the start of the checks again)
+        //Libero/Protean
+        //Charge move message
+        //Set flag to lose 100% HP from Explosion/Self Destruct
+        //Failure due to no target for move or target is self when it shouldn't be
+        //Set flag to lose 50% HP from Steel Beam
+        //Semi-invulnerability
+        //Psychic Terrain
+        //Teammate Protection Effects
+        //--Quick Guard
+        //--Wide Guard
+        //--Crafty Shield
+        //Protect and equivalents (no Max Guard)
+        //Mat Block
+        //Max Guard
+        //Magic Coat
+        //Magic Bounce
+        //Ability Failures Pt 2
+        //--Dry Skin
+        //--Flash Fire
+        //--Lightning Rod
+        //--Overcoat
+        //--Sap Sipper
+        //--Soundproof
+        //--Storm Drain
+        //--Telepathy
+        //--Volt Absorb
+        //--Water Absorb
+        //--Wonder Guard
         float type = CalculateTypeAdvantage(move.MoveBase.MoveType, move, defender, attacker);
-        Debug.Log($"Move: {move.MoveBase.MoveName}; Type: {move.MoveBase.MoveType}; Defender Types: {defender.Species.Type1}/{defender.Species.Type2}; Effectiveness: {type}");        
+        Debug.Log($"Move: {move.MoveBase.MoveName}; Type: {move.MoveBase.MoveType}; Defender Types: {defender.Type1}/{defender.Type2}; Effectiveness: {type}");        
         if(type == 0f)
         {
-            yield return mainBox.Immune();
+            yield return mainBox.Immune(defender);
             yield return mainBox.PauseAfterText();
             yield break;
         }
-
-        if(isPlayerAttacking)
+        //Levitate Ground-type immunity
+        //Air Balloon/Magnet Rise Ground-type immunity
+        //Safety Goggles
+        //Ability Failures Pt 3
+        //--Bulletproof
+        //--Sticky Hold (against Trick/Switcheroo/Corrosive Gas)
+        //Type-based move immunities Pt 1
+        //--Dark Type Prankster immunity
+        //--Ghost Type immunity to trapping moves
+        //--Grass Type powder immunity
+        //--Ice Type immunity to Sheer Cold
+        //Move Failure Checks Pt 2
+        //--Attract (when target is same gender)
+        //--Torment (into Dynamax)
+        //--Venom Drench (when target not poisoned)
+        //Move Failure Checks Pt 3
+        //--Attract (if already infatuated)
+        //--Clangorous Soul/No Retreat (with max stats already)
+        //--Coaching (in singles or with no ally available in doubles)
+        //--Dream Eater (target is awake)
+        //--Endeavor (target had equal or less HP than the user)
+        //--Ingrain (user already ingrained)
+        //--Leech Seed (target already seeded)
+        //--OHKO (target with higher level/dynamaxed)
+        //--Perish Song (all targets already have Perish Song)
+        //--Status move (into target with that status already)
+        //--Status move (into target with another status already)
+        //--Stat change (can't go any higher)
+        //--Stat change (can't go any lower)
+        //--Stuff Cheeks (w/ max Def)
+        //--Torment (target already Tormented)
+        //--Worry Seed (target has Insomnia/Truant)
+        //--Yawn (target w/ status condition/already yawned)
+        //Type-Based condition immunities Pt 2
+        //--Electric type paralysis
+        //--Fire type burn
+        //--Grass type Leech Seed
+        //--Poison/Steel type Poison/Badly Poisoned
+        //Uproar stopping a sleep move
+        //Safeguard
+        //Electric Terrain/Misty Terrain blocking a status
+        //Substitute blocking stat drop/decorate
+        //Mist
+        //Ability Failures Pt 4
+        //--Stat based failures
+        //----Big Pecks
+        //----Clear Body
+        //----Flower Veil
+        //----Full Metal Body
+        //----Hyper Cutter
+        //----Keen Eye
+        //----White Smoke
+        //--Status condition based failures
+        //----Comatose
+        //----Flower Veil
+        //----Immunity
+        //----Insomnia
+        //----Leaf Guard
+        //----Limber
+        //----Oblivious
+        //----Own Tempo
+        //----Pastel Veil
+        //----Shields Down
+        //----Sweet Veil
+        //----Vital Spirit
+        //----Water Bubble
+        //----Water Veil
+        //--Other
+        //----Aroma Veil (Attract/Torment)
+        //----Sturdy (against OHKO moves)
+        //Move Accuracy Check
+        //Substitute blocking effect other than stat drop
+        //Mirror Armor
+        //Roar/Whirlwind into D-Max target
+        //Roar/Whirlwind into Suction Cups target
+        //Roar/Whirlwind into Ingrained target
+        //Move Failure Checks Pt 4
+        //--Ability Failure
+        //----Entrainment when target is Dynamaxed, target has same Ability as user, or target / user have an Ability that can't be passed / passed from
+        //----Gastro Acid into already has Gastro Acid / unchangeable ability
+        //----Role Play when target has same ability as user or cannot take target's Ability
+        //----Simple Beam into target that has Simple / unreplaceable Ability
+        //----Skill Swap when target or user cannot swap Ability / target is Dynamaxed
+        //----Worry Seed when target has unreplaceable Ability
+        //--Full HP failures
+        //----Heal Pulse / Floral Healing into target at full HP
+        //----Life Dew into target at full HP
+        //----Jungle Healing when both user and ally are at full HP and lack status conditions
+        //----Pollen Puff into target at full HP
+        //----Self-target recovery moves when user has full HP
+        //--Stat-related failures
+        //----Belly Drum when user is at less than 50% HP or already at +6 Attack
+        //----Flower Shield with no Grass-type targets
+        //----Strength Sap into target at -6 Attack
+        //----Swagger / Flatter when target is already at +6 and confused
+        //----Topsy-Turvy when target has no stat changes
+        //--Type failures
+        //----Conversion when user is already the same type as its first move
+        //----Conversion 2 into target that hasn't moved, or into target that most recently used Struggle
+        //----Reflect Type when user is same type as target
+        //----Soak into a pure Water-type / Magic Powder into a pure Psychic-type / Soak | Magic Powder into Silvally with RKS System
+        //----Trick-or-Treat into a Ghost-type / Forest's Curse into a Grass-type
+        //--Failures that play additional text
+        //----Aromatherapy / Heal Bell while no party Pokemon have status conditions
+        //----Teatime when no Pokemon on the field have Berries to eat
+        //--Redundancy failures
+        //----Attempting to create a weather / Terrain that already exists / field effect that already exists
+        //----Aqua Ring while the user already has Aqua Ring
+        //----Baton Pass / Healing Wish / Lunar Dance with no remaining Pokemon to pass to
+        //----Curse (user Ghost-type) into target that already has Curse
+        //----Entry hazard when that entry hazard is already fully set
+        //----Focus Energy when user already has "Critical Hit Boost" Y-info volatile
+        //----Helping Hand when target has already moved
+        //----Lock-On / Mind Reader when user already has "Lock-On" Y-info volatile
+        //----Magnet Rise when user already has Magnet Rise
+        //----Substitute when user already has a Substitute
+        //----Taunt into target already taunted
+        //----Trapping move while target already has "Can't Escape" Y-info volatile
+        //----Wish while a Wish is already active
+        //--Other
+        //----After You / Electrify / Quash into a target that has already moved
+        //----Corrosive Gas
+        //----Copycat with no moves to copy
+        //----Court Change when neither side has field effects
+        //----Disable failures
+        //----Encore failures
+        //----Helping Hand / Ally Switch / Aromatic Mist / Hold Hands in singles or when there is no ally target available in doubles
+        //----Instruct failures
+        //----Mimic into target that hasn't moved / target used unMimicable move
+        //----Primal weather active and trying to set a regular weather
+        //----Psycho Shift when user has no status condition / target has same status condition / target has different status condition
+        //----Purify when target does not have a status condition
+        //----Roar / Whirlwind into target with no Pokemon remaining to switch into
+        //----Transform while user / target is already Transformed
+        //----Trick / Switcheroo with neither having items or has unTrickable item
+        //Move failure checks, part 5
+        //--Psycho Shift when target is immune to status condition
+        //--Substitute when user lacks enough HP to execute the move
+        //Aroma Veil (Disable, Encore, Taunt)
+        
+        
+        //Damage Calculation        
+        //Perform the move
+        if(attacker.IsPlayer)
         {
             yield return playerSprite.Attack();
             yield return playerSprite.Attack();
@@ -323,17 +756,17 @@ public class Battle : MonoBehaviour
 
         if(move.MoveBase.Category != MoveCategory.Status)
         {
-            yield return CalculateDamage(move, attacker, defender, isPlayerAttacking);
+            yield return CalculateDamage(move, attacker, defender);
         }
-        yield return CalculateEffects(move, attacker, defender, isPlayerAttacking);
+        yield return CalculateEffects(move, attacker, defender);
         //yield return CalculateOther()          -Thinks like contact for abilities and whatnot
 
         if(defender.Fainted)
         {
-            if(isPlayerAttacking)
+            if(attacker.IsPlayer)
             {
                 yield return enemySprite.Faint();
-                yield return mainBox.Fainted(enemyPokemon.Nickname);
+                yield return mainBox.Fainted(enemyPokemon);
                 yield return mainBox.PauseAfterText();
                 CleanupBattle();
                 OnBattleOver(true);
@@ -341,20 +774,416 @@ public class Battle : MonoBehaviour
             else
             {
                 yield return playerSprite.Faint();
-                yield return mainBox.Fainted(playerPokemon.Nickname);
+                yield return mainBox.Fainted(playerPokemon);
                 yield return mainBox.PauseAfterText();
                 switchBecauseFainted = true;
             }
         } 
     }
 
-    IEnumerator CalculateEffects(PokemonMove move, Pokemon attacker, Pokemon defender, bool isPlayerAttacking)
+    IEnumerator CalculateEffects(PokemonMove move, Pokemon attacker, Pokemon defender)
     {
+        yield return ApplyWeatherChanges(move);
+        yield return ApplyTerrainChanges(move);
+        yield return ApplyScreens(move, attacker.IsPlayer);
+        yield return ApplySecondaryHealing(move, attacker);
         if(!defender.Fainted)
         {
-            yield return mainBox.HandlingEffects();
+            yield return ApplyStatChanges(move, attacker, defender);
+            yield return ApplyNonVolatileStatus(move, defender);
+            yield return ApplyVolatileStatus(move, defender);
             yield return mainBox.PauseAfterText();
         }
+    }
+
+    IEnumerator ApplyStatChanges(PokemonMove move, Pokemon attacker, Pokemon defender)
+    {
+        if(RandomPercent() <= move.MoveBase.SelfStatChangeChance)
+        {
+            StatBlock changes = move.MoveBase.SelfStatChanges;
+            int acc = move.MoveBase.SelfAccuracyChange;
+            int eva = move.MoveBase.SelfEvasionChange;
+            yield return StatChangeMessageHandling(attacker, changes, acc, eva);
+            attacker.ChangeStats(changes);
+            attacker.ChangeAccuracy(acc);
+            attacker.ChangeEvasion(eva);
+        }
+        if(RandomPercent() <= move.MoveBase.EnemyStatChangeChance)
+        {
+            StatBlock changes = move.MoveBase.EnemyStatChanges;
+            int acc = move.MoveBase.EnemyAccuracyChange;
+            int eva = move.MoveBase.EnemyEvasionChange;
+            yield return StatChangeMessageHandling(defender, changes, acc, eva);
+            defender.ChangeStats(changes);
+            attacker.ChangeAccuracy(acc);
+            attacker.ChangeEvasion(eva);
+        }
+        yield return null;
+    }
+
+    IEnumerator StatChangeMessageHandling(Pokemon target, StatBlock changes, int acc, int eva)
+    {
+        if(acc > 0)
+        {
+            if(target.Accuracy == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "accuracy");
+                yield return mainBox.PauseAfterText();
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "accuracy", acc == 2);
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        else if(acc < 0)
+        {
+            if(target.Accuracy == -6)
+            {
+                yield return mainBox.CantGoLower(target, "accuracy");
+                yield return mainBox.PauseAfterText();
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "accuracy", acc == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        
+        if(eva > 0)
+        {
+            if(target.Evasion == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "evasion");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "evasion", acc == 2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        else if(eva < 0)
+        {
+            if(target.Evasion == -6)
+            {
+                yield return mainBox.CantGoLower(target, "evasion");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "evasion", acc == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+
+        if(changes.Atk > 0)
+        {
+            if(target.StatChanges.Atk == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "Attack");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "Attack", changes.Atk == 2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        else if(changes.Atk < 0)
+        {
+            if(target.StatChanges.Atk == -6)
+            {
+                yield return mainBox.CantGoLower(target, "Attack");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "Attack", changes.Atk == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+
+        if(changes.Def > 0)
+        {
+            if(target.StatChanges.Def == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "Defense");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "Defense", changes.Def == 2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        else if(changes.Def < 0)
+        {
+            if(target.StatChanges.Def == -6)
+            {
+                yield return mainBox.CantGoLower(target, "Defense");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "Defense", changes.Def == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+
+        if(changes.SpA > 0)
+        {
+            if(target.StatChanges.SpA == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "Sp. Atk");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "Sp. Atk", changes.SpA == 2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        else if(changes.SpA < 0)
+        {
+            if(target.StatChanges.SpA == -6)
+            {
+                yield return mainBox.CantGoLower(target, "Sp. Atk");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "Sp. Atk", changes.SpA == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+
+        if(changes.SpD > 0)
+        {
+            if(target.StatChanges.SpD == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "Sp. Def");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "Sp. Def", changes.SpD == 2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        else if(changes.SpD < 0)
+        {
+            if(target.StatChanges.SpD == -6)
+            {
+                yield return mainBox.CantGoLower(target, "Sp. Def");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "Sp. Def", changes.SpD == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+
+        if(changes.Spe > 0)
+        {
+            if(target.StatChanges.Spe == 6)
+            {
+                yield return mainBox.CantGoHigher(target, "Speed");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatIncrease(target, "Speed", changes.Spe == 2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+        else if(changes.Spe < 0)
+        {
+            if(target.StatChanges.Spe == -6)
+            {
+                yield return mainBox.CantGoLower(target, "Speed");
+                yield return mainBox.PauseAfterText();                
+            }
+            else
+            {
+                yield return mainBox.StatDecrease(target, "Speed", changes.Spe == -2);
+                yield return mainBox.PauseAfterText();                
+            }
+        }
+
+        yield return null;
+    }
+
+    IEnumerator ApplyNonVolatileStatus(PokemonMove move, Pokemon defender)
+    {
+        if(RandomPercent() <= move.MoveBase.EnemyNVStatusChance)
+        {
+            List<NonVolatileStatus> statuses = move.MoveBase.EnemyNonVolatileStatuses;
+            NonVolatileStatus status = statuses[UnityEngine.Random.Range(0, statuses.Count)];
+            int success = defender.ApplyNVStatus(status);
+            if(success == 0)
+            {
+                yield return mainBox.ReceiveCondition(defender, status);
+            }
+            else if(success == -1)
+            {
+                yield return mainBox.SetText("UPDATE ME! Already Statused");
+            }
+            else if(success == -2)
+            {
+                yield return mainBox.SetText("UPDATE ME! Type Immune to Status");
+            }
+            else
+            {
+                //How???
+                yield return mainBox.SetText("DEBUGGING PURPOSES ONLY! THIS LINE SHOULD NEVER BE REACHED!");
+            }
+            playerHUD.UpdateStatus();
+            enemyHUD.UpdateStatus();
+        }
+        yield return null;
+    }
+
+    IEnumerator ApplyVolatileStatus(PokemonMove move, Pokemon defender)
+    {
+        if(RandomPercent() <= move.MoveBase.EnemyNVStatusChance)
+        {
+            List<VolatileStatus> statuses = move.MoveBase.EnemyVolatileStatuses;
+            foreach(VolatileStatus status in statuses)
+            {
+                int success = defender.ApplyVolatileStatus(status);
+                //Message Handling
+            }
+        }
+        yield return null;
+    }
+
+    IEnumerator ApplyWeatherChanges(PokemonMove move)
+    {
+        if(RandomPercent() <= move.MoveBase.WeatherChance)
+        {
+            yield return ChangeWeather(move.MoveBase.Weather);
+        }
+        yield return null;
+    }
+
+    IEnumerator ApplyTerrainChanges(PokemonMove move)
+    {
+        if(RandomPercent() <= move.MoveBase.TerrainChance)
+        {
+            yield return ChangeTerrain(move.MoveBase.Terrain);
+        }
+        yield return null;
+    }
+
+    IEnumerator ApplyScreens(PokemonMove move, bool isPlayerAttacking)
+    {
+        if(move.MoveBase.LightScreen)
+        {
+            yield return CreateLightScreen(isPlayerAttacking);
+        }
+        if(move.MoveBase.Reflect)
+        {
+            yield return CreateReflect(isPlayerAttacking);
+        }
+        yield return null;
+    }
+
+    IEnumerator ApplySecondaryHealing(PokemonMove move, Pokemon attacker)
+    {
+        int healing = -1 * Mathf.FloorToInt(attacker.Stats.HP * move.MoveBase.HealthBasedHealing); //-1 to represent healing (negative damage)
+        playerPokemon.TakeDamage(healing);
+        yield return playerHUD.UpdateHP();
+        yield return null;
+    }
+
+    IEnumerator CreateLightScreen(bool player)
+    {   
+        int screenTurns = 5;
+
+        //
+        // if(lightClay) screenTurns = 8;
+        //
+
+        if(player)
+        {
+            if(playerField[FieldEffect.LightScreen] <= 0)
+            {
+                playerField[FieldEffect.LightScreen] = screenTurns;
+                //yield return mainBox.LightScreen();
+            }
+            else
+            {
+                yield return mainBox.Failed();
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        else
+        {
+            if(enemyField[FieldEffect.LightScreen] <= 0)
+            {
+                enemyField[FieldEffect.LightScreen] = screenTurns;
+                //yield return mainBox.LightScreen();
+            }
+            else
+            {                
+                yield return mainBox.Failed();
+                yield return mainBox.PauseAfterText();
+            }       
+        }
+        yield return null;
+    }
+
+    IEnumerator CreateReflect(bool player)
+    {   
+        int screenTurns = 5;
+
+        //
+        // if(lightClay) screenTurns = 8;
+        //
+
+        if(player)
+        {
+            if(playerField[FieldEffect.Reflect] <= 0)
+            {
+                playerField[FieldEffect.Reflect] = screenTurns;
+                //yield return mainBox.Reflect();
+            }
+            else
+            {
+                yield return mainBox.Failed();
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        else
+        {
+            if(enemyField[FieldEffect.Reflect] <= 0)
+            {
+                enemyField[FieldEffect.Reflect] = screenTurns;
+                //yield return mainBox.Reflect();
+            }
+            else
+            {                
+                yield return mainBox.Failed();
+                yield return mainBox.PauseAfterText();
+            }       
+        }
+        yield return null;
+    }
+
+    IEnumerator ChangeWeather(Weather w)
+    {
+        //Add Message Handling
+        weather = w;
+        yield return null;
+    }
+
+    IEnumerator ChangeTerrain(Terrain t)
+    {
+        //Add Message Handling
+        terrain = t;
+        yield return null;
     }
 
     IEnumerator UseItem(string itemName)
@@ -362,8 +1191,41 @@ public class Battle : MonoBehaviour
         yield return null;
     }
 
+    List <Pokemon> UpdateSpeedOrder()
+    {
+        List <Pokemon> order = new List<Pokemon>();
+        int playerSpeed = GetEffectiveSpeed(playerPokemon, playerField[FieldEffect.Tailwind] > 0);
+        int enemySpeed = GetEffectiveSpeed(enemyPokemon, enemyField[FieldEffect.Tailwind] > 0); 
+        if(playerSpeed > enemySpeed)
+        {            
+            order.Add(playerPokemon);
+            order.Add(enemyPokemon);
+        }
+        else if(enemySpeed > playerSpeed)
+        {
+            order.Add(enemyPokemon);
+            order.Add(playerPokemon);
+        }
+        else
+        {
+            if(UnityEngine.Random.Range(0,2) == 0)
+            {
+                order.Add(playerPokemon);
+                order.Add(enemyPokemon);
+            }
+            else
+            {
+                order.Add(enemyPokemon);
+                order.Add(playerPokemon);
+            }
+        }
+        return order;
+    }
+
     IEnumerator EndRound()
     {
+        List<Pokemon> pokemonOrder = UpdateSpeedOrder();
+
         if(weather != Weather.None)
         {
             weatherCounter--;
@@ -372,6 +1234,173 @@ public class Battle : MonoBehaviour
                 yield return mainBox.WeatherExpire(weather);
                 yield return mainBox.PauseAfterText();
                 weather = Weather.None;
+            }
+            else if(weather == Weather.Hail)
+            {
+                //Hail Damage/Ice Body
+            }
+            else if(weather == Weather.Sand)
+            {
+                //Sand Damage
+            }
+            else if(weather == Weather.Rain)
+            {
+                //Rain Dish/Dry Skin/
+            }
+        }        
+        //Emergency Exit/Wimp Out switches from Weather
+
+        //Affection shrug off status
+        //Future Sight/Doom Desire/Wish (Queue from when set, not determined by speed)
+        //---Block A--- (First pokemon does all 4, then second pokemon does all 4)
+        //G-Max Chip/Sea of Fire (Grass+Fire Pledges) (Queue from when set, not determined by speed)
+        //Grassy Terrain Heal
+        //Healer/Hydration/Shed Skin
+        //Leftovers/Black Sludge
+        //-------------
+        //Emergency Exit/Wimp Out switches from Block A
+        //Aqua Ring
+        //Ingrain
+        //Leech Seed
+        
+        foreach(Pokemon p in pokemonOrder)
+        {
+            if(p.Status == NonVolatileStatus.Poison)
+            {
+                //Toxic Heal
+                int poisonDamage = p.Stats.HP/8;
+                yield return mainBox.PoisonDamage(p);
+                yield return mainBox.PauseAfterText();
+                p.TakeDamage(poisonDamage);
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Poison();
+                    yield return playerSprite.Poison();
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemySprite.Poison();
+                    yield return enemySprite.Poison();
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+            if(p.Status == NonVolatileStatus.BadlyPoisoned)
+            {
+                //Toxic Heal
+                int poisonDamage = p.PoisonCounter++ * (p.Stats.HP/16);
+                yield return mainBox.PoisonDamage(p);
+                yield return mainBox.PauseAfterText();
+                p.TakeDamage(poisonDamage);
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Poison();
+                    yield return playerSprite.Poison();
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemySprite.Poison();
+                    yield return enemySprite.Poison();
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        foreach(Pokemon p in pokemonOrder)
+        {
+            if(p.Status == NonVolatileStatus.Burn)
+            {
+                int burnDamage = p.Stats.HP/16;
+                yield return mainBox.BurnDamage(p);
+                yield return mainBox.PauseAfterText();
+                p.TakeDamage(burnDamage);
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Burn();
+                    yield return playerSprite.Burn();
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemySprite.Burn();
+                    yield return enemySprite.Burn();
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();         
+            }
+        }
+        //Poison/Toxic/Poison Heal
+        //Burn
+
+        //Nightmare
+        //Curse
+        //Bind/Clamp/Fire Spin/Infestation/Magma Storm/Sand Tomb/Whirlpool/Wrap (Binding Moves - both damage and freeing)
+        //Octolock
+        //Taunt fading
+        //Torment ending
+        //Encore fading
+        //Disable fading
+        //Magnet Rise fading
+        //Telekinesis fading
+        //Heal Block fading
+        //Embargo fading
+        //Yawn
+        //Perish Count
+        //Roost fading
+        //Emergency Exit/Wimp Out Checkpoint
+        //---Block B---
+        //Reflect dissipating
+        //Light Screen dissipating
+        //Safeguard dissipating
+        //Mist dissipating
+        //Tailwind dissipating
+        //Lucky Chant dissipating
+        //Rainbow (Water+Fire Pledges) dissipating
+        //Sea of Fire (Fire+Grass Pledges) dissipating
+        //Swamp (Grass+Water Pledges) dissipating
+        //Aurora Veil dissipating
+        //-------------
+
+        if(trickRoom)
+        {
+            trickRoomCounter--;
+            if(trickRoomCounter < 0)
+            {
+                //yield return mainBox.Expire();
+                trickRoom = false;
+            }
+        }
+        
+        //Water Sport dissipating
+        //Mud Sport dissipating
+        
+        if(gravity)
+        {
+            gravityCounter--;
+            if(gravityCounter < 0)
+            {
+                //yield return mainBox.Expire();
+                gravity = false;
+            }
+        }
+        if(wonderRoom)
+        {
+            wonderRoomCounter--;
+            if(wonderRoomCounter < 0)
+            {
+                //yield return mainBox.Expire();
+                wonderRoom = false;
+            }
+        }
+        if(magicRoom)
+        {
+            magicRoomCounter--;
+            if(magicRoomCounter < 0)
+            {
+                //yield return mainBox.Expire();
+                magicRoom = false;
             }
         }
         if(terrain != Terrain.None)
@@ -384,42 +1413,18 @@ public class Battle : MonoBehaviour
                 terrain = Terrain.None;
             }
         }
-        if(trickRoom)
-        {
-            trickRoomCounter--;
-            if(trickRoomCounter < 0)
-            {
-                //yield return mainBox.Expire();
-                trickRoom = false;
-            }
-        }
-        if(magicRoom)
-        {
-            magicRoomCounter--;
-            if(magicRoomCounter < 0)
-            {
-                //yield return mainBox.Expire();
-                magicRoom = false;
-            }
-        }
-        if(wonderRoom)
-        {
-            wonderRoomCounter--;
-            if(wonderRoomCounter < 0)
-            {
-                //yield return mainBox.Expire();
-                wonderRoom = false;
-            }
-        }
-        if(gravity)
-        {
-            gravityCounter--;
-            if(gravityCounter < 0)
-            {
-                //yield return mainBox.Expire();
-                gravity = false;
-            }
-        }
+        //---Block C---
+        //Uproar (active/ending)
+        //Bad Dreams/Ball Fetch/Harvest/Moody/Pickup/Slow Start/Speed Boost
+        //Flame Orb/Sticky Barb/Toxic Orb/White Herb
+        //-------------
+        //Emergency Exit/Wimp Out Checkpoint
+        //Power Construct/Schooling/Shields Down/Zen Mode
+        //---Block D---
+        //Hunger Switch
+        //Eject Pack
+        //-------------
+
         if(fairyLock)
         {
             fairyLockCounter--;
@@ -434,46 +1439,34 @@ public class Battle : MonoBehaviour
             //yield return mainBox.Expire();
             ionDeluge = false;
         }
-
-
-        foreach(KeyValuePair<FieldEffect, int> effect in playerField)
-        {
-            //Decrement the values of the field effects that have a duration (screens, tailwind, lucky chant, etc...)    
-        }
-        foreach(KeyValuePair<FieldEffect, int> effect in enemyField)
-        {
-
-        }
     }
 
-    IEnumerator EnemySoloTurn()
+    // IEnumerator EnemySoloTurn()
+    // {
+    //     state = BattleState.Battle;
+    //     PokemonMove enemyMove = getEnemyMove();
+    //     yield return UseMove(enemyMove, enemyPokemon, playerPokemon);        
+    //     yield return EndRound();
+
+    //     if(switchBecauseFainted)
+    //     {            
+    //         if(player.GetLeadPokemon() == null)
+    //         {
+    //             yield return mainBox.WhiteOut();
+    //             yield return mainBox.PauseAfterText();
+    //             CleanupBattle();
+    //             OnBattleOver(false);
+    //         }
+    //         Pokemon();
+    //     }
+    //     else
+    //     {
+    //         PlayerSelection();
+    //     }
+    // }
+
+    IEnumerator SwitchPokemon(Pokemon pokemon)
     {
-        state = BattleState.Battle;
-        PokemonMove enemyMove = getEnemyMove();
-        yield return UseMove(enemyMove, enemyPokemon, playerPokemon, false);        
-        yield return EndRound();
-
-        if(switchBecauseFainted)
-        {            
-            if(player.GetLeadPokemon() == null)
-            {
-                yield return mainBox.WhiteOut();
-                yield return mainBox.PauseAfterText();
-                CleanupBattle();
-                OnBattleOver(false);
-            }
-            Pokemon();
-        }
-        else
-        {
-            PlayerSelection();
-        }
-    }
-
-    IEnumerator SwitchPokemon(Pokemon pokemon, bool isFree)
-    {
-        state = BattleState.Switching;
-
         sideBox.Clear();
 
         playerHUD.gameObject.SetActive(false);
@@ -495,28 +1488,20 @@ public class Battle : MonoBehaviour
 
         playerHUD.GenerateBar(playerPokemon);
         playerHUD.gameObject.SetActive(true);
-    
-        if(!isFree)
-        {       
-            yield return EnemySoloTurn();
-        }
-        else
-        {     
-            PlayerSelection();
-        }
     }
 
     IEnumerator RunAttempt()
     {
-        if(playerPokemon.Species.Type1 == PokemonType.Ghost || playerPokemon.Species.Type1 == PokemonType.Ghost)
+        if(playerPokemon.Type1 == PokemonType.Ghost || playerPokemon.Type2 == PokemonType.Ghost)
         {
             yield return RunSuccess();
         }
-        if(enemyPokemon.Ability == "Arena Trap")
-        {
-            //yield return mainBox.FleePrevention()
-            yield return mainBox.PauseAfterText();
-        }
+
+        // if(enemyPokemon.Ability == "Arena Trap")
+        // {
+        //     //yield return mainBox.FleePrevention()
+        //     yield return mainBox.PauseAfterText();
+        // }
 
         if(playerPokemon.Stats.Spe >= enemyPokemon.Stats.Spe)
         {
@@ -526,7 +1511,6 @@ public class Battle : MonoBehaviour
         {
             //ToDo: Rework to check if run is successful or not
             yield return RunSuccess();
-            yield return EnemySoloTurn();
         }        
     }
 
@@ -536,12 +1520,13 @@ public class Battle : MonoBehaviour
         yield return mainBox.PauseAfterText();
         CleanupBattle();
         OnBattleOver(false);
-        yield return null;
+        yield break;
     }
 
     IEnumerator RunFailure()
     {
-        yield return null;
+        yield return mainBox.RunFailure();
+        yield return mainBox.PauseAfterText();
     }
 
     void CleanupBattle()
@@ -578,7 +1563,7 @@ public class Battle : MonoBehaviour
     }
 //----------------------Damage Calculations-----------------------
 
-    IEnumerator CalculateDamage(PokemonMove move, Pokemon attacker, Pokemon defender, bool isPlayerAttacking)
+    IEnumerator CalculateDamage(PokemonMove move, Pokemon attacker, Pokemon defender)
     {   
         Debug.Log($"Attacker is {attacker.Nickname}");
         attacker.Stats.print();
@@ -611,7 +1596,7 @@ public class Battle : MonoBehaviour
         //Calculate crit (ignoring stat changes)
         
         float critical = 1f;
-        bool crit = DetermineCrit(move, attacker, defender, isPlayerAttacking);
+        bool crit = DetermineCrit(move, attacker, defender);
         if(crit)
         {
             critical = 1.5f;
@@ -645,7 +1630,7 @@ public class Battle : MonoBehaviour
         float type = CalculateTypeAdvantage(moveType, move, defender, attacker);
 
         float burn = 1f;
-        if(attacker.Status == NonVolatileStatus.Burn && attacker.Ability != "Guts" && move.MoveBase.Category == MoveCategory.Physical && move.MoveBase.MoveName != "Facade")
+        if(attacker.Status == NonVolatileStatus.Burn && move.MoveBase.Category == MoveCategory.Physical) //&& attacker.Ability != "Guts" && move.MoveBase.MoveName != "Facade")
         {
             burn = 0.5f;
         }
@@ -682,15 +1667,13 @@ public class Battle : MonoBehaviour
 
         Debug.Log($"Level Calc: {levelCalc}; Top: {top}; Base Damage: {baseDamage}; Damage: {damage}");
     
-        if(isPlayerAttacking)
+        if(attacker.IsPlayer)
         {
-            int startHP = enemyPokemon.CurHP;
             enemyPokemon.TakeDamage(damage);
             yield return enemyHUD.UpdateHP();
         }
         else
         {
-            int startHP = playerPokemon.CurHP;
             playerPokemon.TakeDamage(damage);
             yield return playerHUD.UpdateHP();
         }
@@ -712,19 +1695,12 @@ public class Battle : MonoBehaviour
         {
             yield return mainBox.NotVeryEffective();
             yield return mainBox.PauseAfterText();
-        }       
+        }      
+
+        //Damage Based Healing and Recoil calculations 
     }
 
-    int Round(float f)  //Round to nearest with .5 rounding down
-    {
-        if(f < 0)
-        {
-            return (int) Math.Floor(f + 0.5f);
-        }
-        return (int) Math.Ceiling(f - 0.5f);
-    }
-
-    bool DetermineCrit(PokemonMove move, Pokemon att, Pokemon def, bool isPlayerAttacking)
+    bool DetermineCrit(PokemonMove move, Pokemon att, Pokemon def)
     {        
         if(def.Ability == "Battle Armor" || def.Ability == "Shell Armor") //Implement Lucky Chant
         {
@@ -734,7 +1710,7 @@ public class Battle : MonoBehaviour
         {
             return true;
         }
-        if(isPlayerAttacking)
+        if(att.IsPlayer)
         {
             if(enemyField[FieldEffect.LuckyChant] > 0)
             {
@@ -792,6 +1768,10 @@ public class Battle : MonoBehaviour
         }
         if(weather == Weather.HarshSun)
         {
+            if(type == PokemonType.Fire || move.MoveBase.MoveName == "Hydro Steam")
+            {
+                return 1.5f;
+            }
             if(type == PokemonType.Water)
             {
                 return 0f;
@@ -799,11 +1779,25 @@ public class Battle : MonoBehaviour
         }
         if(weather == Weather.Rain)
         {
-
+            if(type == PokemonType.Water)
+            {
+                return 1.5f;
+            }
+            if(type == PokemonType.Fire)
+            {
+                return 0.5f;
+            }
         }
         if(weather == Weather.HeavyRain)
         {
-
+            if(type == PokemonType.Water)
+            {
+                return 1.5f;
+            }
+            if(type == PokemonType.Fire)
+            {
+                return 0f;
+            }
         }
         return 1f;        
     }
@@ -858,18 +1852,8 @@ public class Battle : MonoBehaviour
 
     float CalculateTypeAdvantage(PokemonType moveType, PokemonMove move, Pokemon defender, Pokemon attacker)
     {
-        PokemonType t1 = defender.Species.Type1;
-        PokemonType t2 = defender.Species.Type2;
-        if(defender.Soak)
-        {
-            t1 = PokemonType.Water;
-            t2 = PokemonType.None;
-        }
-        if(defender.IsTera)
-        {
-            t1 = defender.TeraType;
-            t2 = PokemonType.None;
-        }        
+        PokemonType t1 = defender.Type1;
+        PokemonType t2 = defender.Type2;      
         if(t1 == PokemonType.None && t2 == PokemonType.None)
         {
             Debug.Log($"{defender.Nickname} does not have a type.");
@@ -933,8 +1917,36 @@ public class Battle : MonoBehaviour
         return 0f;
     }
 
+//--------------------Custom Math Functions-----------------------
+
+    int Round(float f)  //Round to nearest with .5 rounding down
+    {
+        if(f < 0)
+        {
+            return (int) Math.Floor(f + 0.5f);
+        }
+        return (int) Math.Ceiling(f - 0.5f);
+    }
+
+    float RandomPercent()
+    {
+        float r;
+
+        do
+        {
+            r = UnityEngine.Random.value;
+        }while(r == 0f);    //if random is exactly 0, reroll
+
+        return r;
+    }
 
 //------------------------Battle Functions--------------------------------------
+
+    BattleChoice getEnemyChoice()
+    {
+        //Determine if the enemy wants to do something other than attack
+        return BattleChoice.Move;
+    }
 
     PokemonMove getEnemyMove()
     {
@@ -1043,7 +2055,6 @@ public class Battle : MonoBehaviour
             {
                 if(playerPokemon.Moves[curMoveOption] != null && playerPokemon.Moves[curMoveOption].CurPP > 0)
                 {
-                    playerPokemon.Moves[curMoveOption].DecrementPP(false);
                     StartCoroutine(ChooseMove(playerPokemon.Moves[curMoveOption]));
                 }
             }
@@ -1066,17 +2077,38 @@ public class Battle : MonoBehaviour
         }
         if(state == BattleState.MoveSelection)
         {
-            mainBox.updateMoveSelection(curMoveOption);
+            mainBox.UpdateMoveSelection(curMoveOption);
             sideBox.updateMoveDetails(playerPokemon.Moves[curMoveOption]);
         }
     }
 }
+
+public enum BattleChoice
+{
+    Move,
+    Item,
+    Switch,
+    Run
+}
+
+/*
+
+Sand/Hail
+-EoT Damage
+Sand/Snow
+-Defense Boost
+
+Terrain
+-All Effects
+
+*/
 
 
 /*
 Fully Implemented:
 -Move order calculation (tailwind, trick room, paralysis, speed ties, and priority all taken into account)
 -Adaptability in STAB calculations (May need to be updated with the ability rework in the future)
+-Stat Changes
 
 Mostly Implemented:
 -Damage Calculation (the function has more comments for what is needed) 
@@ -1085,7 +2117,7 @@ Mostly Implemented:
 
 TODO:
 -Accuracy/Failure checks
--Move effects (stat changes, status conditions)
+-Status conditions graphic and effects
 -Implement full weather/terrain effects
 -Many corner cases for everything
 */

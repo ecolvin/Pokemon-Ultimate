@@ -11,6 +11,7 @@ public class BattleHUD : MonoBehaviour
     [SerializeField] TextMeshProUGUI level;
     [SerializeField] TextMeshProUGUI genderField;
     [SerializeField] TextMeshProUGUI hpNums;
+    [SerializeField] StatusIcon statusIcon;
 
     //TODO: Replace with parameters
     [SerializeField] PokemonSpecies species;
@@ -44,6 +45,7 @@ public class BattleHUD : MonoBehaviour
             hpNums.text = pokemon.CurHP + "/" + pokemon.Stats.HP;
         }
         hpBar.SetHP((float)pokemon.CurHP/(float)pokemon.Stats.HP);
+        UpdateStatus();
     }
 
     public IEnumerator UpdateHP()
@@ -69,6 +71,14 @@ public class BattleHUD : MonoBehaviour
         if(hpNums != null)
         {
             hpNums.text = newHP + "/" + maxHP;
+        }
+    }
+
+    public void UpdateStatus()
+    {
+        if(statusIcon != null)
+        {
+            statusIcon.UpdateIcon(pokemon.Status);
         }
     }
 }

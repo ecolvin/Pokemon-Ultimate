@@ -55,7 +55,6 @@ public class PartyScreen : MonoBehaviour
         {
             members[0].Set(notFainted.Dequeue());
         }  
-
         int i = 1;
         while(notFainted.Count > 0)
         {

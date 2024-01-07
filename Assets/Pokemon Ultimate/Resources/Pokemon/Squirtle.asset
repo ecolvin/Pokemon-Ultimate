@@ -81,6 +81,4 @@ MonoBehaviour:
     levelLearned: 30
   - moveBase: {fileID: 11400000, guid: 0e3f050d91648f4409b3c1400f154c77, type: 2}
     levelLearned: 33
-  - moveBase: {fileID: 11400000, guid: 0d0fe534f9bb44e4aa66512d7b86b56c, type: 2}
-    levelLearned: 36
   tmLearnset: []
