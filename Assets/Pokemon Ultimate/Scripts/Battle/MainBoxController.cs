@@ -183,19 +183,21 @@ public class MainBoxController : MonoBehaviour
         yield return SlowText($"{pokemonName} {conditioned}!");        
     }
 
+    //Confirmed
     public IEnumerator PoisonDamage(Pokemon pokemon)
     {
         string pokemonName = pokemon.GetBattleMessageName();
         yield return SlowText($"{pokemonName} was hurt by its poisoning!");
     }    
     
+    //Confirmed
     public IEnumerator BurnDamage(Pokemon pokemon)
     {
         string pokemonName = pokemon.GetBattleMessageName();
         yield return SlowText($"{pokemonName} was hurt by its burn!");
     }
 
-    //Verified
+    //Confirmed
     public IEnumerator FullParalysis(Pokemon pokemon)
     {
         string pokemonName = pokemon.GetBattleMessageName();
@@ -220,6 +222,7 @@ public class MainBoxController : MonoBehaviour
         yield return SlowText($"{pokemonName} thawed out!");
     }
 
+    //Confirmed
     public IEnumerator FreezeTurn(Pokemon pokemon)
     {
         string pokemonName = pokemon.GetBattleMessageName();
@@ -227,16 +230,197 @@ public class MainBoxController : MonoBehaviour
     }
     //----------------------------------------
 
+    //Confirmed
+    public IEnumerator NaturalWeather(Weather weather)
+    {
+        if(weather == Weather.Sun)
+        {
+            yield return SlowText("The sunlight is harsh!");
+        }
+        else if(weather == Weather.Rain)
+        {
+            yield return SlowText("It's raining!");
+        }
+        else if(weather == Weather.Sand)
+        {
+            yield return SlowText("The sandstorm is raging!");
+        }
+        else if(weather == Weather.Snow)
+        {
+            yield return SlowText("It's snowing!");
+        }
+        else if(weather == Weather.Fog)
+        {
+            yield return SlowText("Mist swirls around the battlefield!");
+        }
+        else if(weather == Weather.HarshSun)
+        {
+            yield return SlowText("The sunlight is extremely harsh!");
+        }
+        else if(weather == Weather.HeavyRain)
+        {
+            yield return SlowText("It's raining heavily!");
+        }
+        else if(weather == Weather.Wind)
+        {
+            yield return SlowText("Mysterious strong winds are protecting Flying-type Pokemon!");
+        }
+        else
+        {
+            yield return SlowText("This type of weather is not currently implemented!");
+        }
+    }
 
+    //Confirmed
+    public IEnumerator CreateWeather(Weather weather)
+    {
+        if(weather == Weather.Sun)
+        {
+            yield return SlowText("The sunlight turned harsh!");
+        }
+        else if(weather == Weather.Rain)
+        {
+            yield return SlowText("It started to rain!");
+        }
+        else if(weather == Weather.Sand)
+        {
+            yield return SlowText("A sandstorm kicked up!");
+        }
+        else if(weather == Weather.Snow)
+        {
+            yield return SlowText("It started to snow!");
+        }
+        else if(weather == Weather.Fog)
+        {
+            yield return SlowText("Mist swirls around the battlefield!");
+        }
+        else if(weather == Weather.HarshSun)
+        {
+            yield return SlowText("The sunlight turned extremely harsh!");
+        }
+        else if(weather == Weather.HeavyRain)
+        {
+            yield return SlowText("A heavy rain began to fall!");
+        }
+        else if(weather == Weather.Wind)
+        {
+            yield return SlowText("Mysterious strong winds are protecting Flying-type Pokemon!");
+        }
+        else
+        {
+            yield return SlowText("This type of weather is not currently implemented!");
+        }
+    }
+
+    //Confirmed
     public IEnumerator WeatherExpire(Weather weather)
     {
-        yield return SlowText($"The {weather} has worn off.");
-        //"The snow stopped"
+        if(weather == Weather.Sun)
+        {
+            yield return SlowText("The harsh sunlight faded!");
+        }
+        else if(weather == Weather.Rain)
+        {
+            yield return SlowText("The rain stopped!");
+        }
+        else if(weather == Weather.Sand)
+        {
+            yield return SlowText("The sandstorm subsided!");
+        }
+        else if(weather == Weather.Snow)
+        {
+            yield return SlowText("The snow stopped!");
+        }
+        else if(weather == Weather.HarshSun)
+        {
+            yield return SlowText("The harsh sunlight faded!");
+        }
+        else if(weather == Weather.HeavyRain)
+        {
+            yield return SlowText("The heavy rain has lifted!");
+        }
+        else if(weather == Weather.Wind)
+        {
+            yield return SlowText("The mysterious strong winds have dissipated!");
+        }
+        else
+        {
+            yield return SlowText("This type of weather is not currently implemented!");
+        }
+    }
+
+    //Confirmed
+    public IEnumerator CreateTerrain(Terrain terrain)
+    {
+        if(terrain == Terrain.Grassy)
+        {
+            yield return SlowText("Grass grew to cover the battlefield!");
+        }
+        else if(terrain == Terrain.Electric)
+        {
+            yield return SlowText("An electric current ran across the battlefield!");
+        }
+        else if(terrain == Terrain.Psychic)
+        {
+            yield return SlowText("The battlefield got weird!");
+        }
+        else if(terrain == Terrain.Misty)
+        {
+            yield return SlowText("Mist swirled around the battlefield!");
+        }
+        yield return null;
     }
 
     public IEnumerator TerrainExpire(Terrain terrain)
     {
-        yield return SlowText($"The {terrain} has worn off.");
+        string terrainText = "terrain";
+        if(terrain == Terrain.Grassy)
+        {
+            terrainText = "grass";
+        }
+        else if(terrain == Terrain.Electric)
+        {
+            terrainText = "electricity";
+        }
+        else if(terrain == Terrain.Psychic)
+        {
+            terrainText = "weirdness";
+        }
+        else if(terrain == Terrain.Misty)
+        {
+            terrainText = "mist";
+        }
+        yield return SlowText($"The {terrainText} disappeared from the battlefield!");
+    }
+
+    //Confirmed
+    public IEnumerator WeatherFail(Weather weather)
+    {
+        if(weather == Weather.HarshSun)
+        {
+            yield return SlowText("The Water-type attack evaporated in the harsh sunlight!");
+        }
+        else if(weather == Weather.HeavyRain)
+        {
+            yield return SlowText("The Fire-type attack fizzled out in the heavy rain!");
+        }
+        else
+        {            
+            yield return SlowText("The weather caused the move to fail somehow.");
+        }
+    }
+
+    //Confirmed
+    public IEnumerator SandDamage(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} is buffeted by the sandstorm!");
+    }
+
+    public IEnumerator PokemonHealing(Pokemon pokemon)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} had its HP restored.");
     }
 
     //---------Helper Functions------------
@@ -387,3 +571,7 @@ public class MainBoxController : MonoBehaviour
 //The opposing ___ became fully charged due to its bond with its Trainer!
 //You defeated ___!
 //The ___ Berry weakened the damage to ___!
+
+
+//Grassy Terrain Healing:
+//___ had its HP restored.

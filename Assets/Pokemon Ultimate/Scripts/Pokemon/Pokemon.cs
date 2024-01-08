@@ -384,6 +384,17 @@ public class Pokemon
         }
     }
 
+    public void ClearStatChanges()
+    {
+        statChanges.Atk = 0;
+        statChanges.Def = 0;
+        statChanges.SpA = 0;
+        statChanges.SpD = 0;
+        statChanges.Spe = 0;
+
+        CalculateStats();
+    }
+
     public void ChangeStats(StatBlock changes)
     {   
         statChanges.Atk = Mathf.Clamp(statChanges.Atk + changes.Atk, -6, 6);

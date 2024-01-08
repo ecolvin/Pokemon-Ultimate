@@ -20,9 +20,9 @@ public class BattleSprite : MonoBehaviour
     [SerializeField] Color poisonColor = new Color(100f, 50f, 150f, 255f);
     [SerializeField] float burnSpeed = 10;
     [SerializeField] Color burnColor = Color.red;
-    [SerializeField] float paraSpeed = 15;
+    [SerializeField] float paraSpeed = 10;
     [SerializeField] Color paraColor = Color.yellow;
-    [SerializeField] int paraPause = 30;
+    [SerializeField] int paraPause = 150;
     [SerializeField] float sleepSpeed = 3;
     [SerializeField] Color sleepColor = new Color(0f, 0f, 100f, 255f);
     [SerializeField] int sleepPause = 30;

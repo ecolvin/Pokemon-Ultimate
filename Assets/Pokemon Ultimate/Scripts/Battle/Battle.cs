@@ -9,6 +9,7 @@ public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Sw
 public enum Weather {None, Sun, HarshSun, Rain, HeavyRain, Sand, Hail, Snow, Shadow, Fog, Wind}
 public enum Terrain {None, Electric, Misty, Psychic, Grassy}
 public enum FieldEffect {None, Spikes, ToxicSpikes, Rocks, Webs, Reflect, LightScreen, Tailwind, LuckyChant}
+public enum BattleChoice {Move, Item, Switch, Run}
 
 public class Battle : MonoBehaviour
 {
@@ -329,7 +330,7 @@ public class Battle : MonoBehaviour
             Coroutine useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
             yield return useMove;
         }
-        
+
         yield return EndRound();
 
         if(switchBecauseFainted)
@@ -352,15 +353,87 @@ public class Battle : MonoBehaviour
     int GetEffectiveSpeed(Pokemon pokemon, bool tailwind)
     {
         int speed = pokemon.Stats.Spe;
+
+        int modifier = 4096;
+        //Swift Swim/Chlorophyll/Slush Rush/Sand Rush/Surge Surger/Unburden *2 modifier
+        //Quick Feet *1.5 modifier
+        //Slow Start (still active) *0.5 modifier
+        //Quickpowder & species is Ditto *2 modifier
+        //Choice Scarf *1.5 modifier
+        //Iron Ball/Macho Brace/Power EV item *0.5 modifier
         if(tailwind)
         {
-            speed *= 2;
+            modifier *= 2;
         }
-        if(pokemon.Status == NonVolatileStatus.Paralysis)
+        //Pledge Swamp *0.25 modifier
+        
+        speed *= modifier;
+        if(pokemon.Status == NonVolatileStatus.Paralysis) //&& !Quick Feet
         {
             speed /= 2;
         }
+        if(speed > 10000)
+        {
+            speed = 10000;
+        }
+        if(trickRoom)
+        {
+            speed = 10000 - speed;
+        }
+        if(speed > 8191)
+        {
+            speed -= 8192;
+        }
         return speed;
+    }
+
+    bool IsPlayerFaster() 
+    {
+        int playerSpeed = GetEffectiveSpeed(playerPokemon, playerField[FieldEffect.Tailwind] > 0);
+        int enemySpeed = GetEffectiveSpeed(enemyPokemon, enemyField[FieldEffect.Tailwind] > 0); 
+        
+        return playerSpeed > enemySpeed;
+    }
+
+    bool MissCheck(PokemonMove move, Pokemon attacker, Pokemon defender)
+    {
+        int accuracy = move.MoveBase.Accuracy;
+        if(accuracy == -1)
+        {
+            return false;
+        }
+        
+        float modifier = 4096;
+        if(gravity)
+        {
+            modifier = RoundUp(modifier * 6840/4096);
+        }
+        //Tangled Feet .5
+        //Hustle 3277/4096
+        //Sand Veil 3277/4096
+        //Snow Cloak 3277/4096
+        //Vicory Star 4506/4096 (can be applied multiple times)
+        //Compound Eyes 5325/4096
+        //Bright Powder 3686/4096
+        //Lax Incense 3686/4096
+        //Wide Lens 4505/4096
+        //Zoom Lens 4915/4096
+        
+        int accuracyModified = Round(accuracy * modifier/4096);
+
+        //Factor in simple/foresight
+        int adjustedStages = attacker.Accuracy - defender.Evasion;
+        int top = 3, bottom = 3;
+        if(adjustedStages > 0)
+        {
+            top += adjustedStages;
+        }
+        if(adjustedStages < 0)
+        {
+            bottom += adjustedStages;
+        }
+        accuracyModified = Round((float)accuracyModified * (float)top/(float)bottom);
+        return UnityEngine.Random.Range(1,101) > accuracyModified;
     }
 
     IEnumerator UseMove(PokemonMove move, Pokemon attacker, Pokemon defender) 
@@ -456,7 +529,7 @@ public class Battle : MonoBehaviour
         if(attacker.Status == NonVolatileStatus.Paralysis)
         {
             //yield return mainBox.ParaCheck(attacker);
-            if(UnityEngine.Random.Range(0,1) == 0)
+            if(UnityEngine.Random.Range(0,4) == 0)
             {
                 if(attacker.IsPlayer)
                 {
@@ -666,7 +739,16 @@ public class Battle : MonoBehaviour
         //--Other
         //----Aroma Veil (Attract/Torment)
         //----Sturdy (against OHKO moves)
-        //Move Accuracy Check
+        
+        if(MissCheck(move, attacker, defender))
+        {
+            yield return mainBox.Missed();
+            yield return mainBox.PauseAfterText();
+            //Blunder Policy check
+            yield break;
+        }
+
+
         //Substitute blocking effect other than stat drop
         //Mirror Armor
         //Roar/Whirlwind into D-Max target
@@ -783,7 +865,7 @@ public class Battle : MonoBehaviour
 
     IEnumerator CalculateEffects(PokemonMove move, Pokemon attacker, Pokemon defender)
     {
-        yield return ApplyWeatherChanges(move);
+        yield return ApplyWeatherChanges(move, false); //update to check attacker's held item
         yield return ApplyTerrainChanges(move);
         yield return ApplyScreens(move, attacker.IsPlayer);
         yield return ApplySecondaryHealing(move, attacker);
@@ -1059,11 +1141,11 @@ public class Battle : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator ApplyWeatherChanges(PokemonMove move)
+    IEnumerator ApplyWeatherChanges(PokemonMove move, bool rock)
     {
         if(RandomPercent() <= move.MoveBase.WeatherChance)
         {
-            yield return ChangeWeather(move.MoveBase.Weather);
+            yield return ChangeWeather(move.MoveBase.Weather, rock); 
         }
         yield return null;
     }
@@ -1172,17 +1254,33 @@ public class Battle : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator ChangeWeather(Weather w)
+    IEnumerator ChangeWeather(Weather w, bool rock)
     {
-        //Add Message Handling
+        if(weather == w)
+        {
+            yield return mainBox.SetText("That weather is already set!");
+            yield break;
+        }
+        Debug.Log($"Setting {w}");
         weather = w;
+        weatherCounter = 5;
+        if(rock)
+        {
+            weatherCounter = 8;
+        }
+        yield return mainBox.CreateWeather(w);
+        yield return mainBox.PauseAfterText();
         yield return null;
     }
 
     IEnumerator ChangeTerrain(Terrain t)
     {
-        //Add Message Handling
         terrain = t;
+        terrainCounter = 5;
+        //if Terrain Extender {terrainCounter = 8;}
+
+        yield return mainBox.CreateTerrain(terrain);
+        yield return mainBox.PauseAfterText();
         yield return null;
     }
 
@@ -1222,31 +1320,131 @@ public class Battle : MonoBehaviour
         return order;
     }
 
+    bool CheckForSandDmg(Pokemon p)
+    {
+        return p.Type1 == PokemonType.Ground || p.Type2 == PokemonType.Ground ||
+               p.Type1 == PokemonType.Rock   || p.Type2 == PokemonType.Rock   ||
+               p.Type1 == PokemonType.Steel  || p.Type2 == PokemonType.Steel;
+    }
+    
+    IEnumerator EOTSand()
+    {
+        bool playerSand = CheckForSandDmg(playerPokemon);
+        bool enemySand = CheckForSandDmg(enemyPokemon);
+        if(playerSand && enemySand)
+        {
+            if(IsPlayerFaster())
+            {
+                yield return SandDamage(playerPokemon);
+                yield return SandDamage(enemyPokemon);
+            }
+            else
+            {
+                yield return SandDamage(enemyPokemon);
+                yield return SandDamage(playerPokemon);
+            }
+        }
+        else if(playerSand)
+        {
+            yield return SandDamage(playerPokemon);
+        }
+        else if(enemySand)
+        {
+            yield return SandDamage(enemyPokemon);
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+
+    IEnumerator SandDamage(Pokemon p)
+    {
+        int sandDamage = p.Stats.HP/16;
+        yield return mainBox.SandDamage(p);
+        p.TakeDamage(sandDamage);
+        if(p.IsPlayer)
+        {
+            yield return playerSprite.Hit();
+            yield return playerSprite.Hit();
+            yield return playerHUD.UpdateHP();
+        }
+        else
+        {
+            yield return enemySprite.Hit();
+            yield return enemySprite.Hit();
+            yield return enemyHUD.UpdateHP();
+        }
+        yield return mainBox.PauseAfterText();
+    }
+
+    bool IsGrounded(Pokemon p)
+    {
+        if(gravity)
+        {
+            return true;
+        }
+        if(p.Type1 == PokemonType.Flying || p.Type2 == PokemonType.Flying)
+        {
+            return false;
+        }
+        //Levitate Ability
+        //Air Balloon
+        //Magnet Rise/Telekinesis
+        return true;
+    }
+
+    IEnumerator GrassyTerrainHeal(Pokemon p)
+    {
+        if(IsGrounded(p))
+        {
+            if(p.CurHP < p.Stats.HP)
+            {
+                yield return mainBox.PokemonHealing(p);
+                int healing = p.Stats.HP/16;
+                p.TakeDamage(-1 * healing);
+                if(p.IsPlayer)
+                {
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        yield return null;
+    }
+
     IEnumerator EndRound()
     {
         List<Pokemon> pokemonOrder = UpdateSpeedOrder();
 
         if(weather != Weather.None)
         {
-            weatherCounter--;
-            if(weatherCounter < 0)
+            Debug.Log($"Decrementing Weather Counter! {weatherCounter}");
+            if(--weatherCounter <= 0)
             {
+                Debug.Log("Weather Expiring!");
                 yield return mainBox.WeatherExpire(weather);
                 yield return mainBox.PauseAfterText();
                 weather = Weather.None;
             }
             else if(weather == Weather.Hail)
             {
-                //Hail Damage/Ice Body
+                //Ice Body
+                //Hail Damage not implemented due to snow instead
             }
             else if(weather == Weather.Sand)
             {
-                //Sand Damage
+                EOTSand();
             }
             else if(weather == Weather.Rain)
             {
                 //Rain Dish/Dry Skin/
             }
+            Debug.Log($"New Weather Counter: {weatherCounter}");
         }        
         //Emergency Exit/Wimp Out switches from Weather
 
@@ -1366,7 +1564,7 @@ public class Battle : MonoBehaviour
         if(trickRoom)
         {
             trickRoomCounter--;
-            if(trickRoomCounter < 0)
+            if(trickRoomCounter <= 0)
             {
                 //yield return mainBox.Expire();
                 trickRoom = false;
@@ -1379,7 +1577,7 @@ public class Battle : MonoBehaviour
         if(gravity)
         {
             gravityCounter--;
-            if(gravityCounter < 0)
+            if(gravityCounter <= 0)
             {
                 //yield return mainBox.Expire();
                 gravity = false;
@@ -1388,7 +1586,7 @@ public class Battle : MonoBehaviour
         if(wonderRoom)
         {
             wonderRoomCounter--;
-            if(wonderRoomCounter < 0)
+            if(wonderRoomCounter <= 0)
             {
                 //yield return mainBox.Expire();
                 wonderRoom = false;
@@ -1397,7 +1595,7 @@ public class Battle : MonoBehaviour
         if(magicRoom)
         {
             magicRoomCounter--;
-            if(magicRoomCounter < 0)
+            if(magicRoomCounter <= 0)
             {
                 //yield return mainBox.Expire();
                 magicRoom = false;
@@ -1405,8 +1603,21 @@ public class Battle : MonoBehaviour
         }
         if(terrain != Terrain.None)
         {
-            terrainCounter--;
-            if(terrainCounter < 0)
+            if(terrain == Terrain.Grassy)
+            {
+                if(IsPlayerFaster())
+                {
+                    yield return GrassyTerrainHeal(playerPokemon);
+                    yield return GrassyTerrainHeal(enemyPokemon);
+                }
+                else
+                {
+                    yield return GrassyTerrainHeal(enemyPokemon);
+                    yield return GrassyTerrainHeal(playerPokemon);
+                }
+            }
+
+            if(--terrainCounter <= 0)
             {
                 yield return mainBox.TerrainExpire(terrain);
                 yield return mainBox.PauseAfterText();
@@ -1440,30 +1651,6 @@ public class Battle : MonoBehaviour
             ionDeluge = false;
         }
     }
-
-    // IEnumerator EnemySoloTurn()
-    // {
-    //     state = BattleState.Battle;
-    //     PokemonMove enemyMove = getEnemyMove();
-    //     yield return UseMove(enemyMove, enemyPokemon, playerPokemon);        
-    //     yield return EndRound();
-
-    //     if(switchBecauseFainted)
-    //     {            
-    //         if(player.GetLeadPokemon() == null)
-    //         {
-    //             yield return mainBox.WhiteOut();
-    //             yield return mainBox.PauseAfterText();
-    //             CleanupBattle();
-    //             OnBattleOver(false);
-    //         }
-    //         Pokemon();
-    //     }
-    //     else
-    //     {
-    //         PlayerSelection();
-    //     }
-    // }
 
     IEnumerator SwitchPokemon(Pokemon pokemon)
     {
@@ -1558,6 +1745,9 @@ public class Battle : MonoBehaviour
         playerHUD.gameObject.SetActive(false);
         enemyHUD.gameObject.SetActive(false);
 
+        enemyPokemon.ClearStatChanges();
+        playerPokemon.ClearStatChanges();
+
         enemyPokemon.IsActive = false;
         playerPokemon.IsActive = false;
     }
@@ -1575,7 +1765,7 @@ public class Battle : MonoBehaviour
 
         PokemonType moveType = move.MoveBase.MoveType;
         int level = attacker.Level;
-        int power = move.MoveBase.BasePower;
+        int power = GetPower(move, attacker, defender);
         int A = 0;
         int D = 1;
         if(move.MoveBase.Category == MoveCategory.Physical)
@@ -1588,10 +1778,11 @@ public class Battle : MonoBehaviour
             A = attacker.Stats.SpA; //Special Attack
             D = defender.Stats.SpD;
         }
-        
+
         //Calculate variable power moves
 
-        //Calculate moves that use other stats for attack/defense
+        //Calculate moves that use other stats for attack/defense (update weather boost as well)
+        D = Mathf.FloorToInt(BoostDefForWeather(move, defender) * D);
 
         //Calculate crit (ignoring stat changes)
         
@@ -1613,10 +1804,10 @@ public class Battle : MonoBehaviour
 
         float pb = 1f;         //Implement with Parental Bond ability
 
-        float weather = CalculateWeatherBoost(move, moveType);
-        if(weather == 0f)
+        float weat = CalculateWeatherBoost(move, moveType);
+        if(weat == 0f)
         {
-            yield return mainBox.Failed();
+            yield return mainBox.WeatherFail(weather);
             yield return mainBox.PauseAfterText();
             yield break;
         }
@@ -1639,7 +1830,7 @@ public class Battle : MonoBehaviour
         float zMove = 1f;
         float teraShield = 1f;
 
-        Debug.Log($"Targets: {targets}; PB: {pb}; Weather: {weather}; Glaive Rush: {glaiveRush}; Random: {random}; STAB: {stab}; Type: {type}; Burn: {burn}; Other: {other}; Zmove: {zMove}; Tera Shield: {teraShield}");
+        Debug.Log($"Targets: {targets}; PB: {pb}; Weather: {weat}; Glaive Rush: {glaiveRush}; Random: {random}; STAB: {stab}; Type: {type}; Burn: {burn}; Other: {other}; Zmove: {zMove}; Tera Shield: {teraShield}");
 
         //-----------------Formula---------------------------
 
@@ -1649,7 +1840,7 @@ public class Battle : MonoBehaviour
 
         int damage = Round(baseDamage * targets);
         damage = Round(damage * pb);
-        damage = Round(damage * weather);
+        damage = Round(damage * weat);
         damage = Round(damage * glaiveRush);
         damage = Round(damage * critical);
         damage = Round(damage * random);
@@ -1747,6 +1938,97 @@ public class Battle : MonoBehaviour
 
         System.Random r = new System.Random();
         return r.NextDouble() < critChance;
+    }
+
+    float BoostDefForWeather(PokemonMove move, Pokemon defender)
+    {
+        if(weather == Weather.Sand && 
+          (defender.Type1 == PokemonType.Rock || defender.Type2 == PokemonType.Rock) &&
+          move.MoveBase.Category == MoveCategory.Special)
+        {
+            return 1.5f;
+        }
+        if(weather == Weather.Snow && 
+          (defender.Type1 == PokemonType.Ice || defender.Type2 == PokemonType.Ice) &&
+          move.MoveBase.Category == MoveCategory.Physical)
+        {
+            return 1.5f;
+        }
+        return 1f;
+    }
+
+    int GetPower(PokemonMove move, Pokemon att, Pokemon def)
+    {
+        //https://bulbapedia.bulbagarden.net/wiki/Power
+        int basePower = move.MoveBase.BasePower;
+
+        //Variable Power Calculations
+
+        int modifier = 4096;
+
+        //2x Facade/Brine/Venoshock/Barb Barrage/Retaliate/Fusion Flare/Fusion Bolt/Lash Out
+        //0.5x Solar Beam/Solar Blade in rain/sand/snow & no cloud nine/air lock
+        //1.5 Knock Off/Grav Apple/Misty Explosion/Expanding Force/Psyblade
+        //2x Charge && Electric Move
+        //1.5x Me First
+        //1.5x Helping Hand (multiple can stack)
+        //1352/4096x Mud Sport/Water Sport
+        //0.5x Earthquake/Magnitude/Bulldoze in Grassy Terrain
+        if(terrain == Terrain.Misty && move.MoveBase.MoveType == PokemonType.Dragon)
+        {
+            modifier = RoundUp(modifier * 0.5f);
+        }
+        
+        if(terrain == Terrain.Electric && move.MoveBase.MoveType == PokemonType.Electric)
+        {
+            modifier = RoundUp(modifier * 5325f/4096f);
+        }
+        if(terrain == Terrain.Grassy && move.MoveBase.MoveType == PokemonType.Grass)
+        {   
+            modifier = RoundUp(modifier * 5325f/4096f);
+        }
+        if(terrain == Terrain.Psychic && move.MoveBase.MoveType == PokemonType.Psychic)
+        {
+            modifier = RoundUp(modifier * 5325f/4096f);
+        }
+
+        //1.25x Rivalry
+        //Supreme Overlord
+        //4915/4096x Reckless (recoil move)
+        //4915/4096x Iron Fist (punching move)
+        //4915/4096x Normalize ability
+        //4915/4096x Aerilate/Pixilate/Refrigerate/Galvanize (Base move is normal type)
+        //5325/4096x Analytic (target already moved)
+        //5325/4096x Sand Force (if sand & move is ground/rock/steel & no cloud nine/air lock)
+        //5325/4096x Sheer Force (if move has additional effect)
+        //5325/4096x Tough Claws (contact)
+        //5325/4096x Battery (on ally & special move)
+        //5325/4096x Power Spot (on ally)
+        //5325/4096x Punk Rock (sound based move)
+        //5448/4096x Dark Aura/Fairy Aura (dark/fairy type move & no mold breaker)
+        //0.7x "" && Aura Break
+        //1.5x Strong Jaw (Biting Move)
+        //1.5x Mega Launcher (Aura/Pulse Move)
+        //1.5x Technician (base power <= 60)
+        //1.5x Toxic Boost
+        //1.5x Flare Boost
+        //1.5x Steely Spirit
+        //0.5x Heatproof
+        //1.25x Dry Skin
+        //1.5x Sharpness (Slashing Move)
+        //4505/4096x Muscle Band/Wise Glasses
+        //4915/4096x Type-Boost Item/Incense/Plate
+        //4915/4096x Adamant Orb/Lustrous Orb/Griseous Orb/Soul Dew
+        //5325/4096x Normal Gem
+        //4506/4096x Punching Glove (Punching Move)
+
+        Debug.Log($"Modifier pre-round {modifier}");
+
+        modifier = RoundUp(modifier/4096f);
+
+        Debug.Log($"Base Power: {basePower}; Power: {basePower * modifier}; Modifier: {modifier}");
+        return Round(((float)basePower) * modifier);
+
     }
 
     float CalculateWeatherBoost(PokemonMove move, PokemonType type)
@@ -1928,6 +2210,15 @@ public class Battle : MonoBehaviour
         return (int) Math.Ceiling(f - 0.5f);
     }
 
+    int RoundUp(float f)  //Round to nearest with .5 rounding up
+    {
+        if(f < 0)
+        {
+            return (int) Math.Ceiling(f - 0.5f);
+        }
+        return (int) Math.Floor(f + 0.5f);
+    }
+
     float RandomPercent()
     {
         float r;
@@ -2083,13 +2374,7 @@ public class Battle : MonoBehaviour
     }
 }
 
-public enum BattleChoice
-{
-    Move,
-    Item,
-    Switch,
-    Run
-}
+
 
 /*
 
