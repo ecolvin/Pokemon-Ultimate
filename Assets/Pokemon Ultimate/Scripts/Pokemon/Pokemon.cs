@@ -116,6 +116,7 @@ public class Pokemon
         CalculateStats();
         curHP = stats.HP;
         SetModelAndSprite();
+        ClearVolatileStatuses();
     }
 
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
@@ -352,15 +353,14 @@ public class Pokemon
 
     public void SwitchOut()
     {
-        statChanges = new StatBlock(0,0,0,0,0,0);
-        accuracy = 0;
-        evasion = 0;
         nGas = false;
         tarShot = false;
         forestsCurse = false;
         trickOrTreat = false;
         soak = false;
         laserFocus = false;
+        ClearVolatileStatuses();
+        ClearStatChanges();
     }
 
     public void EndBattle()
@@ -386,11 +386,9 @@ public class Pokemon
 
     public void ClearStatChanges()
     {
-        statChanges.Atk = 0;
-        statChanges.Def = 0;
-        statChanges.SpA = 0;
-        statChanges.SpD = 0;
-        statChanges.Spe = 0;
+        statChanges = new StatBlock(0,0,0,0,0,0);
+        accuracy = 0;
+        evasion = 0;
 
         CalculateStats();
     }
@@ -418,7 +416,6 @@ public class Pokemon
 
     public int ApplyNVStatus(NonVolatileStatus status)
     {
-            Debug.Log("Applying NV Status - " + status.ToString());
         if(nvStatus != NonVolatileStatus.None)
         {
             return -1;
@@ -457,13 +454,32 @@ public class Pokemon
     public int ApplyVolatileStatus(VolatileStatus status)
     {      
         Debug.Log("Applying Volatile Status - " + status.ToString());  
-        //volatileStatus[status] = 1;
+        if(status == global::VolatileStatus.Confused)
+        {
+            volatileStatus[status] = UnityEngine.Random.Range(2,6);
+        }
+        if(status == global::VolatileStatus.Flinch)
+        {
+            volatileStatus[status] = 1;
+        }
+        if(status == global::VolatileStatus.Grounded)
+        {
+            volatileStatus[status] = 1;
+        }
         return 0;
     }
 
     public void ClearNVStatus()
     {
         nvStatus = NonVolatileStatus.None;
+    }
+
+    public void ClearVolatileStatuses()
+    {
+        // foreach(KeyValuePair<global::VolatileStatus,int> volStatus in volatileStatus)
+        // {
+        //     volatileStatus[volStatus.Key] = -1;
+        // }
     }
 
     public void ModifyEVs(StatBlock evChanges)

@@ -14,10 +14,10 @@ TagManager:
   - Water
   - UI
   - Colliders
-  - 
+  - Interactable
   - Tile
   - PostProcessing
-  - 
+  - Player
   - Spawner
   - 
   - 

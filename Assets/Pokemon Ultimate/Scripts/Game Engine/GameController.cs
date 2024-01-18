@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState {Overworld, Battle}
+public enum GameState {Overworld, Battle, Dialog}
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] PlayerMovement player;
+    [SerializeField] PlayerController player;
     [SerializeField] Battle battle;
 
     GameState state;
@@ -16,6 +16,19 @@ public class GameController : MonoBehaviour
     {
         player.OnEncounter += StartBattle;    
         battle.OnBattleOver += EndBattle;
+
+        DialogManager.Instance.OnShowDialog += () => 
+        {
+            state = GameState.Dialog;
+        };
+
+        DialogManager.Instance.OnCloseDialog += () => 
+        {
+            if(state == GameState.Dialog)
+            {
+                state = GameState.Overworld;
+            }
+        };
     }
 
     void Update() 
@@ -27,6 +40,10 @@ public class GameController : MonoBehaviour
         else if(state == GameState.Battle)
         {
             battle.HandleUpdate();
+        }
+        else if(state == GameState.Dialog)
+        {
+            DialogManager.Instance.HandleUpdate();
         }
     }
 

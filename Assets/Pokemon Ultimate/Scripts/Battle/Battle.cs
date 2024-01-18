@@ -1745,8 +1745,8 @@ public class Battle : MonoBehaviour
         playerHUD.gameObject.SetActive(false);
         enemyHUD.gameObject.SetActive(false);
 
-        enemyPokemon.ClearStatChanges();
-        playerPokemon.ClearStatChanges();
+        enemyPokemon.EndBattle();
+        playerPokemon.EndBattle();
 
         enemyPokemon.IsActive = false;
         playerPokemon.IsActive = false;
