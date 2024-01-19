@@ -15,10 +15,10 @@ public class Character : MonoBehaviour
         GetComponent<Rigidbody>().freezeRotation = false;
         body.transform.LookAt(newPos);
         GetComponent<Rigidbody>().freezeRotation = true;
-        Collider[] obstacles = Physics.OverlapBox(newPos, new Vector3(GlobalSettings.Instance.GridSize/2, .5f, GlobalSettings.Instance.GridSize/2), Quaternion.identity, GameLayers.Instance.ObstacleLayer | GameLayers.Instance.InteractableLayer | GameLayers.Instance.PlayerLayer);
+        Collider[] obstacles = Physics.OverlapBox(newPos, new Vector3(GlobalSettings.Instance.GridSize/2, 5f, GlobalSettings.Instance.GridSize/2), Quaternion.identity, GameLayers.Instance.ObstacleLayer | GameLayers.Instance.InteractableLayer | GameLayers.Instance.PlayerLayer);
         if(obstacles.Length != 0)
         {
-            newPos = curPos;
+            yield break;
         }        
 
         do

@@ -94,6 +94,7 @@ public class PlayerController : MonoBehaviour
 
         yield return character.SmoothGridMovement(newPos);
 
+
         Collider[] grass = Physics.OverlapBox(transform.position, new Vector3(GlobalSettings.Instance.GridSize/4, .5f, GlobalSettings.Instance.GridSize/4), Quaternion.identity, GameLayers.Instance.SpawnerLayer);
         if(grass.Length != 0 && UnityEngine.Random.Range(0, 100) < encounterOdds)
         {

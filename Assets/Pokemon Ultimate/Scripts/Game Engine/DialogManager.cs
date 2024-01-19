@@ -12,6 +12,8 @@ public class DialogManager : MonoBehaviour
 
     public event Action OnShowDialog;
     public event Action OnCloseDialog;
+    
+    Action onDialogFinished;
 
     public static DialogManager Instance {get; private set;}
 
@@ -27,10 +29,11 @@ public class DialogManager : MonoBehaviour
         //Do things on update (update selected option if dialog has options)
     }
 
-    public IEnumerator ShowDialog(Dialog dialog)
+    public IEnumerator ShowDialog(Dialog dialog, Action onFinished=null)
     {
         OnShowDialog?.Invoke();
         dialogBox.SetActive(true);
+        onDialogFinished = onFinished;
 
         foreach(string line in dialog.Lines)
         {
@@ -39,6 +42,7 @@ public class DialogManager : MonoBehaviour
         }
 
         dialogBox.SetActive(false);
+        onDialogFinished?.Invoke();
         OnCloseDialog?.Invoke();
     }
 
