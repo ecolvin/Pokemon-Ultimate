@@ -45,7 +45,6 @@ public class GameController : MonoBehaviour
 
     void Update() 
     {
-        Debug.Log($"Current State: {state}");
         if(state == GameState.Overworld)
         {
             player.HandleUpdate();

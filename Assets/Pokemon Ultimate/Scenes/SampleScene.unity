@@ -759,7 +759,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -103826,7 +103826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -105210,7 +105210,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &394196400
 RectTransform:
   m_ObjectHideFlags: 0
@@ -105752,6 +105752,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 467419735}
+  - component: {fileID: 467419736}
   m_Layer: 5
   m_Name: PlayerPartyHUD
   m_TagString: Untagged
@@ -105792,6 +105793,25 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &467419736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467419734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28512ee909322574e93da2569638815b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pokeSlots:
+  - {fileID: 655799928}
+  - {fileID: 1028834517}
+  - {fileID: 557760167}
+  - {fileID: 1639333867}
+  - {fileID: 109284262}
+  - {fileID: 197326433}
 --- !u!1 &473127026
 GameObject:
   m_ObjectHideFlags: 0
@@ -106227,7 +106247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -106746,7 +106766,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -107071,7 +107091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -108719,8 +108739,20 @@ PrefabInstance:
       value: Wanna see the new pokemon I just caught?!
       objectReference: {fileID: 0}
     - target: {fileID: 1296979590727751645, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: lossDialog.lines.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1296979590727751645, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: postDialog.lines.Array.size
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1296979590727751645, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: lossDialog.lines.Array.data[0]
+      value: Wow! You beat me!
+      objectReference: {fileID: 0}
+    - target: {fileID: 1296979590727751645, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: lossDialog.lines.Array.data[1]
+      value: I guess we still have some training to do!
       objectReference: {fileID: 0}
     - target: {fileID: 1296979590727751645, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: postDialog.lines.Array.data[0]
@@ -108735,8 +108767,72 @@ PrefabInstance:
       value: Trainer
       objectReference: {fileID: 0}
     - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].level
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: pokemon.Array.data[1].level
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].gender
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].gender
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].ability
+      value: Run Away
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].species
+      value: 
+      objectReference: {fileID: 11400000, guid: 61f3fce888649bf4e934eaddf8797dd9, type: 2}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].ability
+      value: Keen Eye
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].species
+      value: 
+      objectReference: {fileID: 11400000, guid: 7c469133e4d5e7a43b60b16be4ee71f0, type: 2}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].teraType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].teraType
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].moves.Array.data[0].move
+      value: 
+      objectReference: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].moves.Array.data[1].move
+      value: 
+      objectReference: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[0].moves.Array.data[2].move
+      value: 
+      objectReference: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].moves.Array.data[0].move
+      value: 
+      objectReference: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].moves.Array.data[1].move
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[1].moves.Array.data[2].move
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2744577448940979273, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
+      propertyPath: pokemon.Array.data[2].moves.Array.data[0].move
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2921338121017713955, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: m_RootOrder
@@ -108744,7 +108840,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2921338121017713955, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 50
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2921338121017713955, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -108752,7 +108848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2921338121017713955, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 60
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 2921338121017713955, guid: 097dae6bbec3b814691a35a9b619e6d2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -109068,7 +109164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -110584,6 +110680,118 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pokemon:
+  - species: {fileID: 11400000, guid: 5a3d8ed670939f44cb0a3b31255ca4e6, type: 2}
+    level: 5
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 31
+      atk: 31
+      def: 31
+      spa: 31
+      spd: 31
+      spe: 31
+    nature: 51
+    teraType: 5
+    gender: 2
+    ability: Lightning Rod
+    heldItem: Light Ball
+    isShiny: 1
+    isPlayer: 1
+    moves:
+    - move: {fileID: 11400000, guid: 33f6b67ccef9d3847b2142dbed2c4de4, type: 2}
+    - move: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+    - move: {fileID: 11400000, guid: eee6645a351ec2f4c9bdd1ed1558cc19, type: 2}
+    - move: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
+  - species: {fileID: 11400000, guid: 29a4b5c1b3bee394c8e3221b794dd40d, type: 2}
+    level: 5
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 31
+      atk: 31
+      def: 31
+      spa: 31
+      spd: 31
+      spe: 31
+    nature: 51
+    teraType: 3
+    gender: 2
+    ability: Chlorophyll
+    heldItem: 
+    isShiny: 1
+    isPlayer: 1
+    moves:
+    - move: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    - move: {fileID: 11400000, guid: 8724a09fc298dfd47b2683b6a997ade2, type: 2}
+    - move: {fileID: 11400000, guid: 81faa6296264451408aeacb680ba4881, type: 2}
+    - move: {fileID: 0}
+  - species: {fileID: 11400000, guid: ef5dae337744616459e0d55d426d304e, type: 2}
+    level: 5
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 31
+      atk: 31
+      def: 31
+      spa: 31
+      spd: 31
+      spe: 31
+    nature: 53
+    teraType: 2
+    gender: 2
+    ability: Solar Power
+    heldItem: 
+    isShiny: 1
+    isPlayer: 1
+    moves:
+    - move: {fileID: 11400000, guid: 3f63b7ea7ae22e5419809656c433795a, type: 2}
+    - move: {fileID: 11400000, guid: 8724a09fc298dfd47b2683b6a997ade2, type: 2}
+    - move: {fileID: 11400000, guid: 3cdd8fa83e328a0488397c81ee05292a, type: 2}
+    - move: {fileID: 0}
+  - species: {fileID: 11400000, guid: e266b18b564ec6d41b9d3efec965e1ca, type: 2}
+    level: 5
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 31
+      atk: 31
+      def: 31
+      spa: 31
+      spd: 31
+      spe: 31
+    nature: 53
+    teraType: 3
+    gender: 2
+    ability: Rain Dish
+    heldItem: 
+    isShiny: 1
+    isPlayer: 1
+    moves:
+    - move: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    - move: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
+    - move: {fileID: 11400000, guid: bc79d2fe748c4684e841d8c06f4ec3ad, type: 2}
+    - move: {fileID: 0}
   - species: {fileID: 0}
     level: 0
     evs:
@@ -110607,6 +110815,11 @@ MonoBehaviour:
     heldItem: 
     isShiny: 0
     isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
   - species: {fileID: 0}
     level: 0
     evs:
@@ -110630,98 +110843,11 @@ MonoBehaviour:
     heldItem: 
     isShiny: 0
     isPlayer: 0
-  - species: {fileID: 0}
-    level: 0
-    evs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    ivs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    nature: 66
-    teraType: 0
-    gender: 3
-    ability: 
-    heldItem: 
-    isShiny: 0
-    isPlayer: 0
-  - species: {fileID: 0}
-    level: 0
-    evs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    ivs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    nature: 66
-    teraType: 0
-    gender: 3
-    ability: 
-    heldItem: 
-    isShiny: 0
-    isPlayer: 0
-  - species: {fileID: 0}
-    level: 0
-    evs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    ivs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    nature: 66
-    teraType: 0
-    gender: 3
-    ability: 
-    heldItem: 
-    isShiny: 0
-    isPlayer: 0
-  - species: {fileID: 0}
-    level: 0
-    evs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    ivs:
-      hp: 0
-      atk: 0
-      def: 0
-      spa: 0
-      spd: 0
-      spe: 0
-    nature: 66
-    teraType: 0
-    gender: 3
-    ability: 
-    heldItem: 
-    isShiny: 0
-    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
 --- !u!114 &1181812042 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9050996106688312486, guid: f81d10df81eee844bbf8593567ce6799, type: 3}
@@ -110872,7 +110998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -111780,7 +111906,7 @@ RectTransform:
   - {fileID: 1808780783}
   - {fileID: 185584400}
   m_Father: {fileID: 1803394134}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.7, y: 0.25}
@@ -113150,7 +113276,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1580642881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113437,7 +113563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -113661,7 +113787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -114576,8 +114702,8 @@ RectTransform:
   - {fileID: 1831185840}
   - {fileID: 679066206}
   - {fileID: 89039168}
-  - {fileID: 1980827489}
   - {fileID: 1406360024}
+  - {fileID: 1980827489}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -114602,14 +114728,16 @@ MonoBehaviour:
   playerParty: {fileID: 1181812039}
   enemyHUD: {fileID: 89039169}
   playerHUD: {fileID: 679066209}
+  enemyPartyHUD: {fileID: 1831185841}
+  playerPartyHUD: {fileID: 467419736}
   mainBox: {fileID: 1406360027}
   sideBox: {fileID: 1494878218}
   partyScreen: {fileID: 1980827490}
   background: {fileID: 890794017}
   enemySprite: {fileID: 1474852354}
   playerSprite: {fileID: 384777621}
-  playerImage: {fileID: 0}
-  trainerImage: {fileID: 0}
+  playerImage: {fileID: 394196403}
+  trainerImage: {fileID: 1580642884}
 --- !u!1 &1805053931
 GameObject:
   m_ObjectHideFlags: 0
@@ -114881,6 +115009,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1831185840}
+  - component: {fileID: 1831185841}
   m_Layer: 5
   m_Name: TrainerPartyHUD
   m_TagString: Untagged
@@ -114921,6 +115050,25 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1831185841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831185839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28512ee909322574e93da2569638815b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pokeSlots:
+  - {fileID: 1976913946}
+  - {fileID: 1227597489}
+  - {fileID: 1917647245}
+  - {fileID: 2096229697}
+  - {fileID: 1651230001}
+  - {fileID: 590552562}
 --- !u!4 &1840159743 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7622956908286519311, guid: 77f6d204d99fe4d4c97000e198b65420, type: 3}
@@ -115084,7 +115232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -115447,7 +115595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -115512,7 +115660,7 @@ RectTransform:
   - {fileID: 1717917019}
   - {fileID: 438757680}
   m_Father: {fileID: 1803394134}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -116436,7 +116584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

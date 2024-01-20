@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
-  m_Name: Endeavor
+  m_Name: Feather Dance
   m_EditorClassIdentifier: 
-  moveName: Endeavor
-  description: The user inflicts damage by cutting down the target's HP to roughly
-    equal the user's HP.
-  moveType: 1
-  category: 2
-  basePower: 1
-  pp: 5
+  moveName: Feather Dance
+  description: The user covers the target's body with a mass of down that harshly
+    lowers its Attack stat.
+  moveType: 10
+  category: 1
+  basePower: 0
+  pp: 15
   accuracy: 100
   priority: 0
-  critRate: 0
+  critRate: -1
   range: 0
-  contact: 1
+  contact: 0
   isSound: 0
   isPunch: 0
   isBite: 0
@@ -35,7 +35,7 @@ MonoBehaviour:
   metronome: 1
   gravity: 0
   defrosts: 0
-  isReflected: 0
+  isReflected: 1
   isProtected: 1
   copyable: 1
   hitsFlyBounceSkyDrop: 0
@@ -51,10 +51,10 @@ MonoBehaviour:
     spe: 0
   selfAccuracyChange: 0
   selfEvasionChange: 0
-  enemyStatChangeChance: 0
+  enemyStatChangeChance: 1
   enemyStatChanges:
     hp: 0
-    atk: 0
+    atk: -2
     def: 0
     spa: 0
     spd: 0

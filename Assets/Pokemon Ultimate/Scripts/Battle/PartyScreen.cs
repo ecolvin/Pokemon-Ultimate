@@ -140,7 +140,7 @@ public class PartyScreen : MonoBehaviour
             }
             else
             {
-                if(index == 0)
+                if(index == 0 && !switchBecauseFainted)
                 {
                     text.text = $"{members[index].Poke.Nickname} is already in battle.";
                 }

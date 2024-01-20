@@ -28,6 +28,7 @@ public class MainBoxController : MonoBehaviour
         battleText.text = "";
     }
     //-----------------Pokemon I/O---------------
+    //Confirmed
     public IEnumerator TrainerIntro(string trainerName)
     {
         yield return SlowText($"You are challenged by {trainerName}!");
@@ -38,6 +39,7 @@ public class MainBoxController : MonoBehaviour
         yield return SlowText($"A wild {pokemonName} has appeared!");
     }
 
+    //Confirmed
     public IEnumerator TrainerPokemonIntro(string trainerName, string pokemonName)
     {
         yield return SlowText($"{trainerName} sent out {pokemonName}!");
@@ -65,6 +67,12 @@ public class MainBoxController : MonoBehaviour
     {
         string pokemonName = pokemon.GetBattleMessageName();
         yield return SlowText($"{pokemonName} fainted!");
+    }
+
+    //Confirmed
+    public IEnumerator Victory(string trainerName)
+    {
+        yield return SlowText($"You defeated {trainerName}!");
     }
 
     //-!-UNCONFIRMED-!-
@@ -480,6 +488,15 @@ public class MainBoxController : MonoBehaviour
         }
     }
 
+    public IEnumerator SayDialog(Dialog dialog)
+    {
+        foreach(string line in dialog.Lines)
+        {
+            yield return SlowText(line);
+            yield return PauseAfterText();
+        }
+    }
+
     IEnumerator SlowText(string text)
     {
         if(typing)
@@ -591,3 +608,27 @@ public class MainBoxController : MonoBehaviour
 
 //Grassy Terrain Healing:
 //___ had its HP restored.
+
+
+
+//The opposing ___ fainted!
+//___ gained ??? Exp. Points!
+//___ is about to send in ___.
+//Will ___ change Pokemon?
+//Yes/No
+//Yes => Change Pokemon
+//Poke Balls appear but no trainer
+//___ sent out ___!
+//Pokemon Entrance
+
+//The wild ___ fainted!
+//___ gained ??? Exp. Points!
+//Battle Over
+
+
+//Player defeated ___!
+//Sprite appears
+//Sprite says defeat message(s)
+//___ got $???? for winning!
+//You got $??? in prize money!
+//Battle over

@@ -79,7 +79,15 @@ public class Battle : MonoBehaviour
 
     void Start()
     {
-        partyScreen.OnClose += ClosePokemon;
+        partyScreen.OnClose += (Pokemon p) => 
+        {
+            if(p != null)
+            {
+                state = BattleState.Switching;
+            }
+            partyScreen.gameObject.SetActive(false);
+            StartCoroutine(ClosePokemon(p));
+        };
     }
 
     public void StartBattle(Pokemon wildPokemon)
@@ -189,19 +197,20 @@ public class Battle : MonoBehaviour
     void Pokemon()
     {
         state = BattleState.Pokemon;
+        
         partyScreen.SetPartyMembers(playerParty.PartyPokemon);
         partyScreen.gameObject.SetActive(true);
     }
 
-    void ClosePokemon(Pokemon pokemon)
+    IEnumerator ClosePokemon(Pokemon pokemon)
     {
         if(switchBecauseFainted)
         {
             if(pokemon != null && !pokemon.Fainted)
             {
-                partyScreen.gameObject.SetActive(false);
-                StartCoroutine(SwitchPokemon(pokemon));
+                yield return SwitchPokemon(pokemon);
                 switchBecauseFainted = false;
+                yield return CheckIfOppFainted();
                 PlayerSelection();
             }
         }
@@ -209,13 +218,11 @@ public class Battle : MonoBehaviour
         {
             if(pokemon == null)
             {
-                partyScreen.gameObject.SetActive(false);
                 state = BattleState.ActionSelection;
             }
             else if(!pokemon.Fainted)
             {
-                partyScreen.gameObject.SetActive(false);
-                StartCoroutine(ResolveTurn(BattleChoice.Switch, null, pokemon));
+                yield return ResolveTurn(BattleChoice.Switch, null, pokemon);
             }
         }
     }
@@ -359,6 +366,9 @@ public class Battle : MonoBehaviour
             //Switch enemy
         }
 
+        CheckLoss();
+        CheckVictory();
+
         //Handle Rotation
         
         if(choice == BattleChoice.Item && enemyChoice == BattleChoice.Item) //Use an Item
@@ -373,10 +383,9 @@ public class Battle : MonoBehaviour
         {
 
         }
+
         //Mega Evolution/Ultra Burst/Dynamax/Terastalization
         //Focus Punch/Beak Blast/Shell Trap charging effects
-        //Move usage
-        //EOT Effects
 
         if(choice == BattleChoice.Move && enemyChoice == BattleChoice.Move)
         {
@@ -392,53 +401,122 @@ public class Battle : MonoBehaviour
             }
             if(playerFirst)
             {
-                Coroutine useMove = StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
-                yield return useMove;
+                yield return StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
                 if(!enemyPokemon.Fainted)
                 {
-                    useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
-                    yield return useMove;
+                    yield return StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
                 }
             }
             else
             {
-                Coroutine useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
-                yield return useMove;
-                if(!switchBecauseFainted)
+                yield return StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
+                if(!playerPokemon.Fainted)
                 {
-                    useMove = StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
-                    yield return useMove;
+                    yield return StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
                 }
             }
         }
         else if(choice == BattleChoice.Move)
         {
-            Coroutine useMove = StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));
-            yield return useMove;            
+            yield return StartCoroutine(UseMove(move, playerPokemon, enemyPokemon));            
         }
         else if(enemyChoice == BattleChoice.Move)
         {
-            Coroutine useMove = StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
-            yield return useMove;
+            yield return StartCoroutine(UseMove(enemyMove, enemyPokemon, playerPokemon));
         }
+
+        yield return CheckLoss();
+        yield return CheckVictory();
 
         yield return EndRound();
 
-        if(switchBecauseFainted)
+        yield return CheckLoss();
+        yield return CheckVictory();
+
+        if(playerPokemon.Fainted)
         {
-            if(playerParty.GetLeadPokemon() == null)
-            {
-                yield return mainBox.WhiteOut();
-                yield return mainBox.PauseAfterText();
-                CleanupBattle();
-                OnBattleOver(false);
-            }
+            switchBecauseFainted = true;
             Pokemon();
         }
         else
-        {
+        {      
+            yield return CheckIfOppFainted();            
             PlayerSelection();
         }
+    }
+
+    IEnumerator CheckVictory()
+    {
+        if(isTrainerBattle)
+        {
+            if(trainerParty.GetLeadPokemon() == null)
+            {
+                yield return mainBox.Victory(trainer.TrainerName);
+                yield return mainBox.PauseAfterText();
+                yield return trainerImage.Entrance();
+                yield return mainBox.SayDialog(trainer.LossDialog);
+                //int money = GetMoneyEarned();
+                //yield return mainBox.EarnedMoney(money);
+                CleanupBattle();
+                OnBattleOver(true);
+            }
+        }
+        else
+        {
+            if(enemyPokemon.Fainted)
+            {
+                CleanupBattle();
+                OnBattleOver(true);
+            }
+        }
+    }
+
+    IEnumerator CheckLoss()
+    {
+        if(playerParty.GetLeadPokemon() == null)
+        {
+            yield return mainBox.WhiteOut();
+            yield return mainBox.PauseAfterText();
+            CleanupBattle();
+            OnBattleOver(false);
+        }
+    }
+
+    IEnumerator CheckIfOppFainted()
+    {
+        if(!enemyPokemon.Fainted)
+        {
+            yield break;
+        }
+        CheckVictory();
+        if(isTrainerBattle)
+        {
+            yield return EnemyNewPokemon(trainerParty.GetLeadPokemon());
+        }
+        else
+        {
+            Debug.Log("Battle should be over due to a fainted wild pokemon. Something went wrong.");
+        }
+    }
+
+    IEnumerator EnemyNewPokemon(Pokemon newPokemon)
+    {
+        enemyPokemon = newPokemon;
+        enemySprite.Set(enemyPokemon);
+        //___ is about to send in ___.
+        //Will ___ change Pokemon?
+                        
+        sideBox.Clear();
+        enemyHUD.gameObject.SetActive(false);
+        enemyPartyHUD.Set(trainerParty);
+        enemyPartyHUD.gameObject.SetActive(true);
+        yield return mainBox.PauseAfterText();
+        yield return mainBox.TrainerPokemonIntro(trainer.TrainerName, enemyPokemon.Species.SpeciesName);
+        yield return enemySprite.Entrance();
+        yield return mainBox.PauseAfterText();
+        enemyHUD.GenerateBar(enemyPokemon);
+        enemyHUD.gameObject.SetActive(true);
+        enemyPartyHUD.gameObject.SetActive(false);
     }
 
     int GetEffectiveSpeed(Pokemon pokemon, bool tailwind)
@@ -941,15 +1019,12 @@ public class Battle : MonoBehaviour
                 yield return enemySprite.Faint();
                 yield return mainBox.Fainted(enemyPokemon);
                 yield return mainBox.PauseAfterText();
-                CleanupBattle();
-                OnBattleOver(true);
             }
             else
             {
                 yield return playerSprite.Faint();
                 yield return mainBox.Fainted(playerPokemon);
                 yield return mainBox.PauseAfterText();
-                switchBecauseFainted = true;
             }
         } 
     }
@@ -1352,7 +1427,6 @@ public class Battle : MonoBehaviour
             yield return mainBox.SetText("That weather is already set!");
             yield break;
         }
-        Debug.Log($"Setting {w}");
         weather = w;
         weatherCounter = 5;
         if(rock)
@@ -1514,10 +1588,8 @@ public class Battle : MonoBehaviour
 
         if(weather != Weather.None)
         {
-            Debug.Log($"Decrementing Weather Counter! {weatherCounter}");
             if(--weatherCounter <= 0)
             {
-                Debug.Log("Weather Expiring!");
                 yield return mainBox.WeatherExpire(weather);
                 yield return mainBox.PauseAfterText();
                 weather = Weather.None;
@@ -1535,7 +1607,6 @@ public class Battle : MonoBehaviour
             {
                 //Rain Dish/Dry Skin/
             }
-            Debug.Log($"New Weather Counter: {weatherCounter}");
         }        
         //Emergency Exit/Wimp Out switches from Weather
 
@@ -1748,7 +1819,7 @@ public class Battle : MonoBehaviour
         sideBox.Clear();
 
         playerHUD.gameObject.SetActive(false);
-        if(!playerPokemon.Fainted)
+        if(!switchBecauseFainted)
         {
             yield return mainBox.PlayerPokemonReturn(playerPokemon.Nickname);
             yield return playerSprite.Return();
@@ -1846,11 +1917,8 @@ public class Battle : MonoBehaviour
 
     IEnumerator CalculateDamage(PokemonMove move, Pokemon attacker, Pokemon defender)
     {   
-        Debug.Log($"Attacker is {attacker.Nickname}");
         attacker.Stats.print();
         attacker.Ivs.print();
-        Debug.Log("-------------");
-        Debug.Log($"Defender is {defender.Nickname}");
         defender.Stats.print();
         defender.Ivs.print();
 
@@ -2326,8 +2394,16 @@ public class Battle : MonoBehaviour
 
     BattleChoice getEnemyChoice()
     {
-        //Determine if the enemy wants to do something other than attack
-        return BattleChoice.Move;
+        if(isTrainerBattle)
+        {
+            //Logic to decide if you want to use an item or switch
+
+            return BattleChoice.Move;
+        }
+        else
+        {
+            return BattleChoice.Move;
+        }
     }
 
     PokemonMove getEnemyMove()

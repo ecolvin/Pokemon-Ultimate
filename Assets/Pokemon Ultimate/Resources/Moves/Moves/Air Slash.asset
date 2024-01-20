@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
-  m_Name: Endeavor
+  m_Name: Air Slash
   m_EditorClassIdentifier: 
-  moveName: Endeavor
-  description: The user inflicts damage by cutting down the target's HP to roughly
-    equal the user's HP.
-  moveType: 1
-  category: 2
-  basePower: 1
-  pp: 5
-  accuracy: 100
+  moveName: Air Slash
+  description: The user attacks with a blade of air that slices even the sky. This
+    may also make the target flinch.
+  moveType: 10
+  category: 3
+  basePower: 75
+  pp: 15
+  accuracy: 95
   priority: 0
   critRate: 0
   range: 0
-  contact: 1
+  contact: 0
   isSound: 0
   isPunch: 0
   isBite: 0
   isSnatchable: 0
-  isSlice: 0
+  isSlice: 1
   isBullet: 0
   isWind: 0
   isPowder: 0
@@ -67,8 +67,8 @@ MonoBehaviour:
   userVolatileStatuses: 
   enemyNvStatusChance: 0
   enemyNonVolatileStatuses: 
-  enemyVolatileStatusChance: 0
-  enemyVolatileStatuses: 
+  enemyVolatileStatusChance: 0.3
+  enemyVolatileStatuses: 07000000
   weatherChance: 0
   weather: 0
   terrainChance: 0

@@ -11,6 +11,8 @@ public class TrainerController : MonoBehaviour, Interactable
     [SerializeField] Sprite sprite;
     public Sprite Sprite {get => sprite;}
     [SerializeField] Dialog dialog;
+    [SerializeField] Dialog lossDialog;
+    public Dialog LossDialog{get => lossDialog;}
     [SerializeField] Dialog postDialog;
     [SerializeField] Transform body;
     [SerializeField] GameObject challenge;

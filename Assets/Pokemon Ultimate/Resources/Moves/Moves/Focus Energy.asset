@@ -12,26 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
   m_Name: Focus Energy
   m_EditorClassIdentifier: 
-  moveName: 
-  description: 
-  moveType: 0
-  category: 0
+  moveName: Focus Energy
+  description: The user takes a deep breath and focuses so that its future attacks
+    have a heightened chance of landing critical hits.
+  moveType: 1
+  category: 1
   basePower: 0
-  pp: 0
-  accuracy: 0
+  pp: 30
+  accuracy: -1
   priority: 0
-  critRate: 0
-  range: 0
+  critRate: -1
+  range: 1
   contact: 0
   isSound: 0
   isPunch: 0
   isBite: 0
-  isSnatchable: 0
+  isSnatchable: 1
   isSlice: 0
   isBullet: 0
   isWind: 0
   isPowder: 0
-  metronome: 0
+  metronome: 1
   gravity: 0
   defrosts: 0
   isReflected: 0

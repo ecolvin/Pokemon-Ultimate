@@ -45,7 +45,7 @@ MonoBehaviour:
     def: 0
     spa: 0
     spd: 0
-    spe: 0
+    spe: 1
   maleModel: {fileID: 0}
   femaleModel: {fileID: 0}
   maleModelShiny: {fileID: 0}
@@ -61,24 +61,24 @@ MonoBehaviour:
     levelLearned: 0
   - moveBase: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
     levelLearned: 4
-  - moveBase: {fileID: 0}
+  - moveBase: {fileID: 11400000, guid: bae88a666fff43d45b827fafdfbbe51b, type: 2}
     levelLearned: 7
   - moveBase: {fileID: 11400000, guid: 80f0e31cdf625a04ba2c44e8289bb296, type: 2}
     levelLearned: 10
-  - moveBase: {fileID: 0}
+  - moveBase: {fileID: 11400000, guid: 3718ea16c52431442b532c759db8ce82, type: 2}
     levelLearned: 13
   - moveBase: {fileID: 11400000, guid: 2991b69003bedee448d8af1dfb0bb2b9, type: 2}
     levelLearned: 16
-  - moveBase: {fileID: 0}
+  - moveBase: {fileID: 11400000, guid: c762d8c3e899f904c86c908c403c741a, type: 2}
     levelLearned: 19
   - moveBase: {fileID: 11400000, guid: fc9f114ec4c3d5847aae4943096d8649, type: 2}
     levelLearned: 22
-  - moveBase: {fileID: 0}
+  - moveBase: {fileID: 11400000, guid: 45ba8ee2306e89b40bf77a3ceffb83c7, type: 2}
     levelLearned: 25
-  - moveBase: {fileID: 0}
+  - moveBase: {fileID: 11400000, guid: 3edb0878a6c94084e9bc342ce6ad5c63, type: 2}
     levelLearned: 28
   - moveBase: {fileID: 11400000, guid: ad4b7ef6c0d3b6f49b40bb82ac721365, type: 2}
     levelLearned: 31
-  - moveBase: {fileID: 0}
+  - moveBase: {fileID: 11400000, guid: 8d8fbb4dafae84b49a6e8e30e8f54d35, type: 2}
     levelLearned: 34
   tmLearnset: []

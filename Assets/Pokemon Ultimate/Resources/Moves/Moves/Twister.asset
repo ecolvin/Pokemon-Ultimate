@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
-  m_Name: Endeavor
+  m_Name: Twister
   m_EditorClassIdentifier: 
-  moveName: Endeavor
-  description: The user inflicts damage by cutting down the target's HP to roughly
-    equal the user's HP.
-  moveType: 1
-  category: 2
-  basePower: 1
-  pp: 5
+  moveName: Twister
+  description: "The user whips up a vicious tornado to tear at opposing Pok\xE9mon.
+    This may also make them flinch."
+  moveType: 15
+  category: 3
+  basePower: 40
+  pp: 20
   accuracy: 100
   priority: 0
   critRate: 0
-  range: 0
-  contact: 1
+  range: 10
+  contact: 0
   isSound: 0
   isPunch: 0
   isBite: 0
   isSnatchable: 0
   isSlice: 0
   isBullet: 0
-  isWind: 0
+  isWind: 1
   isPowder: 0
   metronome: 1
   gravity: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
   isReflected: 0
   isProtected: 1
   copyable: 1
-  hitsFlyBounceSkyDrop: 0
+  hitsFlyBounceSkyDrop: 1
   hitsDig: 0
   hitsDive: 0
   selfStatChangeChance: 0
@@ -67,8 +67,8 @@ MonoBehaviour:
   userVolatileStatuses: 
   enemyNvStatusChance: 0
   enemyNonVolatileStatuses: 
-  enemyVolatileStatusChance: 0
-  enemyVolatileStatuses: 
+  enemyVolatileStatusChance: 0.2
+  enemyVolatileStatuses: 07000000
   weatherChance: 0
   weather: 0
   terrainChance: 0

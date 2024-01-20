@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Pidgey
+  m_EditorClassIdentifier: 
+  speciesName: Pidgey
+  description: It is docile and prefers to avoid conflict. If disturbed, however,
+    it can ferociously strike back.
+  classification: Tiny Bird Pokemon
+  dexNo: 16
+  type1: 1
+  type2: 10
+  ability1: Keen Eye
+  ability2: Tangled Feet
+  hiddenAbility: Big Pecks
+  baseStats:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 0
+  genderRatio: 0.5
+  eggGroup1: 4
+  eggGroup2: 0
+  hatchTime: 15
+  height: 0.3
+  weight: 1.8
+  baseHappiness: 50
+  catchRate: 255
+  baseXPYield: 50
+  levelingRate: 3
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 1
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: ccd320bb95f49ec44a89911dc3daaff7, type: 3}
+  femaleSprite: {fileID: 21300000, guid: ccd320bb95f49ec44a89911dc3daaff7, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: 199de95ff8507b047a0131797ee10270, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: 199de95ff8507b047a0131797ee10270, type: 3}
+  learnset:
+  - moveBase: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 5e5e9b11599518446944fff3dfdcdc52, type: 2}
+    levelLearned: 5
+  - moveBase: {fileID: 11400000, guid: 047ca1b2dd9239445b3dac41e5ae96f9, type: 2}
+    levelLearned: 9
+  - moveBase: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+    levelLearned: 13
+  - moveBase: {fileID: 11400000, guid: 3ad2d17b8a45b204e9c1d9f2344c66f4, type: 2}
+    levelLearned: 17
+  - moveBase: {fileID: 11400000, guid: ed0b0c49aef807d42bf5592a2f075fd4, type: 2}
+    levelLearned: 21
+  - moveBase: {fileID: 11400000, guid: c3c020e2982d02347bef94eee2252236, type: 2}
+    levelLearned: 25
+  - moveBase: {fileID: 11400000, guid: d2dbc2243880d8e4393eb8e98c57ef8f, type: 2}
+    levelLearned: 29
+  - moveBase: {fileID: 11400000, guid: b606416cb0c46a6408dcb91841515c34, type: 2}
+    levelLearned: 33
+  - moveBase: {fileID: 11400000, guid: ab7315f4690970b4f93c61858d6d410a, type: 2}
+    levelLearned: 37
+  - moveBase: {fileID: 11400000, guid: 73ae21090688a0d4eb6cea06f4ceea3f, type: 2}
+    levelLearned: 41
+  - moveBase: {fileID: 11400000, guid: 971e5a87361ed094bb250875b151cf5f, type: 2}
+    levelLearned: 45
+  - moveBase: {fileID: 11400000, guid: 681634448d73a2e4682c3f0a52992886, type: 2}
+    levelLearned: 49
+  - moveBase: {fileID: 11400000, guid: 0a9565bad495595439cb5dbe4d04b1d3, type: 2}
+    levelLearned: 53
+  tmLearnset: []
