@@ -4,19 +4,21 @@ using UnityEngine;
 
 public class Party : MonoBehaviour
 {
-    [SerializeField] PokemonSpecies[] species = new PokemonSpecies [6]; 
+    [SerializeField] PartyPokemon[] pokemon = new PartyPokemon [6]; 
     List<Pokemon> partyPokemon = new List<Pokemon>();
     public List<Pokemon> PartyPokemon{get{return partyPokemon;}}
 
 
     void Awake() 
     {
-        partyPokemon.Add(new Pokemon(species[0], 5, true, true, false, true)); 
-        partyPokemon.Add(new Pokemon(species[1], 5, true, true, false, true));
-        partyPokemon.Add(new Pokemon(species[2], 5, true, true, false, true));
-        //partyPokemon.Add(new Pokemon(species[3], 5, true, true, false));
-        //partyPokemon.Add(new Pokemon(species[4], 5, true, true, false));
-        //partyPokemon.Add(new Pokemon(species[5], 5, true, true, false));   
+        for(int i = 0; i < pokemon.Length; i++)
+        {
+            Pokemon pkmn = pokemon[i].GetPokemon();
+            if(pkmn != null)
+            {
+                partyPokemon.Add(pkmn);
+            }
+        }  
     }
 
     public Pokemon GetLeadPokemon()

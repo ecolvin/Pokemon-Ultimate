@@ -13,10 +13,14 @@ public enum BattleChoice {Move, Item, Switch, Run}
 
 public class Battle : MonoBehaviour
 {
-    [SerializeField] Party player;
+    
+    [SerializeField] PlayerController player;
+    [SerializeField] Party playerParty;
 
     [SerializeField] BattleHUD enemyHUD;
     [SerializeField] BattleHUD playerHUD;
+    [SerializeField] PartyHUD enemyPartyHUD;
+    [SerializeField] PartyHUD playerPartyHUD;
     [SerializeField] MainBoxController mainBox;
     [SerializeField] SideBoxController sideBox;
     [SerializeField] PartyScreen partyScreen;
@@ -26,6 +30,8 @@ public class Battle : MonoBehaviour
     [SerializeField] Image background;
     [SerializeField] BattleSprite enemySprite;
     [SerializeField] BattleSprite playerSprite;
+    [SerializeField] CharacterBattleSprite playerImage;
+    [SerializeField] CharacterBattleSprite trainerImage;
 
     public event Action<bool> OnBattleOver;
 
@@ -36,10 +42,15 @@ public class Battle : MonoBehaviour
 
     int fleeAttempts = 0;
 
+    bool isTrainerBattle = false;
     bool switchBecauseFainted = false;
 
     Pokemon playerPokemon;
     Pokemon enemyPokemon;
+
+    Party trainerParty;
+
+    TrainerController trainer;
 
     Dictionary<FieldEffect, int> playerField = new Dictionary<FieldEffect, int>(); 
     Dictionary<FieldEffect, int> enemyField = new Dictionary<FieldEffect, int>();
@@ -73,15 +84,35 @@ public class Battle : MonoBehaviour
 
     public void StartBattle(Pokemon wildPokemon)
     {   
+        isTrainerBattle = false;
         curBattleOption = 0;
         curMoveOption = 0;
-        playerPokemon = player.GetLeadPokemon();
+        playerPokemon = playerParty.GetLeadPokemon();
         if(playerPokemon == null)
         {
             Debug.Log("The player is out of useable pokemon!");
             return;
         }
         enemyPokemon = wildPokemon;
+        state = BattleState.Intro;
+        InitField();
+        StartCoroutine(InitBattle(playerPokemon, enemyPokemon));
+    }
+
+    public void StartTrainerBattle(Party trainerParty)
+    {   
+        this.trainerParty = trainerParty;
+        trainer = trainerParty.GetComponent<TrainerController>();
+        isTrainerBattle = true;
+        curBattleOption = 0;
+        curMoveOption = 0;
+        playerPokemon = playerParty.GetLeadPokemon();
+        if(playerPokemon == null)
+        {
+            Debug.Log("The player is out of useable pokemon!");
+            return;
+        }
+        enemyPokemon = trainerParty.GetLeadPokemon();
         state = BattleState.Intro;
         InitField();
         StartCoroutine(InitBattle(playerPokemon, enemyPokemon));
@@ -117,6 +148,21 @@ public class Battle : MonoBehaviour
                 enemyField[fe] = -1;
             }
         }
+        weather = Weather.None;   //Add dynamic battle weather based on environment
+        weatherCounter = -1;
+        terrain = Terrain.None;
+        terrainCounter = -1;
+        trickRoom = false;
+        trickRoomCounter = -1;
+        magicRoom = false;
+        magicRoomCounter = -1;
+        wonderRoom = false;
+        wonderRoomCounter = -1;
+        gravity = false;
+        gravityCounter = -1;
+        fairyLock = false;
+        fairyLockCounter = -1;
+        ionDeluge = false;
     }
 
 //-----------------------Battle States--------------------------
@@ -143,7 +189,7 @@ public class Battle : MonoBehaviour
     void Pokemon()
     {
         state = BattleState.Pokemon;
-        partyScreen.SetPartyMembers(player.PartyPokemon);
+        partyScreen.SetPartyMembers(playerParty.PartyPokemon);
         partyScreen.gameObject.SetActive(true);
     }
 
@@ -176,6 +222,11 @@ public class Battle : MonoBehaviour
 
     void Run()
     {
+        if(isTrainerBattle)
+        {
+            StartCoroutine(mainBox.RunFromTrainer());
+            return;
+        }
         StartCoroutine(ResolveTurn(BattleChoice.Run, null, null));
     }
 
@@ -184,26 +235,66 @@ public class Battle : MonoBehaviour
     public IEnumerator InitBattle(Pokemon playerPokemon, Pokemon enemyPokemon)
     {
         sideBox.Clear();
+        partyScreen.Init();            
         
         playerSprite.Set(playerPokemon);
         enemySprite.Set(enemyPokemon);
-        playerPokemon.IsActive = true;
+        playerPokemon.IsActive = true; 
         
-        partyScreen.Init();
+        if(!isTrainerBattle)
+        {
+            playerImage.gameObject.SetActive(false);
+            trainerImage.gameObject.SetActive(false);
+            StartCoroutine(enemySprite.Entrance());
+            yield return mainBox.WildPokemonIntro(enemyPokemon.Species.SpeciesName);
+            yield return mainBox.PauseAfterText();
+            enemyHUD.GenerateBar(enemyPokemon);
+            enemyHUD.gameObject.SetActive(true);
 
-        StartCoroutine(enemySprite.Entrance());
-        yield return mainBox.WildPokemonIntro(enemyPokemon.Species.SpeciesName);
-        yield return mainBox.PauseAfterText();
+            StartCoroutine(playerSprite.Entrance());
+            yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
+            yield return mainBox.PauseAfterText();
+            playerHUD.GenerateBar(playerPokemon);
+            playerHUD.gameObject.SetActive(true);
 
-        enemyHUD.GenerateBar(enemyPokemon);
-        enemyHUD.gameObject.SetActive(true);
-        StartCoroutine(playerSprite.Entrance());
-        yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
-        yield return mainBox.PauseAfterText();
+            PlayerSelection();
+        }
+        else
+        {
+            playerImage.Set(player.Sprite);
+            trainerImage.Set(trainer.Sprite);
+            playerImage.gameObject.SetActive(true);
+            trainerImage.gameObject.SetActive(true);
+            StartCoroutine(playerImage.Entrance());
+            yield return StartCoroutine(trainerImage.Entrance());
+            
+            playerPartyHUD.Set(playerParty);
+            enemyPartyHUD.Set(trainerParty);
+            playerPartyHUD.gameObject.SetActive(true);
+            enemyPartyHUD.gameObject.SetActive(true);
 
-        playerHUD.GenerateBar(playerPokemon);
-        playerHUD.gameObject.SetActive(true);
-        PlayerSelection();
+            yield return mainBox.TrainerIntro(trainer.TrainerName);
+            yield return mainBox.PauseAfterText();
+
+
+            enemyPartyHUD.gameObject.SetActive(false);
+            StartCoroutine(trainerImage.Exit());
+            StartCoroutine(enemySprite.Entrance());
+            yield return mainBox.TrainerPokemonIntro(trainer.TrainerName, enemyPokemon.Species.SpeciesName);
+            yield return mainBox.PauseAfterText();
+            enemyHUD.GenerateBar(enemyPokemon);
+            enemyHUD.gameObject.SetActive(true);
+
+            playerPartyHUD.gameObject.SetActive(false);
+            StartCoroutine(playerImage.Exit());
+            StartCoroutine(playerSprite.Entrance());
+            yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
+            yield return mainBox.PauseAfterText();
+            playerHUD.GenerateBar(playerPokemon);
+            playerHUD.gameObject.SetActive(true);
+
+            PlayerSelection(); 
+        }
     }
 
     IEnumerator ChooseMove(PokemonMove move)
@@ -335,7 +426,7 @@ public class Battle : MonoBehaviour
 
         if(switchBecauseFainted)
         {
-            if(player.GetLeadPokemon() == null)
+            if(playerParty.GetLeadPokemon() == null)
             {
                 yield return mainBox.WhiteOut();
                 yield return mainBox.PauseAfterText();

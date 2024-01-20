@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599383b7706ffd046b9187425362db45, type: 3}
+  m_Name: Sweet Kiss
+  m_EditorClassIdentifier: 
+  moveName: Sweet Kiss
+  description: The user kisses the target with a sweet, angelic cuteness that causes
+    confusion.
+  moveType: 18
+  category: 1
+  basePower: 0
+  pp: 10
+  accuracy: 75
+  priority: 0
+  critRate: -1
+  range: 0
+  contact: 0
+  isSound: 0
+  isPunch: 0
+  isBite: 0
+  isSnatchable: 0
+  isSlice: 0
+  isBullet: 0
+  isWind: 0
+  isPowder: 0
+  metronome: 1
+  gravity: 0
+  defrosts: 0
+  isReflected: 1
+  isProtected: 1
+  copyable: 1
+  hitsFlyBounceSkyDrop: 0
+  hitsDig: 0
+  hitsDive: 0
+  selfStatChangeChance: 0
+  selfStatChanges:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 0
+  selfAccuracyChange: 0
+  selfEvasionChange: 0
+  enemyStatChangeChance: 0
+  enemyStatChanges:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 0
+  enemyAccuracyChange: 0
+  enemyEvasionChange: 0
+  userNvStatusChance: 0
+  userNonVolatileStatuses: 
+  userVolatileStatusChance: 0
+  userVolatileStatuses: 
+  enemyNvStatusChance: 0
+  enemyNonVolatileStatuses: 
+  enemyVolatileStatusChance: 1
+  enemyVolatileStatuses: 02000000
+  weatherChance: 0
+  weather: 0
+  terrainChance: 0
+  terrain: 0
+  lightScreen: 0
+  reflect: 0
+  recoil: 0
+  damageBasedHealing: 0
+  healthBasedHealing: 0

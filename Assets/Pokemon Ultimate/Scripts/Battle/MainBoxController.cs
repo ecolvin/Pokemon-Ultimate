@@ -28,9 +28,19 @@ public class MainBoxController : MonoBehaviour
         battleText.text = "";
     }
     //-----------------Pokemon I/O---------------
+    public IEnumerator TrainerIntro(string trainerName)
+    {
+        yield return SlowText($"You are challenged by {trainerName}!");
+    }
+    
     public IEnumerator WildPokemonIntro(string pokemonName)
     {
         yield return SlowText($"A wild {pokemonName} has appeared!");
+    }
+
+    public IEnumerator TrainerPokemonIntro(string trainerName, string pokemonName)
+    {
+        yield return SlowText($"{trainerName} sent out {pokemonName}!");
     }
 
     //Confirmed
@@ -74,6 +84,12 @@ public class MainBoxController : MonoBehaviour
     public IEnumerator RunFailure()
     {
         yield return SlowText("Failed to Run!");
+    }
+
+    //---GET CORRECT TEXT---
+    public IEnumerator RunFromTrainer()
+    {
+        yield return SlowText("You can't run from a trainer battle!");
     }
     //--------------------------------------------
 

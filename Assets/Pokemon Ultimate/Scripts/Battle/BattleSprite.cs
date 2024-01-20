@@ -34,13 +34,12 @@ public class BattleSprite : MonoBehaviour
     public Pokemon Pokemon {get;set;}
 
     Vector3 battlePosition;
-    float battleScale;
+    float battleScale = 1;
     Color battleColor;
 
     void Awake()
     {
         battlePosition = image.transform.localPosition;
-        battleScale = image.transform.localScale.x;
         battleColor = image.color;
     }
 
@@ -52,7 +51,7 @@ public class BattleSprite : MonoBehaviour
         if(isPlayerSprite)
         {
             image.transform.localPosition = new Vector3(battlePosition.x - 700, battlePosition.y);
-            image.transform.localScale = new Vector3(0f, 0f);
+            //image.transform.localScale = new Vector3(0f, 0f);
         }
         else
         {
@@ -69,6 +68,8 @@ public class BattleSprite : MonoBehaviour
             yield return SendOut();
             yield break;
         }
+
+        image.transform.localScale = new Vector3(battleScale, battleScale, battleScale);
         float curX = image.transform.localPosition.x;
         float diff = battlePosition.x - curX;
         
@@ -120,8 +121,8 @@ public class BattleSprite : MonoBehaviour
 
     public IEnumerator SendOut()
     {
-        image.transform.localPosition = battlePosition;
         image.transform.localScale = new Vector3(0f, 0f);
+        image.transform.localPosition = battlePosition;
         float curScale = image.transform.localScale.x;
         float diff = battleScale - curScale;
 

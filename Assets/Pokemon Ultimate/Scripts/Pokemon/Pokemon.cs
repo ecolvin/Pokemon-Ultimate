@@ -119,6 +119,83 @@ public class Pokemon
         ClearVolatileStatuses();
     }
 
+    public Pokemon(PokemonSpecies species, int level, StatBlock ivs = null, StatBlock evs = null, 
+                   PokemonNature nature = PokemonNature.None, PokemonType teraType = PokemonType.None,
+                   PokemonGender gender = PokemonGender.None, string ability = "", string heldItem = "",
+                   PokemonMove[] moves = null, bool isShiny=false, bool isWild=false, bool isPlayer=false)
+    {
+
+        this.species = species;
+        nickname = species.SpeciesName;
+        this.level = level;
+        this.isShiny = isShiny;
+        this.isWild = isWild;
+        this.isPlayer = isPlayer;
+
+        SetTypes();
+
+        if(ivs == null)
+        {
+            RandomizeIVs();
+        }
+        else
+        {
+            this.ivs = ivs;
+        }
+
+        if(evs == null)
+        {
+            this.evs = new StatBlock(0,0,0,0,0,0);
+        }
+        else
+        {
+            this.evs = evs;
+        }
+
+        if(nature == PokemonNature.None)
+        {
+            RandomizeNature();
+        }
+        else
+        {
+            this.nature = nature;
+        }
+
+        if(gender == PokemonGender.None)
+        {
+            DetermineGender();
+        }
+        else
+        {
+            this.gender = gender;
+        }
+
+        if(ability == "")
+        {
+            DetermineAbility(false);
+        }
+        else
+        {
+            this.ability = ability;
+        }
+
+        this.heldItem = heldItem;
+
+        if(moves == null)
+        {
+            DetermineMoves();
+        }
+        else
+        {
+            this.moves = moves;
+        }
+
+        CalculateStats();
+        curHP = stats.HP;
+        SetModelAndSprite();
+        ClearVolatileStatuses();
+    }
+
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
     //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
@@ -525,7 +602,8 @@ public enum PokemonGender
 {
     Genderless,
     Male,
-    Female
+    Female,
+    None
 }
 
 public enum PokemonNature

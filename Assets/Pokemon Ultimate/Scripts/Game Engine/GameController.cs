@@ -12,10 +12,22 @@ public class GameController : MonoBehaviour
     GameState state;
     Route curRoute;
 
+    public static GameController Instance {get; private set;}
+
     void Start() 
     {
+        Instance = this;
         player.OnEncounter += StartBattle;    
         battle.OnBattleOver += EndBattle;
+
+        player.OnTrainerBattle += (Collider trainerCollider) =>
+        {
+            TrainerController trainer = trainerCollider.GetComponent<TrainerController>();
+            if(trainer != null)
+            {
+
+            }
+        };
 
         DialogManager.Instance.OnShowDialog += () => 
         {
@@ -33,6 +45,7 @@ public class GameController : MonoBehaviour
 
     void Update() 
     {
+        Debug.Log($"Current State: {state}");
         if(state == GameState.Overworld)
         {
             player.HandleUpdate();
@@ -53,6 +66,13 @@ public class GameController : MonoBehaviour
         curRoute = FindObjectOfType<Route>();
         battle.gameObject.SetActive(true);
         battle.StartBattle(curRoute.GetPokemon(Habitat.Grass, TimePeriod.Day, shinyRolls, haRolls, numPerfect));
+    }
+
+    public void StartTrainerBattle(TrainerController trainer)
+    {
+        state = GameState.Battle;        
+        battle.gameObject.SetActive(true);
+        battle.StartTrainerBattle(trainer.Party);
     }
 
     void EndBattle(bool playerWin)

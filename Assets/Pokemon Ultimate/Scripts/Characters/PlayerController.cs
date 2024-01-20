@@ -6,7 +6,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] Transform body;    
-    
+    [SerializeField] Sprite sprite;
+    public Sprite Sprite {get => sprite;}
+
     [Tooltip("Reference to a shiny sparkle ParticleSystem")]
     [SerializeField] ParticleSystem shinySparkle;      
     [Tooltip("The chance of a grass patch producing an encounter when you walk into it (percentage)")]
@@ -15,6 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] int baseShinyOdds = 4096;
 
     public event Action<int, int, int> OnEncounter;
+    public event Action<Collider> OnTrainerBattle;
 
     private Character character;
 
@@ -29,7 +32,7 @@ public class PlayerController : MonoBehaviour
     public void HandleUpdate()
     {
         MovePlayer();    
-        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))   
+        if(!isMoving && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))   
         {
             Interact();
         } 
@@ -75,6 +78,8 @@ public class PlayerController : MonoBehaviour
         if(interactables.Length != 0)
         {
             interactables[0].GetComponent<Interactable>()?.Interact(transform.position);
+            //if trainer battle
+            //OnTrainerBattle?.Invoke(interactables[0]);
         } 
     }
 
