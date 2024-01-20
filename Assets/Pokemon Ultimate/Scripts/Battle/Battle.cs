@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 
-public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Switching, Battle}
+public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Switching, Choice, Battle}
 public enum Weather {None, Sun, HarshSun, Rain, HeavyRain, Sand, Hail, Snow, Shadow, Fog, Wind}
 public enum Terrain {None, Electric, Misty, Psychic, Grassy}
 public enum FieldEffect {None, Spikes, ToxicSpikes, Rocks, Webs, Reflect, LightScreen, Tailwind, LuckyChant}
 public enum BattleChoice {Move, Item, Switch, Run}
+public enum SwitchReason {None, BattleSelection, Fainted, OppSwitch, SwitchMove}
 
 public class Battle : MonoBehaviour
 {
@@ -39,11 +40,14 @@ public class Battle : MonoBehaviour
 
     int curBattleOption = 0;
     int curMoveOption = 0;
+    bool choice = true;
 
     int fleeAttempts = 0;
 
     bool isTrainerBattle = false;
-    bool switchBecauseFainted = false;
+    SwitchReason switchReason = SwitchReason.None;
+    //bool switchBecauseFainted = false;
+    //bool switch
 
     Pokemon playerPokemon;
     Pokemon enemyPokemon;
@@ -204,21 +208,34 @@ public class Battle : MonoBehaviour
 
     IEnumerator ClosePokemon(Pokemon pokemon)
     {
-        if(switchBecauseFainted)
+        if(switchReason == SwitchReason.Fainted)
         {
             if(pokemon != null && !pokemon.Fainted)
             {
                 yield return SwitchPokemon(pokemon);
-                switchBecauseFainted = false;
+                switchReason = SwitchReason.None;
                 yield return CheckIfOppFainted();
                 PlayerSelection();
             }
+            else
+            {
+                Debug.Log("Switching due to fainted Pokemon but no Pokemon selected. Party Screen shouldn't let you get here.");
+            }
+        }
+        else if(switchReason == SwitchReason.OppSwitch)
+        {
+            if(pokemon != null && !pokemon.Fainted)
+            {
+                yield return SwitchPokemon(pokemon);
+            }
+            switchReason = SwitchReason.None;
         }
         else
         {
             if(pokemon == null)
             {
                 state = BattleState.ActionSelection;
+                switchReason = SwitchReason.None;
             }
             else if(!pokemon.Fainted)
             {
@@ -359,7 +376,8 @@ public class Battle : MonoBehaviour
         }
         else if(choice == BattleChoice.Switch) //Switch Pokemon
         {
-            yield return SwitchPokemon(pokemon);            
+            yield return SwitchPokemon(pokemon);
+            switchReason = SwitchReason.None;            
         }
         else if(enemyChoice == BattleChoice.Switch)
         {
@@ -435,7 +453,7 @@ public class Battle : MonoBehaviour
 
         if(playerPokemon.Fainted)
         {
-            switchBecauseFainted = true;
+            switchReason = SwitchReason.Fainted;
             Pokemon();
         }
         else
@@ -490,7 +508,7 @@ public class Battle : MonoBehaviour
         }
         CheckVictory();
         if(isTrainerBattle)
-        {
+        {   
             yield return EnemyNewPokemon(trainerParty.GetLeadPokemon());
         }
         else
@@ -500,12 +518,15 @@ public class Battle : MonoBehaviour
     }
 
     IEnumerator EnemyNewPokemon(Pokemon newPokemon)
-    {
+    {           
         enemyPokemon = newPokemon;
         enemySprite.Set(enemyPokemon);
-        //___ is about to send in ___.
-        //Will ___ change Pokemon?
-                        
+        
+        if(GlobalSettings.Instance.BattleMode == BattleMode.Switch) //&& Not trainer switching mid-turn
+        {
+            yield return TrainerSwitching();
+        }        
+
         sideBox.Clear();
         enemyHUD.gameObject.SetActive(false);
         enemyPartyHUD.Set(trainerParty);
@@ -517,6 +538,28 @@ public class Battle : MonoBehaviour
         enemyHUD.GenerateBar(enemyPokemon);
         enemyHUD.gameObject.SetActive(true);
         enemyPartyHUD.gameObject.SetActive(false);
+    }
+
+    IEnumerator TrainerSwitching()
+    {
+        yield return mainBox.TrainerNewPokemon(trainer.TrainerName, enemyPokemon.Nickname);             
+        state = BattleState.Choice;
+        mainBox.EnableChoiceBox(true);
+
+        while(state == BattleState.Choice)
+        {
+            yield return null;
+        }
+
+        if(choice)
+        {
+            switchReason = SwitchReason.OppSwitch;
+            Pokemon();
+            while(switchReason == SwitchReason.OppSwitch)
+            {
+                yield return null;
+            }
+        }
     }
 
     int GetEffectiveSpeed(Pokemon pokemon, bool tailwind)
@@ -1525,7 +1568,7 @@ public class Battle : MonoBehaviour
 
     IEnumerator SandDamage(Pokemon p)
     {
-        int sandDamage = p.Stats.HP/16;
+        int sandDamage = Mathf.Max(1, p.Stats.HP/16);
         yield return mainBox.SandDamage(p);
         p.TakeDamage(sandDamage);
         if(p.IsPlayer)
@@ -1628,7 +1671,7 @@ public class Battle : MonoBehaviour
             if(p.Status == NonVolatileStatus.Poison)
             {
                 //Toxic Heal
-                int poisonDamage = p.Stats.HP/8;
+                int poisonDamage = Mathf.Max(1, p.Stats.HP/8);
                 yield return mainBox.PoisonDamage(p);
                 yield return mainBox.PauseAfterText();
                 p.TakeDamage(poisonDamage);
@@ -1649,7 +1692,7 @@ public class Battle : MonoBehaviour
             if(p.Status == NonVolatileStatus.BadlyPoisoned)
             {
                 //Toxic Heal
-                int poisonDamage = p.PoisonCounter++ * (p.Stats.HP/16);
+                int poisonDamage = Mathf.Max(1, p.PoisonCounter++ * (p.Stats.HP/16));
                 yield return mainBox.PoisonDamage(p);
                 yield return mainBox.PauseAfterText();
                 p.TakeDamage(poisonDamage);
@@ -1672,7 +1715,7 @@ public class Battle : MonoBehaviour
         {
             if(p.Status == NonVolatileStatus.Burn)
             {
-                int burnDamage = p.Stats.HP/16;
+                int burnDamage = Mathf.Max(1, p.Stats.HP/16);
                 yield return mainBox.BurnDamage(p);
                 yield return mainBox.PauseAfterText();
                 p.TakeDamage(burnDamage);
@@ -1819,7 +1862,7 @@ public class Battle : MonoBehaviour
         sideBox.Clear();
 
         playerHUD.gameObject.SetActive(false);
-        if(!switchBecauseFainted)
+        if(switchReason != SwitchReason.Fainted)
         {
             yield return mainBox.PlayerPokemonReturn(playerPokemon.Nickname);
             yield return playerSprite.Return();
@@ -2422,11 +2465,42 @@ public class Battle : MonoBehaviour
 
 //---------------------------Input Handling---------------------------------------    
 
+    void HandleChoice()
+    {
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) ||
+           Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
+           Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) ||
+           Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            choice = !choice;
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            choice = false;
+        }
+        mainBox.UpdateChoiceSelection(choice);
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            state = BattleState.Switching;
+            mainBox.EnableChoiceBox(false);       
+        }
+
+    }
+
     void HandleInput()
     {
         if(state == BattleState.Pokemon)
         {
-            partyScreen.HandleInput(switchBecauseFainted);
+            partyScreen.HandleInput(switchReason == SwitchReason.Fainted);
+            return;
+        }
+        if(state == BattleState.Choice)
+        {
+            HandleChoice();
+            return;
+        }
+        if(state == BattleState.Switching)
+        {
             return;
         }
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))

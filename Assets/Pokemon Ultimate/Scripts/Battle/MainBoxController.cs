@@ -12,8 +12,11 @@ public class MainBoxController : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI battleText;
     [SerializeField] GameObject moveOptions;
+    [SerializeField] GameObject choiceBox;
     
     [SerializeField] List<TextMeshProUGUI> moveOptionText;
+    [SerializeField] TextMeshProUGUI yesText;
+    [SerializeField] TextMeshProUGUI noText;
 
     [SerializeField] float textDelay = .02f;     //Dynamically change in gameSettings eventually
     [SerializeField] float pauseDuration = 1f;
@@ -60,6 +63,13 @@ public class MainBoxController : MonoBehaviour
     public IEnumerator PlayerPokemonReturn(string pokemonName)
     {
         yield return SlowText($"{pokemonName}, come back!");
+    }
+
+    public IEnumerator TrainerNewPokemon(string trainerName, string pokemonName)
+    {
+        yield return SlowText($"{trainerName} is about to send out {pokemonName}.");
+        yield return PauseAfterText();
+        yield return SlowText($"Will you switch your Pokemon?");
     }
 
     //Confirmed
@@ -533,6 +543,25 @@ public class MainBoxController : MonoBehaviour
     }
 
 //------------------Dynamic UI Updates-------------------------
+
+    public void EnableChoiceBox(bool enabled)
+    {
+        choiceBox.SetActive(enabled);
+    }
+
+    public void UpdateChoiceSelection(bool yesSelected)
+    {
+        if(yesSelected)
+        {
+            yesText.color = selectionColor;
+            noText.color = defaultColor;
+        }
+        else
+        {
+            yesText.color = defaultColor;
+            noText.color = selectionColor;
+        }
+    }
 
     public void UpdateMoveSelection(int selection)
     {
