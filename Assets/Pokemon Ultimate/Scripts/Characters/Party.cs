@@ -25,11 +25,30 @@ public class Party : MonoBehaviour
     {
         foreach(Pokemon p in partyPokemon)
         {
+            if(p == null)
+            {
+                continue;
+            }
             if(!p.Fainted)
             {
                 return p;
             }
         }
         return null;
+    }
+
+    bool IsFull()
+    {
+        return !(partyPokemon.Count < 6);
+    }
+
+    public bool AddPokemon(Pokemon p)
+    {
+        if(IsFull())
+        {
+            return false;
+        }
+        partyPokemon.Add(p);
+        return true;
     }
 }

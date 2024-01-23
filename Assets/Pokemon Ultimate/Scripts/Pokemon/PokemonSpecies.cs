@@ -46,6 +46,7 @@ public class PokemonSpecies : ScriptableObject
     [Header("Other Info")]
     [SerializeField] int baseHappiness;
     [SerializeField] int catchRate;
+    public int CatchRate {get => catchRate;}
     [SerializeField] int baseXPYield;
     [SerializeField] LevelingRate levelingRate;
     [SerializeField] StatBlock evYield;

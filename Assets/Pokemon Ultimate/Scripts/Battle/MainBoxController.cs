@@ -160,6 +160,59 @@ public class MainBoxController : MonoBehaviour
     }
     //-----------------------------------------
 
+    //-----------------Catching----------------
+
+    //Get Exact Text
+    public IEnumerator CantCatchTrainer()
+    {
+        yield return SlowText("You can't use balls during a trainer battle!");
+    }
+
+    //Confirmed
+    public IEnumerator UsedBall(string ballName)
+    {
+        yield return SlowText($"You used a {ballName}!");
+    }
+
+    //Confirmed
+    public IEnumerator BreakOut(int shakes)
+    {
+        if(shakes == 0)
+        {
+            yield return SlowText("Oh no! The Pokemon broke free!");
+        }
+        if(shakes == 1)
+        {
+            yield return SlowText("Aww! It appeared to be caught!");
+        }
+        if(shakes == 2)
+        {
+            yield return SlowText("Aargh! Almost had it!");
+        }
+        if(shakes == 3)
+        {
+            yield return SlowText("Gah! It was so close, too!");
+        }
+    }
+
+    //Confirmed
+    public IEnumerator Caught(string pokemonName)
+    {
+        yield return SlowText($"Gotcha! {pokemonName} was caught!");
+    }
+
+    public IEnumerator AddedToParty(string pokemonName)
+    {
+        yield return SlowText($"{pokemonName} was added to your party!");
+    }
+
+    public IEnumerator PartyFull(string pokemonName)
+    {
+        yield return SlowText($"{pokemonName} was sent to your PC!");
+    }
+
+    //-----------------------------------------
+
     //---------------Move Effects--------------
     //Confirmed
     public IEnumerator StatIncrease(Pokemon pokemon, string stat, bool sharp)

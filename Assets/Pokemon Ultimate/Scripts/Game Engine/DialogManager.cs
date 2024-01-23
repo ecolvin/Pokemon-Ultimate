@@ -19,7 +19,7 @@ public class DialogManager : MonoBehaviour
 
     bool typing = false;
 
-    private void Awake()
+    void Awake()
     {
         Instance = this;
     }

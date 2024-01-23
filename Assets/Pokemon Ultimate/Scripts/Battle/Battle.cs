@@ -34,6 +34,8 @@ public class Battle : MonoBehaviour
     [SerializeField] CharacterBattleSprite playerImage;
     [SerializeField] CharacterBattleSprite trainerImage;
 
+    [SerializeField] PokeBallSprite ballSprite;
+
     public event Action<bool> OnBattleOver;
 
     BattleState state;
@@ -195,7 +197,12 @@ public class Battle : MonoBehaviour
 
     void Bag()
     {
-        mainBox.NotImplemented();
+        if(isTrainerBattle)
+        {
+            StartCoroutine(mainBox.CantCatchTrainer());
+            return;
+        }
+        StartCoroutine(ResolveTurn(BattleChoice.Item, null, null));
     }
 
     void Pokemon()
@@ -261,6 +268,8 @@ public class Battle : MonoBehaviour
         sideBox.Clear();
         partyScreen.Init();            
         
+        playerSprite.gameObject.SetActive(true);
+        enemySprite.gameObject.SetActive(true);
         playerSprite.Set(playerPokemon);
         enemySprite.Set(enemyPokemon);
         playerPokemon.IsActive = true; 
@@ -285,10 +294,10 @@ public class Battle : MonoBehaviour
         }
         else
         {
-            playerImage.Set(player.Sprite);
-            trainerImage.Set(trainer.Sprite);
             playerImage.gameObject.SetActive(true);
             trainerImage.gameObject.SetActive(true);
+            playerImage.Set(player.Sprite);
+            trainerImage.Set(trainer.Sprite);
             StartCoroutine(playerImage.Entrance());
             yield return StartCoroutine(trainerImage.Entrance());
             
@@ -395,7 +404,11 @@ public class Battle : MonoBehaviour
         }
         else if(choice == BattleChoice.Item)
         {
-
+            if(isTrainerBattle)
+            {
+                Debug.Log("You shouldn't be able to select bag against a trainer currently...");
+            }
+            yield return ThrowPokeball(1);
         }
         else if (enemyChoice == BattleChoice.Item)
         {
@@ -1882,6 +1895,175 @@ public class Battle : MonoBehaviour
         playerHUD.gameObject.SetActive(true);
     }
 
+    //-------------Pokemon Catching Methods-----------------
+
+    IEnumerator ThrowPokeball(float ballMultiplier) //Add parameter for type of ball
+    {
+        yield return mainBox.UsedBall("Poke Ball");
+        ballSprite.gameObject.SetActive(true);
+        yield return ballSprite.Thrown();
+        
+        yield return enemySprite.Return();
+
+
+        int success = TryCapture(ballMultiplier);
+        Debug.Log($"Catch success = {success}");
+        if(success < 0)
+        {
+            yield return ballSprite.Critical();
+            if(success == -1)
+            {
+                yield return ballSprite.Shake();
+                yield return ballSprite.BreakOut();
+                yield return enemySprite.SendOut();
+                yield return mainBox.BreakOut(0);
+                yield return mainBox.PauseAfterText();
+            }
+            else if(success == -2)
+            {
+                yield return ballSprite.Shake();
+                yield return ballSprite.Catch();
+                yield return mainBox.Caught(enemyPokemon.Nickname);
+                yield return mainBox.PauseAfterText();
+                yield return ballSprite.BreakOut(); //Get rid of the ball sprite
+                yield return CatchSuccess();
+            }
+            else
+            {
+                Debug.Log($"How did you get {success} from TryCapture()?!?!?!");
+            }
+        }
+        else if(success >= 0 && success <= 4)
+        {            
+            yield return ballSprite.Fall();
+            for(int i = 0; i < Mathf.Min(success, 3); i++)
+            {
+                yield return ballSprite.Shake();
+            }
+            if(success == 4)
+            {
+                yield return ballSprite.Catch();
+                yield return mainBox.Caught(enemyPokemon.Nickname);
+                yield return mainBox.PauseAfterText();
+                yield return ballSprite.BreakOut(); //Get rid of the ball sprite
+                yield return CatchSuccess();
+            }
+            else
+            {
+                yield return ballSprite.BreakOut();
+                yield return enemySprite.SendOut();
+                yield return mainBox.BreakOut(success);
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        else
+        {
+            Debug.Log($"How did you get {success} from TryCapture()?!?!?!");
+        }
+    }
+
+    int TryCapture(float ballMultiplier)
+    {
+        //if Route 1 
+        //success
+
+        float modCatchRate = (3 * enemyPokemon.Stats.HP) - (2 * enemyPokemon.CurHP);
+        Debug.Log($"Catch Rate 1: {modCatchRate}");
+        modCatchRate *= 4096;
+        modCatchRate += 0.5f;
+        modCatchRate = Mathf.FloorToInt(modCatchRate);
+        Debug.Log($"Catch Rate 2: {modCatchRate}");
+        //Dark Grass modifier (see wiki if/when you implement dark grass)
+        //if(Heavy Ball Used)
+        //int heavyBall = Heavy Ball modifier
+        modCatchRate *= enemyPokemon.Species.CatchRate; //+ heavyBall;
+        modCatchRate *= ballMultiplier;
+        //Calculate badgePenalty based on badges missing
+        modCatchRate = modCatchRate/(3 * enemyPokemon.Stats.HP);  //(modCatchRate * BadgePenalty)
+        if(enemyPokemon.Level <= 13)
+        {
+            modCatchRate = ((36-(2*enemyPokemon.Level)) * modCatchRate)/10;
+        }
+        modCatchRate = Mathf.FloorToInt(modCatchRate);
+        Debug.Log($"Catch Rate 3: {modCatchRate}");
+        modCatchRate *= GetStatusCatchBonus(enemyPokemon);
+        //modCatchRate *= (410/4096) if wild pokemon's level > player pokemon's level && <8 gym badges
+        //modCatchRate *= miscellaneous (2 for a backstrike, various for capture powers of some sort)
+        modCatchRate = Mathf.Min(modCatchRate, 1044480);
+        Debug.Log($"Catch Rate 4: {modCatchRate}");
+
+        float critModifier = 1f;
+        //int catchingCharm = 2;
+        int critRate = Mathf.FloorToInt(715827883f * modCatchRate * critModifier/(4294967296f*4096f));
+        Debug.Log($"Crit Rate = {critRate}");
+        
+        int shakeProb = Mathf.FloorToInt(65536 / Mathf.Pow(1044480/modCatchRate, .1875f));
+        Debug.Log($"Shake Prob = {shakeProb}");
+
+        if(UnityEngine.Random.Range(0, 256) < critRate)
+        {
+            if(ShakeCheck(shakeProb))
+            {
+                return -2; //Successful Crit Capture
+            }
+            else
+            {
+                return -1; //Failed Crit Capture
+            }
+        }
+        else
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                if(!ShakeCheck(shakeProb))
+                {
+                    return i; //Return # of shakes
+                }
+            }
+            return 4; //Successful catch
+        }
+    }
+
+    bool ShakeCheck(int shakeProb)
+    {
+        return UnityEngine.Random.Range(0, 65536) < shakeProb;
+    }
+
+    float GetStatusCatchBonus(Pokemon p)
+    {
+        if(p.Status == NonVolatileStatus.Sleep || p.Status == NonVolatileStatus.Freeze)
+        {
+            return 2.5f;
+        }
+        if(p.Status == NonVolatileStatus.Paralysis || p.Status == NonVolatileStatus.Poison || p.Status == NonVolatileStatus.BadlyPoisoned || p.Status == NonVolatileStatus.Burn)
+        {
+            return 1.5f;
+        }
+        return 1f;
+    }
+
+    IEnumerator CatchSuccess()
+    {
+        if(playerParty.AddPokemon(enemyPokemon))
+        {
+            yield return mainBox.AddedToParty(enemyPokemon.Nickname);
+        }
+        else if(PC.Instance.AddPokemon(enemyPokemon))
+        {            
+            yield return mainBox.PartyFull(enemyPokemon.Nickname);
+        }
+        else
+        {
+            Debug.Log("No room in party or PC");
+        }
+        //Experience gain
+        CleanupBattle();
+        OnBattleOver(true);
+        yield return null;
+    }
+
+    //-----------------------------------------------------------
+
     IEnumerator RunAttempt()
     {
         if(playerPokemon.Type1 == PokemonType.Ghost || playerPokemon.Type2 == PokemonType.Ghost)
@@ -2615,35 +2797,3 @@ public class Battle : MonoBehaviour
     }
 }
 
-
-
-/*
-
-Sand/Hail
--EoT Damage
-Sand/Snow
--Defense Boost
-
-Terrain
--All Effects
-
-*/
-
-
-/*
-Fully Implemented:
--Move order calculation (tailwind, trick room, paralysis, speed ties, and priority all taken into account)
--Adaptability in STAB calculations (May need to be updated with the ability rework in the future)
--Stat Changes
-
-Mostly Implemented:
--Damage Calculation (the function has more comments for what is needed) 
----(also refactor into an IEnumerator that outputs messages based on effectiveness/failure/crits/etc...)
----Have the pokemon take damage at the end of the function instead of back in the previous function
-
-TODO:
--Accuracy/Failure checks
--Status conditions graphic and effects
--Implement full weather/terrain effects
--Many corner cases for everything
-*/

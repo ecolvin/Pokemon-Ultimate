@@ -18,7 +18,7 @@ public class PartyHUD : MonoBehaviour
 
             if(p.Fainted)
             {
-                pokeSlots[i].color = Color.black;
+                pokeSlots[i].color = new Color(.25f,.25f,.25f,1f);
             }
             else if(p.Status != NonVolatileStatus.None)
             {
