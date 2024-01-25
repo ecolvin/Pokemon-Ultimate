@@ -3046,4 +3046,4 @@ public class Battle : MonoBehaviour
     }
 }
 
-//Implement learning new moves
+//Implement option to run after pokemon fainted

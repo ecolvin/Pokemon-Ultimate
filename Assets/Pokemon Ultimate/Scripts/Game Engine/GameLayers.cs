@@ -12,11 +12,16 @@ public class GameLayers : MonoBehaviour
     public LayerMask SpawnerLayer {get => spawnerLayer;}
     [SerializeField] LayerMask playerLayer;
     public LayerMask PlayerLayer {get => playerLayer;}
+    [SerializeField] LayerMask portalLayer;
+    public LayerMask PortalLayer {get => portalLayer;}
 
+    public LayerMask BlockingLayers {get => obstacleLayer | interactableLayer | playerLayer;}
+    public LayerMask TriggerLayers {get => spawnerLayer | portalLayer;}
     public static GameLayers Instance {get; set;}
     
     void Awake()
     {
         Instance = this;
     }
+
 }

@@ -10,16 +10,13 @@ public class PlayerController : MonoBehaviour
     public Sprite Sprite {get => sprite;}
 
     [Tooltip("Reference to a shiny sparkle ParticleSystem")]
-    [SerializeField] ParticleSystem shinySparkle;      
-    [Tooltip("The chance of a grass patch producing an encounter when you walk into it (percentage)")]
-    [SerializeField] [Range(0,100)] int encounterOdds = 15;    
-    [Tooltip("The base chance of an encounter being a shiny pokemon")]
-    [SerializeField] int baseShinyOdds = 4096;
+    [SerializeField] ParticleSystem shinySparkle;
 
-    public event Action<int, int, int> OnEncounter;
+    public event Action<Pokemon> OnEncounter;
     public event Action<Collider> OnTrainerBattle;
 
     private Character character;
+    public Character Character {get => character;}
 
     bool isMoving = false;
 
@@ -100,57 +97,38 @@ public class PlayerController : MonoBehaviour
         yield return character.SmoothGridMovement(newPos);
 
 
-        Collider[] grass = Physics.OverlapBox(transform.position, new Vector3(GlobalSettings.Instance.GridSize/4, .5f, GlobalSettings.Instance.GridSize/4), Quaternion.identity, GameLayers.Instance.SpawnerLayer);
-        if(grass.Length != 0 && UnityEngine.Random.Range(0, 100) < encounterOdds)
-        {
-            yield return new WaitForSeconds(0.5f);
-            OnEncounter(GetShinyRolls(), 0, 0);   //Shiny, HA, Perfect IVs
-        }        
+        Collider[] triggers = Physics.OverlapBox(transform.position, new Vector3(GlobalSettings.Instance.GridSize/4, .5f, GlobalSettings.Instance.GridSize/4), Quaternion.identity, GameLayers.Instance.TriggerLayers);
+        
+        bool waitForTriggers = false;
 
+        foreach(var trig in triggers)
+        {
+            IPlayerTrigger trigger = trig.GetComponent<IPlayerTrigger>();
+            if(trigger != null)
+            {
+                trigger.OnPlayerTriggered(this);
+                waitForTriggers = true;
+                break;
+            }
+        }      
+
+        if(!waitForTriggers)
+        {
+            isMoving = false;
+        }
+    }
+
+    public void EndTrigger()
+    {
         isMoving = false;
     }
 
-    // void generateEncounter()
-    // {
-    //     PokemonSpecies pokemon = determineSpecies();
-    //     bool isShiny = determineShiny();
 
-    //     if(isShiny)
-    //     {
-    //         shinySparkle.Play();
-    //     }
-    //     else
-    //     {                       
-    //         shinySparkle.Stop();
-    //     }
-    // }
-
-    // PokemonSpecies determineSpecies()
-    // {
-    //     return null;
-    // }
-
-    // bool determineShiny()
-    // {
-    //     int numRolls = getShinyRolls();
-
-    //     for(int i = 0; i < numRolls; i++)
-    //     {
-    //         if(UnityEngine.Random.Range(0, baseShinyOdds) == 0)
-    //         {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    int GetShinyRolls()
+    public IEnumerator TriggerEncounter(Pokemon p)
     {
-        int numRolls = 1;
-        // if(shinyCharm)
-        // {
-        //     numRolls += 3;
-        // }
-        return numRolls;
+        yield return new WaitForSeconds(0.5f);
+        //Screen Flash (and music start eventually)
+        OnEncounter(p);   //Shiny, HA, Perfect IVs
+        isMoving = false;
     }
 }

@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Route : MonoBehaviour
 {
-    [SerializeField] [NonReorderable] List<Encounter> encounterTable; 
+    [SerializeField] [NonReorderable] List<Encounter> encounterTable;       
+    [Tooltip("The chance of a grass patch producing an encounter when you walk into it (percentage)")]
+    [SerializeField] [Range(0,100)] int encounterOdds = 15;
+    public int EncounterOdds {get => encounterOdds;}
     
     public Pokemon GetPokemon(Habitat habitat, TimePeriod time, int shinyRolls, int haRolls, int numPerfect)
     {

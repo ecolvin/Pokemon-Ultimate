@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     [SerializeField] Battle battle;
 
     GameState state;
-    Route curRoute;
+    //Route curRoute;
 
     public static GameController Instance {get; private set;}
 
@@ -59,12 +59,11 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void StartBattle(int shinyRolls, int haRolls, int numPerfect)
+    void StartBattle(Pokemon p)//int shinyRolls, int haRolls, int numPerfect)
     {
-        state = GameState.Battle;        
-        curRoute = FindObjectOfType<Route>();
+        state = GameState.Battle;
         battle.gameObject.SetActive(true);
-        battle.StartBattle(curRoute.GetPokemon(Habitat.Grass, TimePeriod.Day, shinyRolls, haRolls, numPerfect));
+        battle.StartBattle(p);
     }
 
     public void StartTrainerBattle(TrainerController trainer)

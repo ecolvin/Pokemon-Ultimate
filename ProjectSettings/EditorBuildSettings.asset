@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/TestScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/Route 1.unity
+    guid: 6e9958dd2f44d314c97840c4926eb10d
   m_configObjects: {}
