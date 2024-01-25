@@ -15,8 +15,7 @@ public class Pokemon
     bool isShiny;    
     bool isWild = true;
     public bool IsWild{get{return isWild;}}
-    bool isPlayer = false;
-    public bool IsPlayer{get{return isPlayer;}}
+    public bool IsPlayer{get;set;}
     string ability;
     public string Ability{get{return ability;}}
     PokemonType type1;
@@ -33,6 +32,7 @@ public class Pokemon
     StatBlock stats = new StatBlock(0,0,0,0,0,0);
     public StatBlock Stats{get{return stats;}}
     StatBlock evs = new StatBlock(0,0,0,0,0,0);
+    StatBlock tempEVs = new StatBlock(0,0,0,0,0,0);
     StatBlock ivs = new StatBlock(0,0,0,0,0,0);
     public StatBlock Ivs{get{return ivs;}}
     StatBlock hyperTrained = new StatBlock(0,0,0,0,0,0);
@@ -56,6 +56,8 @@ public class Pokemon
             } 
         }
     }
+
+    int experience = 0;
 
     int curHP;
     public int CurHP{get{return curHP;}}
@@ -103,8 +105,10 @@ public class Pokemon
         this.level = level;
         this.isShiny = isShiny;
         this.isWild = isWild;
-        this.isPlayer = isPlayer;
+        this.IsPlayer = isPlayer;
         
+        experience = GetExpAtLevel(this.level);
+
         SetTypes();
         RandomizeIVs();
         RandomizeNature();
@@ -130,7 +134,9 @@ public class Pokemon
         this.level = level;
         this.isShiny = isShiny;
         this.isWild = isWild;
-        this.isPlayer = isPlayer;
+        this.IsPlayer = isPlayer;
+
+        experience = GetExpAtLevel(this.level);
 
         SetTypes();
 
@@ -445,6 +451,7 @@ public class Pokemon
         isTera = false;
         SetTypes();
         SwitchOut();
+        CalculateStats();
     }
     
     public void TakeDamage(int damage)
@@ -459,6 +466,126 @@ public class Pokemon
         {
             curHP = stats.HP;
         }
+    }
+
+    int GetExpAtLevel(int lvl)
+    {
+        if(lvl == 1)
+        {
+            return 0;
+        }
+        if (species.LevelingRate == LevelingRate.Erratic)
+        {
+            if(lvl < 50)
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (100 - lvl))/50);
+            }
+            else if(lvl < 68)
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (150 - lvl))/100);
+            }
+            else if(lvl < 98)
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * Mathf.FloorToInt((1911 - (10*lvl))/3))/500);
+            }
+            else
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (160 - lvl))/100);
+            }
+        }
+        else if(species.LevelingRate == LevelingRate.Fast)
+        {
+            return Mathf.RoundToInt(4 * Mathf.Pow(lvl, 3)/5);
+        }
+        else if(species.LevelingRate == LevelingRate.Fluctuating)
+        {
+            if(lvl < 15)
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (Mathf.FloorToInt((lvl + 1)/3) + 24))/50);
+            }
+            else if(lvl < 36)
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (lvl + 14))/50);
+            }
+            else
+            {
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (Mathf.FloorToInt(lvl/2) + 32))/50);
+            }
+        }
+        else if(species.LevelingRate == LevelingRate.MediumFast)
+        {
+            return Mathf.RoundToInt(Mathf.Pow(lvl, 3));
+        }
+        else if(species.LevelingRate == LevelingRate.MediumSlow)
+        {
+            return Mathf.RoundToInt(((6/5) * Mathf.Pow(lvl, 3)) - (15 * Mathf.Pow(lvl, 2)) + (100 * lvl) - 140);
+        }
+        else if(species.LevelingRate == LevelingRate.Slow)
+        {
+            return Mathf.RoundToInt(5 * Mathf.Pow(lvl, 3)/4);
+        }
+        else
+        {
+            Debug.Log($"Error! Invalid leveling rate: {species.LevelingRate}");
+            return -1;
+        }
+    }
+
+    public float GetExpPercent()
+    {
+        float expAtCurLevel = GetExpAtLevel(level);
+        float totalExpDiff = GetExpAtLevel(level + 1) - expAtCurLevel;
+        float expDiff = experience - expAtCurLevel;
+
+        return Mathf.Clamp01(expDiff/totalExpDiff);
+    }
+
+    public void GainExp(int exp)
+    {
+        experience += exp;
+    }
+
+    public bool LevelUp()
+    {
+        if(experience < GetExpAtLevel(level+1))
+        {
+            return false;
+        }
+        level++;      
+        int prevHP = stats.HP;  
+        CalculateStats();        
+        curHP += stats.HP - prevHP;
+        return true;
+    }
+
+    public List<PokemonMove> NewMoveAtCurLevel()
+    {
+        List<PokemonMove> moves = new List<PokemonMove>();
+        foreach(LearnableMove lm in species.Learnset)
+        {
+            if(lm.LevelLearned == level)
+            {
+                moves.Add(new PokemonMove(lm.MoveBase));
+            }
+        }
+        return moves;
+    }
+
+    public int AvailableMoveSlot()
+    {
+        for(int i = 0; i < moves.Length; i++)
+        {
+            if(moves[i] == null)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void LearnMove(PokemonMove move, int slot)
+    {
+        moves[slot] = move;
     }
 
     public void ClearStatChanges()
@@ -559,15 +686,98 @@ public class Pokemon
         // }
     }
 
+    int GetSumOfStats(StatBlock sb)
+    {
+        return sb.HP + sb.Atk + sb.Def + sb.SpA + sb.SpD + sb.Spe;
+    }
+
     public void ModifyEVs(StatBlock evChanges)
     {
-        evs.HP += evChanges.HP;
-        evs.Atk += evChanges.Atk;
-        evs.Def += evChanges.Def;
-        evs.SpA += evChanges.SpA;
-        evs.SpD += evChanges.SpD;
-        evs.Spe += evChanges.Spe;
-        CalculateStats();
+        int availableEVs = 510 - GetSumOfStats(evs);
+
+        if(availableEVs <= 0)
+        {
+            return;
+        }
+        if(evChanges.HP > availableEVs)
+        {
+            evs.HP = Mathf.Min(255, evs.HP + availableEVs);
+        }
+        else
+        {
+            evs.HP = Mathf.Min(255, evs.HP + evChanges.HP);
+            availableEVs -= evChanges.HP;
+        }
+
+        if(availableEVs <= 0)
+        {
+            return;
+        }
+        if(evChanges.Atk > availableEVs)
+        {
+            evs.Atk = Mathf.Min(255, evs.Atk + availableEVs);
+        }
+        else
+        {
+            evs.Atk = Mathf.Min(255, evs.Atk + evChanges.Atk);
+            availableEVs -= evChanges.Atk;
+        }
+
+        if(availableEVs <= 0)
+        {
+            return;
+        }
+        if(evChanges.Def > availableEVs)
+        {
+            evs.Def = Mathf.Min(255, evs.Def + availableEVs);
+        }
+        else
+        {
+            evs.Def = Mathf.Min(255, evs.Def + evChanges.Def);
+            availableEVs -= evChanges.Def;
+        }
+
+        if(availableEVs <= 0)
+        {
+            return;
+        }
+        if(evChanges.Spe > availableEVs)
+        {
+            evs.Spe = Mathf.Min(255, evs.Spe + availableEVs);
+        }
+        else
+        {
+            evs.Spe = Mathf.Min(255, evs.Spe + evChanges.Spe);
+            availableEVs -= evChanges.Spe;
+        }
+
+        if(availableEVs <= 0)
+        {
+            return;
+        }
+        if(evChanges.SpA > availableEVs)
+        {
+            evs.SpA = Mathf.Min(255, evs.SpA + availableEVs);
+        }
+        else
+        {
+            evs.SpA = Mathf.Min(255, evs.SpA + evChanges.SpA);
+            availableEVs -= evChanges.SpA;
+        }
+
+        if(availableEVs <= 0)
+        {
+            return;
+        }
+        if(evChanges.SpD > availableEVs)
+        {
+            evs.SpD = Mathf.Min(255, evs.SpD + availableEVs);
+        }
+        else
+        {
+            evs.SpD = Mathf.Min(255, evs.SpD + evChanges.SpD);
+            availableEVs -= evChanges.SpD;
+        }
     }
 
     public void Terastalize()
@@ -579,7 +789,7 @@ public class Pokemon
 
     public string GetBattleMessageName()
     {
-        if(isPlayer)
+        if(IsPlayer)
         {
             return nickname;
         }

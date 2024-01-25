@@ -101,7 +101,7 @@ public class MainBoxController : MonoBehaviour
     //---GET CORRECT TEXT---
     public IEnumerator RunFailure()
     {
-        yield return SlowText("Failed to Run!");
+        yield return SlowText("Couldn't get away!");
     }
 
     //---GET CORRECT TEXT---
@@ -314,6 +314,57 @@ public class MainBoxController : MonoBehaviour
     {
         string pokemonName = pokemon.GetBattleMessageName();
         yield return SlowText($"{pokemonName} is frozen solid!");
+    }
+
+    public IEnumerator GainExp(Pokemon pokemon, int exp)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} gained {exp} Exp. Points!");
+    }
+
+    public IEnumerator LevelUp(Pokemon pokemon, int level)
+    {
+        string pokemonName = pokemon.GetBattleMessageName();
+        yield return SlowText($"{pokemonName} grew to Lv. {level}!");
+    }
+    
+    public IEnumerator NewMove(string pokemonName, string moveName)
+    {
+        yield return SlowText($"{pokemonName} wants to learn the move {moveName}.");
+        yield return PauseAfterText();
+        yield return SlowText($"Should another move be forgotten and replaced with {moveName}?");
+    }
+
+    public IEnumerator WhichMove(string moveName)
+    {
+        yield return SlowText($"Please choose a move that will be replaced with {moveName}.");
+    }
+
+    public IEnumerator MoveLearned(string pokemonName, string moveName)
+    {
+        yield return SlowText($"{pokemonName} learned {moveName}!");
+    }
+    
+    public IEnumerator MoveConfirm(string oldMove, string newMove)
+    {
+        yield return SlowText($"Is it OK to forget {oldMove} in order to learn {newMove}?");
+    }
+    
+    public IEnumerator SkipConfirm(string newMove)
+    {
+        yield return SlowText($"Do you want to give up on having your Pokemon learn {newMove}?");
+    }
+
+    public IEnumerator ForgottenMove(string pokemonName, string oldMove, string newMove)
+    {
+        yield return SlowText($"One...two...and...ta-da!");
+        yield return PauseAfterText();
+        yield return SlowText($"{pokemonName} forgot {oldMove}...\nand it learned {newMove} instead!");
+    }
+
+    public IEnumerator NotAValidChoice()
+    {
+        yield return SlowText("Not a valid selection.");
     }
     //----------------------------------------
 

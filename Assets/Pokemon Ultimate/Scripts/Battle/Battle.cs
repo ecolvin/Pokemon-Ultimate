@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 
-public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Switching, Choice, Battle}
+public enum BattleState {Intro, ActionSelection, MoveSelection, Bag, Pokemon, Busy, Choice, Battle, ForgetMove}
 public enum Weather {None, Sun, HarshSun, Rain, HeavyRain, Sand, Hail, Snow, Shadow, Fog, Wind}
 public enum Terrain {None, Electric, Misty, Psychic, Grassy}
 public enum FieldEffect {None, Spikes, ToxicSpikes, Rocks, Webs, Reflect, LightScreen, Tailwind, LuckyChant}
@@ -25,6 +25,7 @@ public class Battle : MonoBehaviour
     [SerializeField] MainBoxController mainBox;
     [SerializeField] SideBoxController sideBox;
     [SerializeField] PartyScreen partyScreen;
+    [SerializeField] MoveSelectionController moveSelection;
 
 
     //TODO: Replace with parameters
@@ -43,8 +44,9 @@ public class Battle : MonoBehaviour
     int curBattleOption = 0;
     int curMoveOption = 0;
     bool choice = true;
+    int moveChoice = 0;
 
-    int fleeAttempts = 0;
+    int numRunAttempts = 0;
 
     bool isTrainerBattle = false;
     SwitchReason switchReason = SwitchReason.None;
@@ -89,7 +91,7 @@ public class Battle : MonoBehaviour
         {
             if(p != null)
             {
-                state = BattleState.Switching;
+                state = BattleState.Busy;
             }
             partyScreen.gameObject.SetActive(false);
             StartCoroutine(ClosePokemon(p));
@@ -274,6 +276,8 @@ public class Battle : MonoBehaviour
         enemySprite.Set(enemyPokemon);
         playerPokemon.IsActive = true; 
         
+        numRunAttempts = 0;
+
         if(!isTrainerBattle)
         {
             playerImage.gameObject.SetActive(false);
@@ -1065,24 +1069,14 @@ public class Battle : MonoBehaviour
         {
             yield return CalculateDamage(move, attacker, defender);
         }
-        yield return CalculateEffects(move, attacker, defender);
-        //yield return CalculateOther()          -Thinks like contact for abilities and whatnot
 
-        if(defender.Fainted)
-        {
-            if(attacker.IsPlayer)
-            {
-                yield return enemySprite.Faint();
-                yield return mainBox.Fainted(enemyPokemon);
-                yield return mainBox.PauseAfterText();
-            }
-            else
-            {
-                yield return playerSprite.Faint();
-                yield return mainBox.Fainted(playerPokemon);
-                yield return mainBox.PauseAfterText();
-            }
-        } 
+        List<Pokemon> pokemonOrder = new List<Pokemon>();
+        pokemonOrder.Add(defender);
+        pokemonOrder.Add(attacker);
+        yield return CheckForFainted(pokemonOrder);
+
+        yield return CalculateEffects(move, attacker, defender);
+        //yield return CalculateOther()          -Things like contact for abilities and whatnot
     }
 
     IEnumerator CalculateEffects(PokemonMove move, Pokemon attacker, Pokemon defender)
@@ -1638,6 +1632,50 @@ public class Battle : MonoBehaviour
         yield return null;
     }
 
+    IEnumerator CheckForFainted(List<Pokemon> pokemonOrder)
+    {
+        bool playerWinsTie = false;
+        bool enemyWinsTie = false;
+        foreach(Pokemon p in pokemonOrder)
+        {
+            if(p.Fainted)
+            {
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Faint();
+                    yield return mainBox.Fainted(playerPokemon);
+                    yield return mainBox.PauseAfterText();
+                    if(!playerWinsTie)
+                    {
+                        enemyWinsTie = true;
+                    }
+                }
+                else
+                {
+                    yield return enemySprite.Faint();
+                    yield return mainBox.Fainted(enemyPokemon);
+                    yield return mainBox.PauseAfterText();
+                    yield return GainExp();
+                    if(!enemyWinsTie)
+                    {
+                        playerWinsTie = true;
+                    }
+                }
+            }
+        }
+
+        if(playerWinsTie)
+        {
+            CheckVictory();
+            CheckLoss();
+        }
+        if(enemyWinsTie)
+        {
+            CheckLoss();
+            CheckVictory();
+        }
+    }
+
     IEnumerator EndRound()
     {
         List<Pokemon> pokemonOrder = UpdateSpeedOrder();
@@ -1657,13 +1695,16 @@ public class Battle : MonoBehaviour
             }
             else if(weather == Weather.Sand)
             {
-                EOTSand();
+                yield return EOTSand();
             }
             else if(weather == Weather.Rain)
             {
                 //Rain Dish/Dry Skin/
             }
         }        
+
+        CheckForFainted(pokemonOrder);
+        
         //Emergency Exit/Wimp Out switches from Weather
 
         //Affection shrug off status
@@ -1747,8 +1788,9 @@ public class Battle : MonoBehaviour
                 yield return mainBox.PauseAfterText();         
             }
         }
-        //Poison/Toxic/Poison Heal
-        //Burn
+        //Poison Heal
+
+        CheckForFainted(pokemonOrder);
 
         //Nightmare
         //Curse
@@ -1868,6 +1910,155 @@ public class Battle : MonoBehaviour
             //yield return mainBox.Expire();
             ionDeluge = false;
         }
+    }
+
+    int CalculateExperience()
+    {
+        float b = enemyPokemon.Species.BaseXPYield;
+        float e = 1f;
+        //if(Lucky Egg)
+        // e = 1.5f;
+        float f = 1f;
+        //Change F based on affection
+        float l = enemyPokemon.Level;
+        float lp = playerPokemon.Level;
+        float p = 1;
+        //Increase if EXP point power active
+        float s = 1;
+        //s = 2 if EXP Share && pokemon didn't participate
+        float t = 1;
+        //t = 1.5 if not same OT; t = 1.7 if not same OT and not same Language
+        float v = 1;
+        //v = 4915f/4096f if past evolution level without evolving
+
+        return Mathf.RoundToInt(((((b*l)/5) * (1/s) * Mathf.Pow(((2*l) + 10)/(l+lp+10), 2.5f)) + 1) * t * e * v * f * p);
+    }
+
+    IEnumerator ForgetAMove(Pokemon p, PokemonMove newMove)
+    {
+        moveSelection.gameObject.SetActive(true);
+        List<PokemonMove> moves = new List<PokemonMove>();
+        moves.AddRange(p.Moves);
+        moveSelection.SetMoves(moves, newMove);
+        state = BattleState.ForgetMove;
+
+        while(state == BattleState.ForgetMove)
+        {
+            yield return null;
+        }
+
+        if(moveChoice >= 0 && moveChoice < moves.Count)
+        {
+            yield return mainBox.MoveConfirm(moves[moveChoice].MoveBase.MoveName, newMove.MoveBase.MoveName);
+            yield return mainBox.PauseAfterText();
+
+            state = BattleState.Choice;
+            mainBox.EnableChoiceBox(true);
+
+            while(state == BattleState.Choice)
+            {
+                yield return null;
+            }
+
+            if(choice)
+            {
+                p.LearnMove(newMove, moveChoice);
+
+                yield return mainBox.ForgottenMove(p.Nickname, moves[moveChoice].MoveBase.MoveName, newMove.MoveBase.MoveName);
+                yield return mainBox.PauseAfterText();
+            }
+            else
+            {
+                yield return ForgetAMove(p, newMove);
+            }
+        }
+        else if(moveChoice == moves.Count)
+        {
+            yield return mainBox.SkipConfirm(newMove.MoveBase.MoveName);
+            yield return mainBox.PauseAfterText();
+
+            state = BattleState.Choice;
+            mainBox.EnableChoiceBox(true);
+
+            while(state == BattleState.Choice)
+            {
+                yield return null;
+            }
+
+            if(!choice)
+            {
+                yield return ForgetAMove(p, newMove);
+            }
+        }
+        else
+        {
+            yield return mainBox.NotAValidChoice();
+            yield return ForgetAMove(p, newMove);
+            //Can theoretically get here if somehow move selection is opened
+            //for a Pokemon with less than 4 moves leading to an empty move
+            //slot that if selected would lead here, but that should not be
+            //possible if everything is coded properly.
+        }
+
+    }
+
+    IEnumerator LearnNewMove(Pokemon p, PokemonMove newMove)
+    {
+        Debug.Log("New Move Learnable");
+        int slot = p.AvailableMoveSlot();
+        if(slot == -1)
+        {
+            yield return mainBox.NewMove(p.Nickname, newMove.MoveBase.MoveName);
+            yield return mainBox.PauseAfterText();
+
+            state = BattleState.Choice;
+            mainBox.EnableChoiceBox(true);
+
+            while(state == BattleState.Choice)
+            {
+                yield return null;
+            }
+
+            if(choice)
+            {
+                yield return mainBox.WhichMove(newMove.MoveBase.MoveName);
+                yield return mainBox.PauseAfterText();
+                yield return ForgetAMove(p, newMove);
+            }  
+        }
+        else
+        {
+            p.LearnMove(newMove, slot);
+            yield return mainBox.MoveLearned(p.Nickname, newMove.MoveBase.MoveName);
+            yield return mainBox.PauseAfterText();
+        }
+    }
+
+    IEnumerator GainExp()
+    {
+        int exp = CalculateExperience();
+        playerPokemon.GainExp(exp);
+        playerPokemon.ModifyEVs(enemyPokemon.Species.EvYield);
+        yield return mainBox.GainExp(playerPokemon, exp);
+        yield return mainBox.PauseAfterText();
+        
+        while(playerPokemon.LevelUp())
+        {
+            yield return playerHUD.LevelUp();
+            yield return mainBox.LevelUp(playerPokemon, playerPokemon.Level);
+            yield return mainBox.PauseAfterText();
+            List<PokemonMove> newMoves = playerPokemon.NewMoveAtCurLevel();
+            if(newMoves.Count > 0)
+            {
+                foreach(PokemonMove m in newMoves)
+                {
+                    yield return LearnNewMove(playerPokemon, m);
+                }
+            }
+        }
+
+        yield return playerHUD.UpdateXP(playerPokemon.GetExpPercent());
+        yield return mainBox.PauseAfterText();
     }
 
     IEnumerator SwitchPokemon(Pokemon pokemon)
@@ -2044,6 +2235,7 @@ public class Battle : MonoBehaviour
 
     IEnumerator CatchSuccess()
     {
+        enemyPokemon.IsPlayer = true;
         if(playerParty.AddPokemon(enemyPokemon))
         {
             yield return mainBox.AddedToParty(enemyPokemon.Nickname);
@@ -2071,10 +2263,16 @@ public class Battle : MonoBehaviour
             yield return RunSuccess();
         }
 
-        // if(enemyPokemon.Ability == "Arena Trap")
+        // if(enemyPokemon.Ability == "Arena Trap") //Shadow Tag & Magnet Pull if Steel Type ; Binding moves and Ingrain
         // {
         //     //yield return mainBox.FleePrevention()
         //     yield return mainBox.PauseAfterText();
+        // }
+
+        // if(Smoke Ball or Run Away)
+        // {
+        //     Smoke Ball message???
+        //     yield return RunSuccess();
         // }
 
         if(playerPokemon.Stats.Spe >= enemyPokemon.Stats.Spe)
@@ -2083,8 +2281,18 @@ public class Battle : MonoBehaviour
         }
         else
         {
-            //ToDo: Rework to check if run is successful or not
-            yield return RunSuccess();
+            numRunAttempts++;
+            float escapeOdds = (Mathf.Floor((playerPokemon.Stats.Spe * 32)/(enemyPokemon.Stats.Spe / 4)) + 30) * numRunAttempts;
+            Debug.Log($"Run Attempt #{numRunAttempts}: Player Speed = {playerPokemon.Stats.Spe}; Enemy Speed = {enemyPokemon.Stats.Spe}; Escape Odds = {escapeOdds}");
+
+            if(UnityEngine.Random.Range(0, 256) < escapeOdds)
+            {
+                yield return RunSuccess();
+            }
+            else
+            {
+                yield return RunFailure();
+            }
         }        
     }
 
@@ -2127,13 +2335,14 @@ public class Battle : MonoBehaviour
         fairyLockCounter = -1;
         ionDeluge = false;
 
-        fleeAttempts = 0;
+        numRunAttempts = 0;
 
         playerHUD.gameObject.SetActive(false);
         enemyHUD.gameObject.SetActive(false);
 
         enemyPokemon.EndBattle();
-        playerPokemon.EndBattle();
+
+        playerParty.EndBattle();
 
         enemyPokemon.IsActive = false;
         playerPokemon.IsActive = false;
@@ -2663,10 +2872,45 @@ public class Battle : MonoBehaviour
         mainBox.UpdateChoiceSelection(choice);
         if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
         {
-            state = BattleState.Switching;
+            state = BattleState.Busy;
             mainBox.EnableChoiceBox(false);       
         }
+    }
 
+    void HandleForgetMove()
+    {
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || 
+           Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            moveChoice++;
+            if(moveChoice > 4)
+            {
+                moveChoice = 0;
+            }
+        }
+        else if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
+                Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            moveChoice--;
+            if(moveChoice < 0)
+            {
+                moveChoice = 4;
+            }
+        }
+
+        Debug.Log($"New Choice = {moveChoice}");
+        moveSelection.UpdateMoveSelection(moveChoice);
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            state = BattleState.Busy;
+            moveSelection.gameObject.SetActive(false);
+        }
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            state = BattleState.Busy;
+            moveSelection.gameObject.SetActive(false);
+        }
     }
 
     void HandleInput()
@@ -2681,7 +2925,12 @@ public class Battle : MonoBehaviour
             HandleChoice();
             return;
         }
-        if(state == BattleState.Switching)
+        if(state == BattleState.ForgetMove)
+        {
+            HandleForgetMove();
+            return;
+        }
+        if(state == BattleState.Busy)
         {
             return;
         }
@@ -2797,3 +3046,4 @@ public class Battle : MonoBehaviour
     }
 }
 
+//Implement learning new moves

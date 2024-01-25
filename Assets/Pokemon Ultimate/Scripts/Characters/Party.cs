@@ -37,6 +37,14 @@ public class Party : MonoBehaviour
         return null;
     }
 
+    public void EndBattle()
+    {
+        foreach(Pokemon p in partyPokemon)
+        {
+            p.EndBattle();
+        }
+    }
+
     bool IsFull()
     {
         return !(partyPokemon.Count < 6);

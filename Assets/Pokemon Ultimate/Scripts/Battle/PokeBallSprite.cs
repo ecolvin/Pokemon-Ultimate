@@ -19,21 +19,44 @@ public class PokeBallSprite : MonoBehaviour
     [SerializeField] float shakeSpeed = 10f;
     [SerializeField] float critSpeed = 15f;
 
+    [SerializeField] float amplitude = 1;
+
     Vector3 startPosition;
     Vector3 endPosition;
+    Vector3 airPosition;
 
     void Awake()
     {
         endPosition = transform.localPosition;
         startPosition = endPosition - new Vector3(xOffset, yOffset);
+        airPosition = endPosition + new Vector3(0f, ballHeight);
+        
         GetComponent<Image>().color = Color.white;
     }
 
     public IEnumerator Thrown()
     {
-        gameObject.SetActive(true);
-        transform.position = startPosition;
-        Vector3 airPosition = endPosition + new Vector3(0f, ballHeight);
+        //gameObject.SetActive(true);
+        transform.localPosition = startPosition;
+                
+        // float distance = Vector3.Distance(startPosition, airPosition);
+        // float stepSize = throwSpeed/distance;
+
+        // float progress = 0;
+
+        // while(progress != 1.0f)
+        // {
+        //     progress = Mathf.Min(progress + (Time.deltaTime * stepSize), 1.0f);
+
+        //     float parabola = 1.0f - (4.0f * (progress - .5f) * (progress - .5f));
+
+        //     Vector3 nextPos = Vector3.Lerp(startPosition, airPosition, progress);
+        //     nextPos.y += parabola * amplitude;
+
+        //     transform.position = nextPos;
+
+        //     yield return null;
+        // }
 
         float curX = transform.localPosition.x;
         float curY = transform.localPosition.y;
@@ -41,7 +64,7 @@ public class PokeBallSprite : MonoBehaviour
         float diffY = airPosition.y - curY;
 
         while(Mathf.Abs(curY - airPosition.y) > Mathf.Epsilon && Mathf.Abs(curX - airPosition.x) > Mathf.Epsilon)
-        {
+        {      
             curX += diffX * throwSpeed * Time.deltaTime;
             curY += diffY * throwSpeed * Time.deltaTime;
             if((airPosition.x - curX) * diffX <= 0)

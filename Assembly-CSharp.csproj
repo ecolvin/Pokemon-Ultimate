@@ -83,6 +83,7 @@
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Other\PCBox.cs" />
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Other\PC.cs" />
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\PokeBallSprite.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\MoveSelectionController.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

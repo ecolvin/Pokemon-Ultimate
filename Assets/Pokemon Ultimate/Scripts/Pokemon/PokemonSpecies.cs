@@ -48,8 +48,11 @@ public class PokemonSpecies : ScriptableObject
     [SerializeField] int catchRate;
     public int CatchRate {get => catchRate;}
     [SerializeField] int baseXPYield;
+    public int BaseXPYield {get => baseXPYield;}
     [SerializeField] LevelingRate levelingRate;
+    public LevelingRate LevelingRate {get => levelingRate;}
     [SerializeField] StatBlock evYield;
+    public StatBlock EvYield {get => evYield;}
 
     //TODO: Rework wildHeldItems to be serializable
     [SerializeField] List<(string, int)> wildHeldItems;
