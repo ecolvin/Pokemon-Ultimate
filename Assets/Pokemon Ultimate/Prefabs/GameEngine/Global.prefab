@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3116474247767719171}
   - component: {fileID: 3116474247767719169}
   - component: {fileID: 3116474247767719168}
+  - component: {fileID: 7929692496381724069}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -112,6 +113,19 @@ MonoBehaviour:
   gridSize: 10
   battleMode: 0
   baseShinyOdds: 4096
+--- !u!114 &7929692496381724069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3116474247767719172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3599b79bea02704f9c0de62273fa0b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menu: {fileID: 3593164678655493607}
 --- !u!1 &3116474249398689409
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,3 +920,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &3593164678655493607 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5508534997779708650, guid: e70602357f2a6b646b8c5fbb9a890bc4, type: 3}
+  m_PrefabInstance: {fileID: 9056531429454429965}
+  m_PrefabAsset: {fileID: 0}

@@ -134,8 +134,6 @@ public class Battle : MonoBehaviour
         StartCoroutine(InitBattle(playerPokemon, enemyPokemon));
     }
 
-    //public void StartTrainerBattle(Trainer trainer){}
-
     public void HandleUpdate()
     {
         HandleInput();

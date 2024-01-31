@@ -12,6 +12,10 @@ public class GlobalSettings : MonoBehaviour
     public BattleMode BattleMode {get => battleMode;}    
     [SerializeField] int baseShinyOdds = 4096;
     public int BaseShinyOdds {get => baseShinyOdds;}
+    [SerializeField] Color defaultColor = Color.black;
+    public Color DefaultColor {get => defaultColor;}
+    [SerializeField] Color selectedColor = Color.red;
+    public Color SelectedColor {get => selectedColor;}
 
     public static GlobalSettings Instance {get; private set;}
 

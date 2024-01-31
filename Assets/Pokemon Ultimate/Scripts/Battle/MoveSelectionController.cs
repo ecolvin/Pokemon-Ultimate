@@ -6,9 +6,6 @@ using TMPro;
 public class MoveSelectionController : MonoBehaviour
 {
     [SerializeField] List<TextMeshProUGUI> moves;
-    
-    [SerializeField] Color selectionColor;
-    [SerializeField] Color defaultColor;
 
     public void SetMoves(List<PokemonMove> currentMoves, PokemonMove newMove)
     {
@@ -28,11 +25,11 @@ public class MoveSelectionController : MonoBehaviour
         {
             if(i == selection)
             {
-                option.color = selectionColor;
+                option.color = GlobalSettings.Instance.SelectedColor;
             }
             else
             {
-                option.color = defaultColor;
+                option.color = GlobalSettings.Instance.DefaultColor;
             }
             i++;
         }

@@ -30,11 +30,6 @@ public class SaveManager : MonoBehaviour
         LoadGame();
     }
 
-    void OnApplicationQuit() 
-    {        
-        SaveGame();
-    }
-
     public void NewGame()
     {
         gameData = new GameData();

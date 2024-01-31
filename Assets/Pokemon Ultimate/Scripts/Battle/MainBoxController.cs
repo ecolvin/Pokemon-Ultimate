@@ -5,9 +5,6 @@ using TMPro;
 
 public class MainBoxController : MonoBehaviour
 {
-    [SerializeField] Color selectionColor;
-    [SerializeField] Color defaultColor;
-
     [SerializeField] SideBoxController sideBox;
 
     [SerializeField] TextMeshProUGUI battleText;
@@ -659,13 +656,13 @@ public class MainBoxController : MonoBehaviour
     {
         if(yesSelected)
         {
-            yesText.color = selectionColor;
-            noText.color = defaultColor;
+            yesText.color = GlobalSettings.Instance.SelectedColor;
+            noText.color = GlobalSettings.Instance.DefaultColor;
         }
         else
         {
-            yesText.color = defaultColor;
-            noText.color = selectionColor;
+            yesText.color = GlobalSettings.Instance.DefaultColor;
+            noText.color = GlobalSettings.Instance.SelectedColor;
         }
     }
 
@@ -676,11 +673,11 @@ public class MainBoxController : MonoBehaviour
         {
             if(i == selection)
             {
-                option.color = selectionColor;
+                option.color = GlobalSettings.Instance.SelectedColor;
             }
             else
             {
-                option.color = defaultColor;
+                option.color = GlobalSettings.Instance.DefaultColor;
             }
             i++;
         }

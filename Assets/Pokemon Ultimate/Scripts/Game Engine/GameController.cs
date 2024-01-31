@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState {Overworld, Battle, Dialog}
+public enum GameState {Overworld, Battle, Dialog, Menu}
 
 public class GameController : MonoBehaviour
 {
@@ -12,6 +12,8 @@ public class GameController : MonoBehaviour
     GameState state;
     //Route curRoute;
 
+    MenuController menuController;
+
     public SceneDetails CurScene {get; private set;}
     public SceneDetails PrevScene {get; private set;}
 
@@ -20,17 +22,11 @@ public class GameController : MonoBehaviour
     void Start() 
     {
         Instance = this;
+        menuController = GetComponent<MenuController>();
+
         player.OnEncounter += StartBattle;    
         battle.OnBattleOver += EndBattle;
-
-        // player.OnTrainerBattle += (Collider trainerCollider) =>
-        // {
-        //     TrainerController trainer = trainerCollider.GetComponent<TrainerController>();
-        //     if(trainer != null)
-        //     {
-
-        //     }
-        // };
+        menuController.OnSelection += ExecuteMenuSelection;
 
         DialogManager.Instance.OnShowDialog += () => 
         {
@@ -44,13 +40,26 @@ public class GameController : MonoBehaviour
                 state = GameState.Overworld;
             }
         };
+
+        menuController.OnClose += () =>
+        {
+            state = GameState.Overworld;
+        };
     }
 
     void Update() 
     {
         if(state == GameState.Overworld)
         {
-            player.HandleUpdate();
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                menuController.OpenMenu();
+                state = GameState.Menu;
+            }
+            else
+            {
+                player.HandleUpdate();
+            }
         }    
         else if(state == GameState.Battle)
         {
@@ -59,6 +68,10 @@ public class GameController : MonoBehaviour
         else if(state == GameState.Dialog)
         {
             DialogManager.Instance.HandleUpdate();
+        }
+        else if(state == GameState.Menu)
+        {
+            menuController.HandleUpdate();
         }
     }
 
@@ -93,6 +106,75 @@ public class GameController : MonoBehaviour
 
         }
         battle.gameObject.SetActive(false);
+        state = GameState.Overworld;
+    }
+
+    void ExecuteMenuSelection(int selection)
+    {
+        switch(selection)
+        {
+            case 0: //Pokedex
+                MenuPokedex();
+                break;
+            case 1: //Pokemon
+                MenuPokemon();
+                break;
+            case 2: //Bag
+                MenuBag();
+                break;
+            case 3: //Save
+                MenuSave();
+                break;
+            case 4: //Trainer 
+                MenuTrainer();               
+                break;
+            case 5: //Options   
+                MenuOptions();             
+                break;
+            case 6:  //Exit
+                MenuExit();
+                break;            
+            default:
+                Debug.Log($"Invalid Menu Selection - {selection}");
+                break;
+        }
+    }
+
+    void MenuPokedex()
+    {
+
+    }
+
+    void MenuPokemon()
+    {
+
+    }
+
+    void MenuBag()
+    {
+
+    }
+
+    void MenuSave()
+    {
+        //Confirm if the player wants to save or not
+        SaveManager.Instance.SaveGame();
+        //Output text saying that the game was saved
+    }
+
+    void MenuTrainer()
+    {
+
+    }
+
+    void MenuOptions()
+    {
+
+    }
+
+    void MenuExit()
+    {
+        menuController.CloseMenu();
         state = GameState.Overworld;
     }
 }

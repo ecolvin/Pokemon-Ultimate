@@ -5,8 +5,6 @@ using TMPro;
 
 public class SideBoxController : MonoBehaviour
 {
-    [SerializeField] Color selectionColor;
-    [SerializeField] Color defaultColor;
     [SerializeField] Color outOfPPColor;
     [SerializeField] Color defaultPPColor;
 
@@ -50,11 +48,11 @@ public class SideBoxController : MonoBehaviour
         {
             if(i == selection)
             {
-                option.color = selectionColor;
+                option.color = GlobalSettings.Instance.SelectedColor;
             }
             else
             {
-                option.color = defaultColor;
+                option.color = GlobalSettings.Instance.DefaultColor;
             }
             i++;
         }
