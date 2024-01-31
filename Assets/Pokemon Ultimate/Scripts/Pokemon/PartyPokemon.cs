@@ -33,7 +33,7 @@ public class PartyPokemon
             return null;
         }
 
-        PokemonMove [] pokemonMoves = new PokemonMove[4];
+        List<PokemonMove> pokemonMoves = new List<PokemonMove>();
 
         for(int i = 0; i < moves.Length; i++)
         {
@@ -43,10 +43,10 @@ public class PartyPokemon
             }
             if(moves[i].Move != null)
             {
-                pokemonMoves[i] = new PokemonMove(moves[i].Move);
+                pokemonMoves.Add(new PokemonMove(moves[i].Move));
             }
         }
 
-        return new Pokemon(species, level, evs, ivs, nature, teraType, gender, ability, heldItem, pokemonMoves, isShiny, false, isPlayer);
+        return new Pokemon(species, level, ivs, evs, nature, teraType, gender, ability, heldItem, pokemonMoves, isShiny, false, isPlayer);
     }
 }

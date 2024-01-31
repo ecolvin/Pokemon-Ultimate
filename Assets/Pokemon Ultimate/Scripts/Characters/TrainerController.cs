@@ -4,8 +4,10 @@ using UnityEngine;
 
 public enum TrainerState {Idle, Walking, Dialog, Battle}
 
-public class TrainerController : MonoBehaviour, Interactable
+public class TrainerController : MonoBehaviour, Interactable, ISaveable
 {
+    [SerializeField] string id;
+
     [SerializeField] string trainerName;
     public string TrainerName {get => trainerName;}
     [SerializeField] Sprite sprite;
@@ -132,7 +134,7 @@ public class TrainerController : MonoBehaviour, Interactable
         {            
             state = TrainerState.Dialog;
             StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () => 
-            {
+            {                
                 state = TrainerState.Battle;
                 GameController.Instance.StartTrainerBattle(this);
                 challenge.SetActive(false);
@@ -143,5 +145,30 @@ public class TrainerController : MonoBehaviour, Interactable
             state = TrainerState.Dialog;
             StartCoroutine(DialogManager.Instance.ShowDialog(postDialog, () => {state = TrainerState.Idle;}));
         }
+    }    
+
+    [ContextMenu("Generate guid for id")]
+    void GenerateGUID()
+    {
+        id = System.Guid.NewGuid().ToString();
+    }
+
+    public void LoadData(GameData data)
+    {
+        bool challengeActive;
+        if(data.trainersBattled.TryGetValue(id, out challengeActive))
+        {
+            challenge.SetActive(challengeActive);
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if(data.trainersBattled.ContainsKey(id))
+        {
+            data.trainersBattled.Remove(id);
+        }
+
+        data.trainersBattled.Add(id, challenge.activeSelf);
     }
 }

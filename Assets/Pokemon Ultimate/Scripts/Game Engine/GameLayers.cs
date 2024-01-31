@@ -14,8 +14,13 @@ public class GameLayers : MonoBehaviour
     public LayerMask PlayerLayer {get => playerLayer;}
     [SerializeField] LayerMask portalLayer;
     public LayerMask PortalLayer {get => portalLayer;}
+    [SerializeField] LayerMask waterLayer;
+    public LayerMask WaterLayer {get => waterLayer;}
+    [SerializeField] LayerMask ledgeLayer;
+    public LayerMask LedgeLayer {get => ledgeLayer;}
 
-    public LayerMask BlockingLayers {get => obstacleLayer | interactableLayer | playerLayer;}
+    public LayerMask BlockingLayers {get => obstacleLayer | interactableLayer | playerLayer | waterLayer | ledgeLayer;}
+    public LayerMask InteractableLayers {get => interactableLayer | waterLayer;}
     public LayerMask TriggerLayers {get => spawnerLayer | portalLayer;}
     public static GameLayers Instance {get; set;}
     

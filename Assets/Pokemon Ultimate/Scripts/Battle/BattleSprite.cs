@@ -22,7 +22,7 @@ public class BattleSprite : MonoBehaviour
     [SerializeField] Color burnColor = Color.red;
     [SerializeField] float paraSpeed = 10;
     [SerializeField] Color paraColor = Color.yellow;
-    [SerializeField] int paraPause = 150;
+    //[SerializeField] int paraPause = 150;
     [SerializeField] float sleepSpeed = 3;
     [SerializeField] Color sleepColor = new Color(0f, 0f, 100f, 255f);
     [SerializeField] int sleepPause = 30;
@@ -437,11 +437,6 @@ public class BattleSprite : MonoBehaviour
             yield return null;
         }
 
-        //Pause for a number of frames equal to paraPause
-        // for(int i = 0; i < paraPause; i++)
-        // {
-        //     yield return null;
-        // }
         yield return Attack();
         yield return Attack();
 

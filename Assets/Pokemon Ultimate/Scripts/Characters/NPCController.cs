@@ -9,9 +9,11 @@ public class NPCController : MonoBehaviour, Interactable
     [SerializeField] Dialog dialog;
     [SerializeField] Transform body;
 
-    [SerializeField] [Range(100,9999)] int moveChance = 5000; // 2/moveChance odds per frame
+    [SerializeField] [Range(100,9999)] int moveOdds = 2500; //Rand(0,n); 0 or 1 to succeed
+    [SerializeField] [Range(100,9999)] int rotateOdds = 2500; //Rand(0,n); 0 or 1 to succeed
     [SerializeField] List<Vector2> movementPattern;
     [SerializeField] float patternDelay;
+    [SerializeField] bool onlyRotate;
 
 
     Character character;
@@ -33,7 +35,11 @@ public class NPCController : MonoBehaviour, Interactable
     {
         if(state == NPCState.Idle)
         {
-            if(movementPattern.Count > 0)
+            if(onlyRotate)
+            {
+                RandomRotation();
+            }
+            else if(movementPattern.Count > 0)
             {
                 StartCoroutine(ScriptedMovement());
             }
@@ -51,8 +57,8 @@ public class NPCController : MonoBehaviour, Interactable
         Vector3 curPos = transform.position;
         float xOffset = 0;
         float zOffset = 0;
-        int rand1 = UnityEngine.Random.Range(0,moveChance);
-        int rand2 = UnityEngine.Random.Range(0,moveChance);
+        int rand1 = UnityEngine.Random.Range(0,2*moveOdds);
+        int rand2 = UnityEngine.Random.Range(0,2*moveOdds);
         if(rand1 <= 1)
         {
             int direction = 1;
@@ -86,7 +92,6 @@ public class NPCController : MonoBehaviour, Interactable
         }
     }
 
-    //Figure out why NPC can move through the player
     IEnumerator ScriptedMovement()
     {
         state = NPCState.Walking;
@@ -112,7 +117,25 @@ public class NPCController : MonoBehaviour, Interactable
         }
     }
 
-    //IEnumerator RandomRotation(){}
+    void RandomRotation()
+    {
+        int rand = UnityEngine.Random.Range(0,3 * rotateOdds);
+        if(rand <= 2)
+        {
+            if(rand % 3 == 0)
+            {
+                body.transform.Rotate(new Vector3(0, 90));
+            }
+            else if(rand % 3 == 1)
+            {
+                body.transform.Rotate(new Vector3(0, 180));
+            }
+            else
+            {
+                body.transform.Rotate(new Vector3(0, -90));
+            }
+        }
+    }
 
     public void Interact(Vector3 playerPos)
     {
@@ -121,3 +144,5 @@ public class NPCController : MonoBehaviour, Interactable
         StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () => {state = NPCState.Idle;}));      
     }
 }
+
+//Implement limited rotation (specific directions only)

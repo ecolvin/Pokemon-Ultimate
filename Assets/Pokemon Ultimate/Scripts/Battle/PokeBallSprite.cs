@@ -19,7 +19,7 @@ public class PokeBallSprite : MonoBehaviour
     [SerializeField] float shakeSpeed = 10f;
     [SerializeField] float critSpeed = 15f;
 
-    [SerializeField] float amplitude = 1;
+    //[SerializeField] float amplitude = 1;
 
     Vector3 startPosition;
     Vector3 endPosition;
@@ -35,7 +35,8 @@ public class PokeBallSprite : MonoBehaviour
     }
 
     public IEnumerator Thrown()
-    {
+    {        
+        GetComponent<Image>().color = Color.white;
         //gameObject.SetActive(true);
         transform.localPosition = startPosition;
                 
@@ -260,4 +261,5 @@ public class PokeBallSprite : MonoBehaviour
 //Arc the throw
 //Add some pizazz when the pokemon is going into the ball
 //Catch animation:
-//-sparkle
+//
+//Recolor pokeball after catch

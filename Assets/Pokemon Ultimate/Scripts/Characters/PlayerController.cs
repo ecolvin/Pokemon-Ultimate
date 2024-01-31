@@ -2,20 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Linq;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ISaveable
 {
     [SerializeField] Transform body;    
     [SerializeField] Sprite sprite;
     public Sprite Sprite {get => sprite;}
 
-    [Tooltip("Reference to a shiny sparkle ParticleSystem")]
-    [SerializeField] ParticleSystem shinySparkle;
-
     public event Action<Pokemon> OnEncounter;
-    public event Action<Collider> OnTrainerBattle;
+    //public event Action<Collider> OnTrainerBattle;
 
-    private Character character;
+    Fader fader;
+    Character character;
     public Character Character {get => character;}
 
     bool isMoving = false;
@@ -24,6 +23,11 @@ public class PlayerController : MonoBehaviour
     {
         character = GetComponent<Character>();
         GetComponent<Rigidbody>().freezeRotation = true;
+    }
+
+    void Start()
+    {        
+        fader = FindObjectOfType<Fader>();
     }
 
     public void HandleUpdate()
@@ -123,12 +127,44 @@ public class PlayerController : MonoBehaviour
         isMoving = false;
     }
 
-
     public IEnumerator TriggerEncounter(Pokemon p)
     {
-        yield return new WaitForSeconds(0.5f);
-        //Screen Flash (and music start eventually)
+        yield return fader.BattleStart();
+        yield return fader.Fade(1);
+        yield return new WaitForSeconds(.5f);
         OnEncounter(p);   //Shiny, HA, Perfect IVs
+        yield return fader.Fade(0);
         isMoving = false;
     }
+
+    public void LoadData(GameData data)
+    {
+        PlayerSaveData saveData = data.player;
+        if(saveData != null)
+        {
+            transform.position = saveData.position;
+            body.transform.rotation = saveData.rotation;
+            GetComponent<Party>().Pokemon = saveData.pokemon.Select(s => new Pokemon(s)).ToList();
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        PlayerSaveData saveData = new PlayerSaveData()
+        {
+            position = transform.position,
+            rotation = body.transform.rotation,
+            pokemon = GetComponent<Party>().Pokemon.Select(p => p.GetSaveData()).ToList()
+        };
+
+        data.player = saveData;
+    }
+}
+
+[System.Serializable]
+public class PlayerSaveData
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public List<PokemonSaveData> pokemon;
 }

@@ -19,7 +19,10 @@ public class MainBoxController : MonoBehaviour
     [SerializeField] TextMeshProUGUI noText;
 
     [SerializeField] float textDelay = .02f;     //Dynamically change in gameSettings eventually
+    
+    [SerializeField] bool waitForInput = true;
     [SerializeField] float pauseDuration = 1f;
+
 
     bool typing = false;
 
@@ -574,15 +577,14 @@ public class MainBoxController : MonoBehaviour
     }
 
     public IEnumerator PauseAfterText()
-    {
-        //Global setting for if text auto plays after a delay or if user input is needed     
-        if(true)
+    {    
+        if(waitForInput)
         {   
             yield return WaitForInput(new List<KeyCode>(){KeyCode.Space,KeyCode.Return,KeyCode.Escape});
         }
         else
         {
-            //yield return new WaitForSeconds(pauseDuration);
+            yield return new WaitForSeconds(pauseDuration);
         }
     }
 
@@ -684,11 +686,15 @@ public class MainBoxController : MonoBehaviour
         }
     }
 
-    public void UpdateMoveNames(PokemonMove[] moves)
+    public void UpdateMoveNames(List<PokemonMove> moves)
     {
         for(int i = 0; i < 4; i++)
         {
-            if(moves[i] != null)
+            if(i >= moves.Count)
+            {
+                moveOptionText[i].text = "-----";
+            }
+            else if(moves[i] != null)
             {
                 moveOptionText[i].text = moves[i].MoveBase.MoveName;
             }

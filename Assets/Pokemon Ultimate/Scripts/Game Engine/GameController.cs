@@ -12,6 +12,9 @@ public class GameController : MonoBehaviour
     GameState state;
     //Route curRoute;
 
+    public SceneDetails CurScene {get; private set;}
+    public SceneDetails PrevScene {get; private set;}
+
     public static GameController Instance {get; private set;}
 
     void Start() 
@@ -20,14 +23,14 @@ public class GameController : MonoBehaviour
         player.OnEncounter += StartBattle;    
         battle.OnBattleOver += EndBattle;
 
-        player.OnTrainerBattle += (Collider trainerCollider) =>
-        {
-            TrainerController trainer = trainerCollider.GetComponent<TrainerController>();
-            if(trainer != null)
-            {
+        // player.OnTrainerBattle += (Collider trainerCollider) =>
+        // {
+        //     TrainerController trainer = trainerCollider.GetComponent<TrainerController>();
+        //     if(trainer != null)
+        //     {
 
-            }
-        };
+        //     }
+        // };
 
         DialogManager.Instance.OnShowDialog += () => 
         {
@@ -57,6 +60,12 @@ public class GameController : MonoBehaviour
         {
             DialogManager.Instance.HandleUpdate();
         }
+    }
+
+    public void SetCurrentScene(SceneDetails newScene)
+    {
+        PrevScene = CurScene;
+        CurScene = newScene;
     }
 
     void StartBattle(Pokemon p)//int shinyRolls, int haRolls, int numPerfect)

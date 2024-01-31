@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {    
+    [SerializeField] string id = "";
+
     [SerializeField] Transform body;
   
     [SerializeField] float moveSpeed = 50f;
 
+    bool isPlayer = false;
+
     void Awake()
     {
         SnapToPos(transform.position);
+        isPlayer = GetComponent<PlayerController>() != null;
     }
 
     public void SnapToPos(Vector3 pos)
@@ -25,7 +30,6 @@ public class Character : MonoBehaviour
     int RoundToNearestTen(float f)
     {
         float r = Mathf.Abs(f % 10);
-        Debug.Log($"F = {f}; R = {r}");
         if(r >= 5)
         {
             return Mathf.RoundToInt(f+(10-r));
@@ -56,4 +60,48 @@ public class Character : MonoBehaviour
             yield return null;
         }while(curPos != newPos);
     }
+
+    [ContextMenu("Generate guid for id")]
+    void GenerateGUID()
+    {
+        id = System.Guid.NewGuid().ToString();
+    }
+        
+    // public void LoadData(GameData data)
+    // {
+    //     if(isPlayer)
+    //     {
+    //         return;
+    //     }
+    //     Vector3 position;
+    //     if(data.characterPositions.TryGetValue(id, out position))
+    //     {
+    //         transform.position = position;
+    //     }
+
+    //     Quaternion rotation = Quaternion.identity;
+    //     if(data.characterRotations.TryGetValue(id, out rotation))
+    //     {
+    //         body.transform.rotation = rotation;
+    //     }
+    // }
+
+    // public void SaveData(ref GameData data)
+    // {
+    //     if(isPlayer)
+    //     {
+    //         return;
+    //     }
+    //     if(data.characterPositions.ContainsKey(id))
+    //     {
+    //         data.characterPositions.Remove(id);
+    //     }
+    //     if(data.characterRotations.ContainsKey(id))
+    //     {
+    //         data.characterRotations.Remove(id);
+    //     }
+
+    //     data.characterPositions.Add(id, transform.position);
+    //     data.characterRotations.Add(id, body.transform.rotation);
+    // }
 }

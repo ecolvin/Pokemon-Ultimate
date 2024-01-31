@@ -6,9 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Pokemon Ultimate/Scenes/TestScene.unity
+    path: Assets/Pokemon Ultimate/Scenes/Sandbox/Route-1.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Pokemon Ultimate/Scenes/Route 1.unity
+    path: Assets/Pokemon Ultimate/Scenes/Sandbox/Route-0.unity
     guid: 6e9958dd2f44d314c97840c4926eb10d
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/Sandbox/Town-1-PC.unity
+    guid: 7de0240876bdb144ab87f45df41794cb
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/Sandbox/Town-1.unity
+    guid: 70598bf0da7ef7c4dbc88c961af597d9
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/Kanto/Pallet Town.unity
+    guid: e5086b85ddfdae6469a73a1d35421cff
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/Kanto/Route 1.unity
+    guid: f70c787e3c4ec294d9ae777ae9003200
   m_configObjects: {}

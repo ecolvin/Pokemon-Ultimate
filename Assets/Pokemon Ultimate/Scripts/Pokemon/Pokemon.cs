@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Pokemon
@@ -32,13 +33,12 @@ public class Pokemon
     StatBlock stats = new StatBlock(0,0,0,0,0,0);
     public StatBlock Stats{get{return stats;}}
     StatBlock evs = new StatBlock(0,0,0,0,0,0);
-    StatBlock tempEVs = new StatBlock(0,0,0,0,0,0);
     StatBlock ivs = new StatBlock(0,0,0,0,0,0);
     public StatBlock Ivs{get{return ivs;}}
     StatBlock hyperTrained = new StatBlock(0,0,0,0,0,0);
     
-    PokemonMove[] moves = new PokemonMove[4];
-    public PokemonMove[] Moves{get{return moves;}}
+    List<PokemonMove> moves = new List<PokemonMove>();
+    public List<PokemonMove> Moves{get{return moves;}}
 
 //-------------------In-battle Effects------------------
 //Lasts outside of battle
@@ -123,10 +123,39 @@ public class Pokemon
         ClearVolatileStatuses();
     }
 
+    public Pokemon(PokemonSaveData saveData)
+    {
+        this.species = saveData.species;
+        this.nickname = saveData.name;
+        this.level = saveData.level;
+        this.gender = saveData.gender;
+        this.isShiny = saveData.shiny;
+        this.ability = saveData.ability;
+        this.teraType = saveData.tt;
+        this.heldItem = saveData.item;
+        this.nature = saveData.nat;
+        this.natureMint = saveData.mint;
+        this.evs = saveData.Evs;
+        this.ivs = saveData.ivs;
+        this.hyperTrained = saveData.ht;
+        this.moves = saveData.moveList.Select(m => new PokemonMove(m)).ToList();
+        this.nvStatus = saveData.status;
+        this.experience = saveData.exp;
+        this.curHP = saveData.hp;
+        this.fainted = saveData.fainted;
+    
+        this.isWild = false;
+        this.IsPlayer = true;
+
+        SetTypes();
+        CalculateStats();
+        SetModelAndSprite();
+    }
+
     public Pokemon(PokemonSpecies species, int level, StatBlock ivs = null, StatBlock evs = null, 
                    PokemonNature nature = PokemonNature.None, PokemonType teraType = PokemonType.None,
                    PokemonGender gender = PokemonGender.None, string ability = "", string heldItem = "",
-                   PokemonMove[] moves = null, bool isShiny=false, bool isWild=false, bool isPlayer=false)
+                   List<PokemonMove> moves = null, bool isShiny=false, bool isWild=false, bool isPlayer=false)
     {
 
         this.species = species;
@@ -187,7 +216,7 @@ public class Pokemon
 
         this.heldItem = heldItem;
 
-        if(moves == null)
+        if(moves == null || moves.Count == 0)
         {
             DetermineMoves();
         }
@@ -202,10 +231,6 @@ public class Pokemon
         ClearVolatileStatuses();
     }
 
-    //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
-    //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
-    //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
-    //public Pokemon(PokemonSpecies species, int level, bool isShiny, bool isHiddenAbility){}
 
 //-------------------Initialization Functions------------------
 
@@ -324,7 +349,7 @@ public class Pokemon
         for(int i = 0; i < 4 && moveOptions.Count > 0; i++)
         {
             LearnableMove m = moveOptions.Pop();
-            moves[i] = new PokemonMove(m.MoveBase);
+            moves.Add(new PokemonMove(m.MoveBase));
         }
     }
 
@@ -478,51 +503,51 @@ public class Pokemon
         {
             if(lvl < 50)
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (100 - lvl))/50);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * (100f - lvl))/50f);
             }
             else if(lvl < 68)
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (150 - lvl))/100);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * (150f - lvl))/100f);
             }
             else if(lvl < 98)
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * Mathf.FloorToInt((1911 - (10*lvl))/3))/500);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * Mathf.FloorToInt((1911f - (10f*lvl))/3f))/500f);
             }
             else
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (160 - lvl))/100);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * (160f - lvl))/100f);
             }
         }
         else if(species.LevelingRate == LevelingRate.Fast)
         {
-            return Mathf.RoundToInt(4 * Mathf.Pow(lvl, 3)/5);
+            return Mathf.RoundToInt(4f * Mathf.Pow(lvl, 3f)/5f);
         }
         else if(species.LevelingRate == LevelingRate.Fluctuating)
         {
             if(lvl < 15)
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (Mathf.FloorToInt((lvl + 1)/3) + 24))/50);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * (Mathf.FloorToInt((lvl + 1f)/3f) + 24f))/50f);
             }
             else if(lvl < 36)
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (lvl + 14))/50);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * (lvl + 14f))/50f);
             }
             else
             {
-                return Mathf.RoundToInt((Mathf.Pow(lvl, 3) * (Mathf.FloorToInt(lvl/2) + 32))/50);
+                return Mathf.RoundToInt((Mathf.Pow(lvl, 3f) * (Mathf.FloorToInt(lvl/2f) + 32f))/50f);
             }
         }
         else if(species.LevelingRate == LevelingRate.MediumFast)
         {
-            return Mathf.RoundToInt(Mathf.Pow(lvl, 3));
+            return Mathf.RoundToInt(Mathf.Pow(lvl, 3f));
         }
         else if(species.LevelingRate == LevelingRate.MediumSlow)
         {
-            return Mathf.RoundToInt(((6/5) * Mathf.Pow(lvl, 3)) - (15 * Mathf.Pow(lvl, 2)) + (100 * lvl) - 140);
+            return Mathf.RoundToInt(((6f/5f) * Mathf.Pow(lvl, 3f)) - (15f * Mathf.Pow(lvl, 2f)) + (100f * lvl) - 140f);
         }
         else if(species.LevelingRate == LevelingRate.Slow)
         {
-            return Mathf.RoundToInt(5 * Mathf.Pow(lvl, 3)/4);
+            return Mathf.RoundToInt(5f * Mathf.Pow(lvl, 3f)/4f);
         }
         else
         {
@@ -573,7 +598,7 @@ public class Pokemon
 
     public int AvailableMoveSlot()
     {
-        for(int i = 0; i < moves.Length; i++)
+        for(int i = 0; i < moves.Count; i++)
         {
             if(moves[i] == null)
             {
@@ -806,7 +831,56 @@ public class Pokemon
         }
     }
 
+    public PokemonSaveData GetSaveData()
+    {
+        //Debug.Log($"Creating save data for {nickname}");
+        return new PokemonSaveData()
+        {
+            species = Species,
+            name = nickname,
+            level = Level,
+            gender = Gender,
+            shiny = isShiny,
+            ability = Ability,
+            tt = TeraType,
+            item = HeldItem,
+            nat = nature,
+            mint = natureMint,
+            Evs = evs,
+            ivs = Ivs,
+            ht = hyperTrained,
+            moveList = moves.Select(m => m?.GetSaveData()).ToList(),
+            status = nvStatus,
+            exp = experience,
+            hp = curHP,
+            fainted = Fainted
+        };
+    }
+
 }
+
+[System.Serializable]
+public class PokemonSaveData
+{
+    public PokemonSpecies species;
+    public string name;
+    public int level;
+    public PokemonGender gender;
+    public bool shiny;
+    public string ability;
+    public PokemonType tt;
+    public string item;
+    public PokemonNature nat;
+    public PokemonNature mint;
+    public StatBlock Evs;
+    public StatBlock ivs;
+    public StatBlock ht;    
+    public List<MoveSaveData> moveList;
+    public NonVolatileStatus status;
+    public int exp;
+    public int hp;
+    public bool fainted;
+};
 
 public enum PokemonGender
 {

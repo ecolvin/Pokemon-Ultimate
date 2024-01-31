@@ -149,15 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 890280363874619441}
-  interactableLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  spawner:
-    serializedVersion: 2
-    m_Bits: 2048
-  shinySparkle: {fileID: 7882415297863137366}
-  encounterOdds: 15
-  baseShinyOdds: 4096
+  sprite: {fileID: 0}
+  shinySparkle: {fileID: 0}
 --- !u!114 &7748905541737895063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,13 +163,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 532b575c718f79941a26d0ebb21ec7bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
   body: {fileID: 890280363874619441}
-  collisionLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  interactableLayer:
-    serializedVersion: 2
-    m_Bits: 128
   moveSpeed: 50
 --- !u!1 &3658677560904596147
 GameObject:
@@ -210,7 +198,6 @@ Transform:
   - {fileID: 2003133861201301314}
   - {fileID: 9007604620102808339}
   - {fileID: 7149045934601134715}
-  - {fileID: 7882415297863137367}
   m_Father: {fileID: 2921338121017713955}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -561,74 +548,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &7394103745064164595
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 890280363874619441}
-    m_Modifications:
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178021, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178023, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_Name
-      value: Shiny Sparkle
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
---- !u!198 &7882415297863137366 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 864362225997178021, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-  m_PrefabInstance: {fileID: 7394103745064164595}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7882415297863137367 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-  m_PrefabInstance: {fileID: 7394103745064164595}
-  m_PrefabAsset: {fileID: 0}

@@ -17,6 +17,14 @@ public class PokemonMove
         Disabled = false;
     }
 
+    public PokemonMove(MoveSaveData data)
+    {
+        MoveBase = data.mBase;
+        MaxPP = data.maxpp;
+        CurPP = data.curpp;
+        Disabled = false;
+    }
+
     public void DecrementPP(bool pressure)
     {
         if(pressure)
@@ -33,4 +41,23 @@ public class PokemonMove
             CurPP = 0;
         }
     }
+
+    public MoveSaveData GetSaveData()
+    {
+        //Debug.Log($"Saving move {MoveBase.MoveName} with {CurPP}/{MaxPP} pp");
+        return new MoveSaveData()
+        {
+            mBase = MoveBase,
+            maxpp = MaxPP,
+            curpp = CurPP
+        };
+    }
+}
+
+[System.Serializable]
+public class MoveSaveData
+{
+    public PokemonMoveBase mBase;
+    public int maxpp;
+    public int curpp;
 }

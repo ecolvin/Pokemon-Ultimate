@@ -211,7 +211,7 @@ public class Battle : MonoBehaviour
     {
         state = BattleState.Pokemon;
         
-        partyScreen.SetPartyMembers(playerParty.PartyPokemon);
+        partyScreen.SetPartyMembers(playerParty.Pokemon);
         partyScreen.gameObject.SetActive(true);
     }
 
@@ -539,7 +539,7 @@ public class Battle : MonoBehaviour
         enemyPokemon = newPokemon;
         enemySprite.Set(enemyPokemon);
         
-        if(GlobalSettings.Instance.BattleMode == BattleMode.Switch) //&& Not trainer switching mid-turn
+        if(GlobalSettings.Instance.BattleMode == BattleMode.Switch && playerParty.NumHealthyPokemon() > 1) //&& Not trainer switching mid-turn
         {
             yield return TrainerSwitching();
         }        
@@ -3016,7 +3016,7 @@ public class Battle : MonoBehaviour
             }
             else if(state == BattleState.MoveSelection)
             {
-                if(playerPokemon.Moves[curMoveOption] != null && playerPokemon.Moves[curMoveOption].CurPP > 0)
+                if(curMoveOption < playerPokemon.Moves.Count && playerPokemon.Moves[curMoveOption] != null && playerPokemon.Moves[curMoveOption].CurPP > 0)
                 {
                     StartCoroutine(ChooseMove(playerPokemon.Moves[curMoveOption]));
                 }
@@ -3041,9 +3041,17 @@ public class Battle : MonoBehaviour
         if(state == BattleState.MoveSelection)
         {
             mainBox.UpdateMoveSelection(curMoveOption);
-            sideBox.updateMoveDetails(playerPokemon.Moves[curMoveOption]);
+            if(curMoveOption < playerPokemon.Moves.Count)
+            {
+                sideBox.updateMoveDetails(playerPokemon.Moves[curMoveOption]);
+            }
+            else
+            {
+                sideBox.updateMoveDetails(null);
+            }
         }
     }
 }
 
 //Implement option to run after pokemon fainted
+//Implement fading into trainer battle (requires minor refactoring somewhere to allow for waiting on the coroutine)

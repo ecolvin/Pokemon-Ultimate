@@ -5,13 +5,14 @@ using UnityEngine;
 public class GlobalLoader : MonoBehaviour
 {
     [SerializeField] GameObject globalPrefab;
+    [SerializeField] GameObject spawnPoint;
 
     void Awake()
     {
         GlobalObjects [] existingGlobals = FindObjectsOfType<GlobalObjects>();
         if(existingGlobals.Length <= 0)
         {
-            Instantiate(globalPrefab, new Vector3(0,0,0), Quaternion.identity);
+            Instantiate(globalPrefab, spawnPoint.transform.position, Quaternion.identity);
         }
     }
 }

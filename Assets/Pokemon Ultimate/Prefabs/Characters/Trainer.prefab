@@ -176,6 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 532b575c718f79941a26d0ebb21ec7bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
   body: {fileID: 890280363874619441}
   moveSpeed: 50
 --- !u!114 &1296979590727751645
@@ -190,9 +191,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2580bf67b4b2c54e82152a063d45968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
   trainerName: 
   sprite: {fileID: 0}
   dialog:
+    lines: []
+  lossDialog:
     lines: []
   postDialog:
     lines: []
@@ -213,13 +217,175 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d482d3be5437a7640aff12a8fac2390d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  species:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  pokemon:
+  - species: {fileID: 0}
+    level: 1
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    nature: 66
+    teraType: 0
+    gender: 3
+    ability: 
+    heldItem: 
+    isShiny: 0
+    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+  - species: {fileID: 0}
+    level: 1
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    nature: 66
+    teraType: 0
+    gender: 3
+    ability: 
+    heldItem: 
+    isShiny: 0
+    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+  - species: {fileID: 0}
+    level: 1
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    nature: 66
+    teraType: 0
+    gender: 3
+    ability: 
+    heldItem: 
+    isShiny: 0
+    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+  - species: {fileID: 0}
+    level: 1
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    nature: 66
+    teraType: 0
+    gender: 3
+    ability: 
+    heldItem: 
+    isShiny: 0
+    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+  - species: {fileID: 0}
+    level: 1
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    nature: 66
+    teraType: 0
+    gender: 3
+    ability: 
+    heldItem: 
+    isShiny: 0
+    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+  - species: {fileID: 0}
+    level: 1
+    evs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    ivs:
+      hp: 0
+      atk: 0
+      def: 0
+      spa: 0
+      spd: 0
+      spe: 0
+    nature: 66
+    teraType: 0
+    gender: 3
+    ability: 
+    heldItem: 
+    isShiny: 0
+    isPlayer: 0
+    moves:
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
+    - move: {fileID: 0}
 --- !u!1 &1474543923328107239
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,7 +417,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 890280363874619441}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4252513369876046364
 MeshFilter:
@@ -334,7 +500,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 890280363874619441}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1464927278523089544
 MeshFilter:
@@ -418,7 +584,6 @@ Transform:
   - {fileID: 2003133861201301314}
   - {fileID: 9007604620102808339}
   - {fileID: 7149045934601134715}
-  - {fileID: 7882415297863137367}
   - {fileID: 8254145236525534908}
   - {fileID: 6442594780749442425}
   - {fileID: 5089092481927201836}
@@ -456,7 +621,7 @@ Transform:
   - {fileID: 7491474540922927121}
   - {fileID: 8789211781389434754}
   m_Father: {fileID: 890280363874619441}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4648942929688410051
 GameObject:
@@ -888,73 +1053,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &7394103745064164595
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 890280363874619441}
-    m_Modifications:
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178021, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178023, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_Name
-      value: Shiny Sparkle
-      objectReference: {fileID: 0}
-    - target: {fileID: 864362225997178023, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
---- !u!4 &7882415297863137367 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 864362225997178020, guid: ebf2e723c63635e4eb996255ec106dae, type: 3}
-  m_PrefabInstance: {fileID: 7394103745064164595}
-  m_PrefabAsset: {fileID: 0}

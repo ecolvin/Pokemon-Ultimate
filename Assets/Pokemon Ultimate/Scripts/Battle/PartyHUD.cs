@@ -10,7 +10,7 @@ public class PartyHUD : MonoBehaviour
     public void Set(Party party)
     {
         int i = 0;
-        foreach(Pokemon p in party.PartyPokemon)
+        foreach(Pokemon p in party.Pokemon)
         {
             pokeSlots[i].gameObject.SetActive(true);
 
