@@ -55,8 +55,8 @@ public class PokemonSpecies : ScriptableObject
     public StatBlock EvYield {get => evYield;}
 
     //TODO: Rework wildHeldItems to be serializable
-    [SerializeField] List<(string, int)> wildHeldItems;
-    public List<(string, int)> WildHeldItems{get{return wildHeldItems;}}
+    [SerializeField] List<(ItemBase, int)> wildHeldItems;
+    public List<(ItemBase, int)> WildHeldItems{get{return wildHeldItems;}}
 
     [Header("Pokemon Models")]
     [SerializeField] GameObject maleModel;

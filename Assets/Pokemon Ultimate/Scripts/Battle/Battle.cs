@@ -85,19 +85,6 @@ public class Battle : MonoBehaviour
     //waterSport - last until the user switches out
     bool airLock = false; //Whether or not pokemon with Cloud Nine/Air Lock is on the field
 
-    void Start()
-    {
-        partyScreen.OnClose += (Pokemon p) => 
-        {
-            if(p != null)
-            {
-                state = BattleState.Busy;
-            }
-            partyScreen.gameObject.SetActive(false);
-            StartCoroutine(ClosePokemon(p));
-        };
-    }
-
     public void StartBattle(Pokemon wildPokemon)
     {   
         isTrainerBattle = false;
@@ -136,6 +123,25 @@ public class Battle : MonoBehaviour
 
     public void HandleUpdate()
     {
+        if(state == BattleState.Pokemon)
+        {
+            HandlePartySelection();            
+            return;
+        }
+        if(state == BattleState.Choice)
+        {
+            HandleChoiceInput();
+            return;
+        }
+        if(state == BattleState.ForgetMove)
+        {
+            HandleForgetMoveInput();
+            return;
+        }
+        if(state == BattleState.Busy)
+        {
+            return;
+        }
         HandleInput();
     }
 
@@ -209,7 +215,6 @@ public class Battle : MonoBehaviour
     {
         state = BattleState.Pokemon;
         
-        partyScreen.SetPartyMembers(playerParty.Pokemon);
         partyScreen.gameObject.SetActive(true);
     }
 
@@ -226,7 +231,7 @@ public class Battle : MonoBehaviour
             }
             else
             {
-                Debug.Log("Switching due to fainted Pokemon but no Pokemon selected. Party Screen shouldn't let you get here.");
+                Debug.LogError("Switching due to fainted Pokemon but no Pokemon selected. Shouldn't be able to get here.");
             }
         }
         else if(switchReason == SwitchReason.OppSwitch)
@@ -537,7 +542,7 @@ public class Battle : MonoBehaviour
         enemyPokemon = newPokemon;
         enemySprite.Set(enemyPokemon);
         
-        if(GlobalSettings.Instance.BattleMode == BattleMode.Switch && playerParty.NumHealthyPokemon() > 1) //&& Not trainer switching mid-turn
+        if(GlobalSettings.Instance.BattleMode == BattleMode.Switch && playerParty.NumHealthyPokemon() > 1) //&& Not a switch move like u-turn or volt switch
         {
             yield return TrainerSwitching();
         }        
@@ -2082,6 +2087,7 @@ public class Battle : MonoBehaviour
 
         playerHUD.GenerateBar(playerPokemon);
         playerHUD.gameObject.SetActive(true);
+        partyScreen.SetPartyMembers();
     }
 
     //-------------Pokemon Catching Methods-----------------
@@ -2233,7 +2239,7 @@ public class Battle : MonoBehaviour
 
     IEnumerator CatchSuccess()
     {
-        enemyPokemon.IsPlayer = true;
+        enemyPokemon.Captured();
         if(playerParty.AddPokemon(enemyPokemon))
         {
             yield return mainBox.AddedToParty(enemyPokemon.Nickname);
@@ -2763,7 +2769,7 @@ public class Battle : MonoBehaviour
                 return 1f;
             }
         }
-        if(defender.HeldItem == "Ring Target" && TypeChart.GetTypeEffectiveness(moveType, type) == 0.0f)
+        if(TypeChart.GetTypeEffectiveness(moveType, type) == 0.0f) //Held Item == Ring Target
         {
             return 1f;
         }
@@ -2854,7 +2860,49 @@ public class Battle : MonoBehaviour
 
 //---------------------------Input Handling---------------------------------------    
 
-    void HandleChoice()
+    void HandlePartySelection()
+    {
+        Action<Pokemon> onSelected = (Pokemon p) =>
+        {
+            if(p == null)
+            {
+                partyScreen.InvalidSelection();
+                Debug.LogError("The selected pokemon was null.");
+            }
+            else if(p.Fainted)
+            {
+                partyScreen.SelectionFainted();
+            }
+            else if(p.IsActive)
+            {
+                partyScreen.SelectionActive();
+            }
+            else
+            {
+                state = BattleState.Busy;
+                partyScreen.gameObject.SetActive(false);
+                StartCoroutine(ClosePokemon(p));
+            }
+        };
+
+        Action onClose = () =>
+        {
+            if(switchReason == SwitchReason.Fainted)
+            {
+                partyScreen.ForcedSelection();
+            }
+            else
+            {
+                state = BattleState.Busy;
+                partyScreen.gameObject.SetActive(false);
+                StartCoroutine(ClosePokemon(null));
+            }
+        };
+
+        partyScreen.HandleInput(onSelected, onClose);
+    }
+
+    void HandleChoiceInput()
     {
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) ||
            Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
@@ -2875,7 +2923,7 @@ public class Battle : MonoBehaviour
         }
     }
 
-    void HandleForgetMove()
+    void HandleForgetMoveInput()
     {
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || 
            Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
@@ -2896,7 +2944,6 @@ public class Battle : MonoBehaviour
             }
         }
 
-        Debug.Log($"New Choice = {moveChoice}");
         moveSelection.UpdateMoveSelection(moveChoice);
 
         if(Input.GetKeyDown(KeyCode.Escape))
@@ -2913,25 +2960,6 @@ public class Battle : MonoBehaviour
 
     void HandleInput()
     {
-        if(state == BattleState.Pokemon)
-        {
-            partyScreen.HandleInput(switchReason == SwitchReason.Fainted);
-            return;
-        }
-        if(state == BattleState.Choice)
-        {
-            HandleChoice();
-            return;
-        }
-        if(state == BattleState.ForgetMove)
-        {
-            HandleForgetMove();
-            return;
-        }
-        if(state == BattleState.Busy)
-        {
-            return;
-        }
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             if(curBattleOption < 2 && state == BattleState.ActionSelection)
@@ -3005,6 +3033,7 @@ public class Battle : MonoBehaviour
                 }
                 else if(curBattleOption == 2)
                 {
+                    switchReason = SwitchReason.BattleSelection;
                     Pokemon();
                 }
                 else if(curBattleOption == 3)

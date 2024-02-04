@@ -145,6 +145,7 @@ public class PlayerController : MonoBehaviour, ISaveable
             transform.position = saveData.position;
             body.transform.rotation = saveData.rotation;
             GetComponent<Party>().Pokemon = saveData.pokemon.Select(s => new Pokemon(s)).ToList();
+            GetComponent<Inventory>().SetInventory(saveData.inventory);
         }
     }
 
@@ -154,7 +155,8 @@ public class PlayerController : MonoBehaviour, ISaveable
         {
             position = transform.position,
             rotation = body.transform.rotation,
-            pokemon = GetComponent<Party>().Pokemon.Select(p => p.GetSaveData()).ToList()
+            pokemon = GetComponent<Party>().Pokemon.Select(p => p.GetSaveData()).ToList(),
+            inventory = Inventory.GetInventory().Items
         };
 
         data.player = saveData;
@@ -167,4 +169,5 @@ public class PlayerSaveData
     public Vector3 position;
     public Quaternion rotation;
     public List<PokemonSaveData> pokemon;
+    public List<ItemSlot> inventory;
 }

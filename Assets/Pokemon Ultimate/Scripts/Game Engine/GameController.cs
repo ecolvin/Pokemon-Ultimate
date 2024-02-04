@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public enum GameState {Overworld, Battle, Dialog, Menu}
+public enum GameState {Overworld, Battle, Dialog, Menu, Pokemon, Bag}
 
 public class GameController : MonoBehaviour
 {
     [SerializeField] PlayerController player;
     [SerializeField] Battle battle;
+    [SerializeField] PartyScreen pokemonScreen;
+    [SerializeField] InventoryUI inventoryUI;
 
     GameState state;
     //Route curRoute;
@@ -19,11 +22,18 @@ public class GameController : MonoBehaviour
 
     public static GameController Instance {get; private set;}
 
-    void Start() 
+    void Awake()
     {
         Instance = this;
         menuController = GetComponent<MenuController>();
+        
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
+    }
 
+    void Start() 
+    {
+        pokemonScreen.Init();
         player.OnEncounter += StartBattle;    
         battle.OnBattleOver += EndBattle;
         menuController.OnSelection += ExecuteMenuSelection;
@@ -72,6 +82,37 @@ public class GameController : MonoBehaviour
         else if(state == GameState.Menu)
         {
             menuController.HandleUpdate();
+        }
+        else if(state == GameState.Pokemon)
+        {
+            Action<Pokemon> onSelection = (Pokemon p) =>
+            {
+                //Show pokemon options
+            };
+
+            Action onClose = () =>
+            {
+                pokemonScreen.gameObject.SetActive(false);
+                state = GameState.Menu;
+            };
+
+            pokemonScreen.HandleInput(onSelection, onClose);
+        }
+        else if(state == GameState.Bag)
+        {
+            // Action onSelection = () =>
+            // {
+            //     //Show item options
+            // };
+
+            Action onClose = () =>
+            {
+                inventoryUI.gameObject.SetActive(false);
+                menuController.OpenMenu();
+                state = GameState.Menu;
+            };
+
+            inventoryUI.HandleUpdate(onClose);
         }
     }
 
@@ -147,12 +188,15 @@ public class GameController : MonoBehaviour
 
     void MenuPokemon()
     {
-
+        state = GameState.Pokemon;
+        pokemonScreen.gameObject.SetActive(true);
     }
 
     void MenuBag()
     {
-
+        state = GameState.Bag;
+        inventoryUI.gameObject.SetActive(true);
+        menuController.CloseMenu();
     }
 
     void MenuSave()

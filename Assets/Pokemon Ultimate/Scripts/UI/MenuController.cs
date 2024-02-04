@@ -53,7 +53,6 @@ public class MenuController : MonoBehaviour
             UpdateItemSelection();
         }
 
-
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             CloseMenu();
@@ -67,17 +66,14 @@ public class MenuController : MonoBehaviour
 
     void UpdateItemSelection()
     {
-        Debug.Log($"Current Selection = {selectedItem}");
         for(int i = 0; i < menuItems.Count; i++)
         {
             if(i == selectedItem)
             {
-                Debug.Log($"Selected Text: Item #{i} - {menuItems[i].text}");
                 menuItems[i].color = GlobalSettings.Instance.SelectedColor;
             }
             else
             {
-                Debug.Log($"Default Text: Item #{i} - {menuItems[i].text}");
                 menuItems[i].color = GlobalSettings.Instance.DefaultColor;
             }
         }

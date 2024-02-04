@@ -11,8 +11,10 @@ public class PartyScreen : MonoBehaviour
     [SerializeField] Image cancelButton;
     [SerializeField] Color cancelDefaultColor;
     [SerializeField] Color cancelSelectionColor;
- 
-    public event Action<Pokemon> OnClose;
+  
+    //public event Action<Pokemon> OnClose;
+
+    Party party;
 
     PartyMember[] members;
     int partySize = 0;
@@ -21,29 +23,35 @@ public class PartyScreen : MonoBehaviour
     public void Init()
     {
         members = GetComponentsInChildren<PartyMember>();
+        party = Party.GetParty();
+        SetPartyMembers();
+
+        party.OnUpdated += SetPartyMembers;
     }
 
-    public void SetPartyMembers(List<Pokemon> party)
+    public void SetPartyMembers()
     {
+        List<Pokemon> pokemon = party.Pokemon;
+
         index = 0;
-        partySize = party.Count;
+        partySize = pokemon.Count;
         Pokemon active = null;
         Queue<Pokemon> fainted = new Queue<Pokemon>();
         Queue<Pokemon> notFainted = new Queue<Pokemon>();
 
         for(int j = 0; j < partySize; j++)
         { 
-            if(party[j].IsActive)
+            if(pokemon[j].IsActive)
             {
-                active = party[j];
+                active = pokemon[j];
             }
-            else if(party[j].Fainted)
+            else if(pokemon[j].Fainted)
             {
-                fainted.Enqueue(party[j]);
+                fainted.Enqueue(pokemon[j]);
             }
             else
             {
-                notFainted.Enqueue(party[j]);
+                notFainted.Enqueue(pokemon[j]);
             }
         }
 
@@ -71,9 +79,30 @@ public class PartyScreen : MonoBehaviour
             members[i].Disable();
             i++;
         }
+        UpdateSelection();
     }
 
-    public void HandleInput(bool switchBecauseFainted)
+    public void ForcedSelection()
+    {
+        text.text = $"{members[0].Poke.Nickname} is unable to battle.";
+    }
+
+    public void SelectionFainted()
+    {
+        text.text = $"{members[index].Poke.Nickname} is unable to battle.";
+    }
+
+    public void SelectionActive()
+    {
+        text.text = $"{members[index].Poke.Nickname} is already in battle.";
+    }
+
+    public void InvalidSelection()
+    {
+        text.text = $"Please make a different selection.";
+    }
+
+    public void HandleInput(Action<Pokemon> onSelection, Action onClose)
     {       
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
@@ -82,6 +111,7 @@ public class PartyScreen : MonoBehaviour
             {
                 index = 6;
             }
+            UpdateSelection();
         }
         if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
@@ -97,6 +127,7 @@ public class PartyScreen : MonoBehaviour
             {
                 index = 0;
             }
+            UpdateSelection();
         }
         if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
@@ -112,6 +143,7 @@ public class PartyScreen : MonoBehaviour
             {
                 index = 0;
             }
+            UpdateSelection();
         }
         if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
@@ -120,42 +152,25 @@ public class PartyScreen : MonoBehaviour
             {
                 index = 6;
             }
+            UpdateSelection();
         }
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             index = 6;
+            UpdateSelection();
         }
         if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
+            text.text = "";
             if(index == 6)
             {
-                if(!switchBecauseFainted)
-                {
-                    OnClose(null);
-                }
-                else
-                {
-                    text.text = $"{members[0].Poke.Nickname} is unable to battle.";
-                }
+                onClose?.Invoke();
             }
             else
             {
-                if(index == 0 && !switchBecauseFainted)
-                {
-                    text.text = $"{members[index].Poke.Nickname} is already in battle.";
-                }
-                else if(!members[index].Poke.Fainted)
-                {
-                    OnClose(members[index].Poke);
-                }
-                else
-                {
-                    text.text = $"{members[index].Poke.Nickname} is unable to battle.";
-                }
+                onSelection?.Invoke(members[index].Poke);
             }
         }
-
-        UpdateSelection();
     }
 
     void UpdateSelection()

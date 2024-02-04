@@ -22,9 +22,11 @@ public class BattleHUD : MonoBehaviour
 
     public void GenerateBar(Pokemon pokemon)
     {
-        Debug.Log($"Generating HUD for {pokemon.Nickname}");
         this.pokemon = pokemon;
-
+        if(pokemon == null)
+        {
+            return;
+        }
         pokemonName.text = pokemon.Species.SpeciesName;
         level.text = "Lv." + pokemon.Level;
         if(pokemon.Gender == PokemonGender.Male)

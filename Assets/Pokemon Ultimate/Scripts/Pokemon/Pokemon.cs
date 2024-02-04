@@ -25,8 +25,8 @@ public class Pokemon
     public PokemonType Type2{get{return type2;}}
     PokemonType teraType;
     public PokemonType TeraType{get{return teraType;}}
-    string heldItem = "";
-    public string HeldItem{get{return heldItem;}}
+    ItemBase heldItem = null;
+    public ItemBase HeldItem{get{return heldItem;}}
 
     PokemonNature nature;
     PokemonNature natureMint = PokemonNature.None;
@@ -91,6 +91,8 @@ public class Pokemon
     Dictionary<VolatileStatus,int> volatileStatus;
     public Dictionary<VolatileStatus,int> VolatileStatus{get{return volatileStatus;}}
 
+    public event System.Action OnDataChange;
+
 //-------------Art-----------------
     GameObject model;
     Sprite sprite;
@@ -154,7 +156,7 @@ public class Pokemon
 
     public Pokemon(PokemonSpecies species, int level, StatBlock ivs = null, StatBlock evs = null, 
                    PokemonNature nature = PokemonNature.None, PokemonType teraType = PokemonType.None,
-                   PokemonGender gender = PokemonGender.None, string ability = "", string heldItem = "",
+                   PokemonGender gender = PokemonGender.None, string ability = "", ItemBase heldItem = null,
                    List<PokemonMove> moves = null, bool isShiny=false, bool isWild=false, bool isPlayer=false)
     {
 
@@ -318,12 +320,12 @@ public class Pokemon
 
     void DetermineWildHeldItem()
     {
-        List<(string,int)> items = species.WildHeldItems;
+        List<(ItemBase,int)> items = species.WildHeldItems;
         if(items != null && items.Count > 0)
         {
-            string[] itemTable = new string[100];
+            ItemBase[] itemTable = new ItemBase[100];
             int i = 0;
-            foreach((string,int) item in items)
+            foreach((ItemBase,int) item in items)
             {
                 for(int j = 0; j < item.Item2; ++i)
                 {
@@ -485,12 +487,18 @@ public class Pokemon
         if(curHP <= 0)
         {
             curHP = 0;
-            fainted = true; //fainted
+            Faint();
         }
+        else
+        {
+            fainted = false;
+        }
+
         if(curHP > stats.HP)
         {
             curHP = stats.HP;
         }
+        OnDataChange?.Invoke();
     }
 
     int GetExpAtLevel(int lvl)
@@ -580,7 +588,60 @@ public class Pokemon
         int prevHP = stats.HP;  
         CalculateStats();        
         curHP += stats.HP - prevHP;
+        OnDataChange?.Invoke();
         return true;
+    }
+
+    public bool PPFull()
+    {
+        for(int i = 0; i < moves.Count; i++)
+        {
+            if(moves[i] != null && moves[i].CurPP < moves[i].MaxPP)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Negative number for full heal
+    public void Elixir(int ppHealing)
+    {
+        for(int i = 0; i < moves.Count; i++)
+        {
+            PokemonMove m = moves[i];
+            if(m == null)
+            {
+                continue;
+            }
+            if(ppHealing < 0)
+            {
+                m.CurPP = m.MaxPP;
+            }
+            else
+            {
+                m.CurPP += ppHealing;
+                m.CurPP = Mathf.Min(m.CurPP, m.MaxPP);
+            }
+        }
+    }
+
+    public void Ether(int ppHealing, int moveSelection)
+    {
+        PokemonMove m = moves[moveSelection];
+        if(m == null)
+        {
+            return;
+        }
+        if(ppHealing < 0)
+        {
+            m.CurPP = m.MaxPP;
+        }
+        else
+        {
+            m.CurPP += ppHealing;
+            m.CurPP = Mathf.Min(m.CurPP, m.MaxPP);
+        }
     }
 
     public List<PokemonMove> NewMoveAtCurLevel()
@@ -677,6 +738,7 @@ public class Pokemon
         }
         
         nvStatus = status;
+        OnDataChange?.Invoke();
         return 0;
     }
 
@@ -701,10 +763,12 @@ public class Pokemon
     public void ClearNVStatus()
     {
         nvStatus = NonVolatileStatus.None;
+        OnDataChange?.Invoke();
     }
 
-    public void ClearVolatileStatuses()
+    public bool ClearVolatileStatuses()
     {
+        return false;
         // foreach(KeyValuePair<global::VolatileStatus,int> volStatus in volatileStatus)
         // {
         //     volatileStatus[volStatus.Key] = -1;
@@ -831,6 +895,13 @@ public class Pokemon
         }
     }
 
+    public void Captured()
+    {
+        IsPlayer = true;
+        isWild = false;
+        //Set OT, capture date/location, etc...
+    }
+
     public PokemonSaveData GetSaveData()
     {
         //Debug.Log($"Creating save data for {nickname}");
@@ -857,6 +928,13 @@ public class Pokemon
         };
     }
 
+    void Faint()
+    {
+        curHP = 0;
+        fainted = true;
+        ClearNVStatus();
+    }
+
 }
 
 [System.Serializable]
@@ -869,7 +947,7 @@ public class PokemonSaveData
     public bool shiny;
     public string ability;
     public PokemonType tt;
-    public string item;
+    public ItemBase item;
     public PokemonNature nat;
     public PokemonNature mint;
     public StatBlock Evs;

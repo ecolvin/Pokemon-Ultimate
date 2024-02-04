@@ -21,7 +21,7 @@ public class PartyPokemon
     [SerializeField] PokemonType teraType = PokemonType.None;
     [SerializeField] PokemonGender gender = PokemonGender.None;
     [SerializeField] string ability;
-    [SerializeField] string heldItem;
+    [SerializeField] ItemBase heldItem = null;
     [SerializeField] bool isShiny = false;
     [SerializeField] bool isPlayer = false;
     [SerializeField] KnownMove [] moves = new KnownMove[4];

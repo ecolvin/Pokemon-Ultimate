@@ -16,12 +16,15 @@ public class PartyMember : MonoBehaviour
     public void Set(Pokemon pokemon)
     {
         poke = pokemon;
+        spriteImage.sprite = pokemon.Sprite;
         hud.gameObject.SetActive(true);
         spriteImage.gameObject.SetActive(true);
-        hud.GenerateBar(pokemon);
-        Debug.Log("4");
-        spriteImage.sprite = pokemon.Sprite;
-        Debug.Log("5");
+        poke.OnDataChange += Update;
+    }
+
+    void Update()
+    {
+        hud.GenerateBar(poke);
     }
 
     public void Disable()

@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Party : MonoBehaviour
 {
     [SerializeField] PartyPokemon[] partyPokemon = new PartyPokemon [6]; 
     List<Pokemon> pokemon = new List<Pokemon>();
-    public List<Pokemon> Pokemon{get{return pokemon;}set{pokemon = value;}}
+    public List<Pokemon> Pokemon{get{return pokemon;}set{pokemon = value; OnUpdated?.Invoke();}}
 
+    public event Action OnUpdated;
+
+    public static Party GetParty()
+    {
+        return FindObjectOfType<PlayerController>().GetComponent<Party>();
+    }
 
     void Awake() 
     {
@@ -74,6 +81,7 @@ public class Party : MonoBehaviour
             return false;
         }
         pokemon.Add(p);
+        OnUpdated?.Invoke();
         return true;
     }
 }
