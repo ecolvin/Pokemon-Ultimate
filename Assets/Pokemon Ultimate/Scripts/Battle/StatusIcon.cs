@@ -10,6 +10,7 @@ public class StatusIcon : MonoBehaviour
     [SerializeField] List<StatusInfo> statusInfo;
 
     Dictionary<NonVolatileStatus, StatusInfo> statusMap = new Dictionary<NonVolatileStatus, StatusInfo>();
+    public Dictionary<NonVolatileStatus, StatusInfo> StatusMap {get => statusMap;}
 
     bool initialized = false;
 
@@ -28,7 +29,16 @@ public class StatusIcon : MonoBehaviour
 
     public void UpdateIcon(NonVolatileStatus status)
     {
-        Debug.Log($"Status = {status}");
+        Debug.Log($"Updating Icon to {status}");
+        if(!initialized)
+        {
+            Init();
+        }
+        GetComponent<Image>().sprite = statusMap[status].Sprite;
+    }
+
+    public void UpdateBattleIcon(NonVolatileStatus status)
+    {
         if(!initialized)
         {
             Init();
@@ -39,12 +49,15 @@ public class StatusIcon : MonoBehaviour
 
     void UpdateColor(Color color)
     {
-        this.gameObject.GetComponent<Image>().color = color;
+        GetComponent<Image>().color = color;
     }
 
     void UpdateText(string s)
     {
-        text.text = s;
+        if(text != null)
+        {
+            text.text = s;
+        }
     }
 }
 
@@ -52,9 +65,11 @@ public class StatusIcon : MonoBehaviour
 public class StatusInfo
 {
     [SerializeField] NonVolatileStatus status;
-    public NonVolatileStatus Status{get{return status;}}
+    public NonVolatileStatus Status{get => status;}
     [SerializeField] Color iconColor;
-    public Color IconColor{get{return iconColor;}}
+    public Color IconColor{get => iconColor;}
     [SerializeField] string iconText;
-    public string IconText{get{return iconText;}}
+    public string IconText{get => iconText;}
+    [SerializeField] Sprite sprite;
+    public Sprite Sprite{get => sprite;}
 }

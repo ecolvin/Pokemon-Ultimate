@@ -498,7 +498,10 @@ public class Pokemon
         {
             curHP = stats.HP;
         }
-        OnDataChange?.Invoke();
+        if(damage != 0)
+        {
+            OnDataChange?.Invoke();
+        }
     }
 
     int GetExpAtLevel(int lvl)

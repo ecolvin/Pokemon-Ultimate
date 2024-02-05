@@ -32,7 +32,7 @@ public class InventoryUI : MonoBehaviour
     int selectedItem = 0;
     int menuSelection = 0;
     float defaultMenuY = 0;
-    int pokemonSelection = 0;
+    int selectedPokemon = 0;
     int selectedQty = 0;
     int listSize = 0;
     int selectedTab = 0;
@@ -57,6 +57,14 @@ public class InventoryUI : MonoBehaviour
         inventory = Inventory.GetInventory();
         party = Party.GetParty();
         numPokemon = party.Pokemon.Count;
+        UpdateItemList(selectedTab);
+        partySprites.SetState(InvUIState.Healing);
+
+        inventory.OnUpdated += RefreshItems;
+    }
+
+    void RefreshItems()
+    {
         UpdateItemList(selectedTab);
     }
 
@@ -206,23 +214,23 @@ public class InventoryUI : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)
         || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
-            pokemonSelection++;            
-            pokemonSelection %= numPokemon;
+            selectedPokemon++;            
+            selectedPokemon %= numPokemon;
         }
         if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) 
         || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
-            pokemonSelection--;
-            if(pokemonSelection < 0)
+            selectedPokemon--;
+            if(selectedPokemon < 0)
             {
-                pokemonSelection += numPokemon;
+                selectedPokemon += numPokemon;
             }
             else
             {
-                pokemonSelection %= numPokemon;
+                selectedPokemon %= numPokemon;
             }
         }
-        StartCoroutine(partySprites.UpdateSelection(pokemonSelection));
+        StartCoroutine(partySprites.UpdateSelection(selectedPokemon));
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             menu.SetActive(true);
@@ -238,7 +246,7 @@ public class InventoryUI : MonoBehaviour
 
     void HandleInputQty()
     {
-        StartCoroutine(partySprites.UpdateSelection(pokemonSelection));
+        StartCoroutine(partySprites.UpdateSelection(selectedPokemon));
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             selectedQty--;
@@ -308,6 +316,7 @@ public class InventoryUI : MonoBehaviour
         {
             useItem = true;
             OpenPokemonSelection();
+            StartCoroutine(DialogManager.Instance.ShowDialog("Which Pokemon will you use it on?"));
         }
         else if(menuSelection == 1)
         {
@@ -333,19 +342,15 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {
-                if(inventory.Items[selectedItem].Item.Use(party.Pokemon[pokemonSelection]))
+                ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon]);
+                if(usedItem != null)
                 {
-                    bool itemRemoved = inventory.RemoveItem(inventory.Items[selectedItem].Item, 1);
-                    if(!itemRemoved)
-                    {
-                        Debug.LogError("Tried to remove an item that didn't exist. Not sure how that's possible.");
-                    }
+                    yield return DialogManager.Instance.ShowDialog($"{party.Pokemon[selectedPokemon]}'s HP was restored.");
                 }
                 else
                 {
-                    Debug.Log("It has no effect!");
+                    yield return DialogManager.Instance.ShowDialog("It would have no effect.");
                 }
-                UpdateItemList(selectedTab);
                 state = UIState.Items;
             }
         }
@@ -358,21 +363,8 @@ public class InventoryUI : MonoBehaviour
 
     IEnumerator HandleQtySelection()
     {
-        if(inventory.Items[selectedItem].Item.Use(party.Pokemon[pokemonSelection]))
-        {
-            //Dialog Message
-            bool itemRemoved = inventory.RemoveItem(inventory.Items[selectedItem].Item, selectedQty);
-            if(!itemRemoved)
-            {
-                Debug.LogError("Tried to remove an item that didn't exist. Not sure how that's possible.");
-            }
-        }
-        else
-        {
-
-        }             
-        CloseQty();
-        UpdateItemList(selectedTab); 
+        ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon], selectedQty);           
+        CloseQty(); 
         state = UIState.Items;
         yield return null;
     }
@@ -421,6 +413,10 @@ public class InventoryUI : MonoBehaviour
     {
         selectedItem = 0; //Reset selection to the top of the new tab
         UpdateItemList(selectedTab);
+
+        //Change the state of the InvParty to reflect necessary UI Icons
+        partySprites.SetState(InvUIState.Healing);
+
     }
 
     void UpdateDescription(ItemBase item)
@@ -488,7 +484,7 @@ public class InventoryUI : MonoBehaviour
     void OpenPokemonSelection() 
     {
         state = UIState.Pokemon;
-        pokemonSelection = 0;
+        selectedPokemon = 0;
         CloseMenu();        
         UnselectItem(selectedItem);
     }

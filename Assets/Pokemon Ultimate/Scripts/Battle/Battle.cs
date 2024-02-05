@@ -198,7 +198,14 @@ public class Battle : MonoBehaviour
     {
         state = BattleState.MoveSelection;
         mainBox.Fight(curMoveOption, playerPokemon);
-        sideBox.Fight(playerPokemon.Moves[curMoveOption]);
+        if(curMoveOption >= playerPokemon.Moves.Count)
+        {
+            sideBox.Fight(null);
+        }
+        else
+        {
+            sideBox.Fight(playerPokemon.Moves[curMoveOption]);
+        }
     }
 
     void Bag()
@@ -2067,6 +2074,7 @@ public class Battle : MonoBehaviour
     IEnumerator SwitchPokemon(Pokemon pokemon)
     {
         sideBox.Clear();
+        curMoveOption = 0;
 
         playerHUD.gameObject.SetActive(false);
         if(switchReason != SwitchReason.Fainted)

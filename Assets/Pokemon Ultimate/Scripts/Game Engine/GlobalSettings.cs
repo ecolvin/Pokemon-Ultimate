@@ -21,6 +21,10 @@ public class GlobalSettings : MonoBehaviour
     public Color SelectedColor {get => selectedColor;}
     [SerializeField] Color selectedBarColor = new Color(255, 200, 0, 255);
     public Color SelectedBarColor {get => selectedBarColor;}
+    [SerializeField] bool waitForInputAfterText = true;
+    public bool WaitForInputAfterText {get => waitForInputAfterText;}
+    [SerializeField] float pauseDuration = 1f;
+    public float PauseDuration {get => pauseDuration;}
 
 
     public static GlobalSettings Instance {get; private set;}

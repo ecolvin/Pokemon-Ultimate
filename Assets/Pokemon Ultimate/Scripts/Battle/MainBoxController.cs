@@ -17,10 +17,6 @@ public class MainBoxController : MonoBehaviour
 
     [SerializeField] float textDelay = .02f;     //Dynamically change in gameSettings eventually
     
-    [SerializeField] bool waitForInput = true;
-    [SerializeField] float pauseDuration = 1f;
-
-
     bool typing = false;
 
 //---------------Dialog Box Options------------------
@@ -574,14 +570,14 @@ public class MainBoxController : MonoBehaviour
     }
 
     public IEnumerator PauseAfterText()
-    {    
-        if(waitForInput)
+    {   
+        if(GlobalSettings.Instance.WaitForInputAfterText)
         {   
-            yield return WaitForInput(new List<KeyCode>(){KeyCode.Space,KeyCode.Return,KeyCode.Escape});
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape));
         }
         else
         {
-            yield return new WaitForSeconds(pauseDuration);
+            yield return new WaitForSeconds(GlobalSettings.Instance.PauseDuration);
         }
     }
 

@@ -29,6 +29,24 @@ public class DialogManager : MonoBehaviour
         //Do things on update (update selected option if dialog has options)
     }
 
+    public IEnumerator ShowDialog(string text, Action onFinished=null)
+    {
+        Debug.Log("Invoking OnShowDialog");
+        OnShowDialog?.Invoke();
+        dialogBox.SetActive(true);
+        onDialogFinished = onFinished;
+
+        Debug.Log($"Calling SlowText(\"{text}\")");
+
+        yield return SlowText(text);
+        yield return PauseAfterText();
+    
+        Debug.Log("Invoking OnCloseDialog");
+        dialogBox.SetActive(false);
+        onDialogFinished?.Invoke();
+        OnCloseDialog?.Invoke();
+    }
+
     public IEnumerator ShowDialog(Dialog dialog, Action onFinished=null)
     {
         OnShowDialog?.Invoke();
@@ -47,39 +65,24 @@ public class DialogManager : MonoBehaviour
     }
 
     public IEnumerator PauseAfterText()
-    {
-        //Global setting for if text auto plays after a delay or if user input is needed     
-        if(true)
+    {  
+        if(GlobalSettings.Instance.WaitForInputAfterText)
         {   
-            yield return WaitForInput(new List<KeyCode>(){KeyCode.Space,KeyCode.Return,KeyCode.Escape});
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape));
         }
         else
         {
-            //yield return new WaitForSeconds(pauseDuration);
-        }
-    }
-
-    IEnumerator WaitForInput(List<KeyCode> keyCodes)
-    {
-        bool keyDown = false;
-        while(!keyDown)
-        {
-            foreach(KeyCode kc in keyCodes)
-            {
-                if(Input.GetKeyDown(kc))
-                {
-                    keyDown = true;
-                }
-            }
-            yield return null;
+            yield return new WaitForSeconds(GlobalSettings.Instance.PauseDuration);
         }
     }
 
     IEnumerator SlowText(string line)
     {
-        if(typing)
+        Debug.Log($"Slow Text = {line}");
+        while(typing)
         {
-            yield break;
+            Debug.Log("Typing");
+            yield return null;
         }
         typing = true;  
         dialogText.text = "";
@@ -87,6 +90,7 @@ public class DialogManager : MonoBehaviour
         {
             dialogText.text += letter;
             yield return new WaitForSeconds(textDelay);
+            Debug.Log($"{dialogText.text}");
         }
         typing = false;
     }

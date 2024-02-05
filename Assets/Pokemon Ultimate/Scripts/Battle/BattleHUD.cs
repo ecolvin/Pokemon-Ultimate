@@ -86,7 +86,7 @@ public class BattleHUD : MonoBehaviour
         }
 
         yield return hpBar.SetHPSmoothly((float) newHP/ (float)maxHP);
-        Debug.Log($"HP Nums: {hpNums != null}; New HP: {newHP}; Max HP: {maxHP}");
+        
         if(hpNums != null)
         {
             hpNums.text = newHP + "/" + maxHP;
@@ -95,7 +95,6 @@ public class BattleHUD : MonoBehaviour
 
     public void SetExp(float expPercentage)
     {
-        Debug.Log($"Exp %: {expPercentage}");
         if(expBar == null)
         {
             return;
@@ -174,7 +173,7 @@ public class BattleHUD : MonoBehaviour
     {
         if(statusIcon != null)
         {
-            statusIcon.UpdateIcon(pokemon.Status);
+            statusIcon.UpdateBattleIcon(pokemon.Status);
         }
     }
 }

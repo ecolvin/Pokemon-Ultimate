@@ -34,13 +34,11 @@ public class RecoveryItem : ItemBase
         {
             if(maxHeal)
             {
-                Debug.Log("Max Heal");
                 target.TakeDamage(-1*target.Stats.HP);
                 hasEffect = true;
             }
             else if(healingAmount > 0)
             {
-                Debug.Log($"Healing {healingAmount} HP");
                 target.TakeDamage(-1*healingAmount);
                 hasEffect = true;
             }
@@ -52,13 +50,11 @@ public class RecoveryItem : ItemBase
             {
                 if(restoreMaxPP)
                 {
-                    Debug.Log("Max Elixir used");
                     target.Elixir(-1);
                     hasEffect = true;
                 }
                 else if(ppAmount > 0)
                 {
-                    Debug.Log($"Elixir used to heal {ppAmount} pp");
                     target.Elixir(ppAmount);
                     hasEffect = true;
                 }
@@ -69,13 +65,11 @@ public class RecoveryItem : ItemBase
                 int moveSelection = 0;
                 if(restoreMaxPP)
                 {
-                    Debug.Log("Max Ether used");
                     target.Ether(-1, moveSelection);
                     hasEffect = true;
                 }
                 else if(ppAmount > 0)
                 {
-                    Debug.Log($"Ether used to heal {ppAmount} pp");
                     target.Ether(ppAmount, moveSelection);
                     hasEffect = true;
                 }
@@ -86,40 +80,34 @@ public class RecoveryItem : ItemBase
         {
             if(target.Status != NonVolatileStatus.None)
             {
-                Debug.Log("Healing NVStatus");
                 target.ClearNVStatus();
                 hasEffect = true;
             }
             if(target.ClearVolatileStatuses())
             {
-                Debug.Log("Cleared Volatile Statuses");
                 hasEffect = true;
             }
         }
         else if(healedStatus != NonVolatileStatus.None && target.Status == healedStatus)
         {
-            Debug.Log($"Healing Status: {healedStatus}");
             target.ClearNVStatus();
             hasEffect = true;
         }
 
         if(revive && target.Fainted)
         {
-            Debug.Log("Reviving");
             target.TakeDamage(-1 * target.Stats.HP / 2);
             hasEffect = true;
         }
 
         if(maxRevive && target.Fainted)
         {
-            Debug.Log("Max Reviving");
             target.TakeDamage(-1 * target.Stats.HP);
             hasEffect = true;
         }
 
         if(maxReviveAll)
         {
-            Debug.Log("Max Reviving All");
             List<Pokemon> party = Party.GetParty().Pokemon;
             foreach(Pokemon p in party)
             {
@@ -135,8 +123,6 @@ public class RecoveryItem : ItemBase
         {
             //Lower the pokemon's happiness
         }
-        
-        Debug.Log($"Has Effect = {hasEffect}");
 
         return hasEffect;
     }

@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
     [SerializeField] InventoryUI inventoryUI;
 
     GameState state;
+    GameState savedState;
     //Route curRoute;
 
     MenuController menuController;
@@ -40,6 +41,7 @@ public class GameController : MonoBehaviour
 
         DialogManager.Instance.OnShowDialog += () => 
         {
+            savedState = state;
             state = GameState.Dialog;
         };
 
@@ -47,7 +49,7 @@ public class GameController : MonoBehaviour
         {
             if(state == GameState.Dialog)
             {
-                state = GameState.Overworld;
+                state = savedState;
             }
         };
 
