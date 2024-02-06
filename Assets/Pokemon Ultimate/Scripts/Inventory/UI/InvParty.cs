@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using Unity.VisualScripting;
 
-public enum InvUIState {Default, Healing, Useable, Learnable}
+public enum InvUIState {Default, Healing, Useable, Learnable, HeldItem, Experience}
 
 public class InvParty : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class InvParty : MonoBehaviour
     List<PokemonInvUI> pokemon;
     List<Pokemon> party;
 
-    InvUIState state = InvUIState.Default;
+    InvUIState curState = InvUIState.Default;
 
     void Awake()
     {
@@ -42,6 +42,11 @@ public class InvParty : MonoBehaviour
 
     public void SetState(InvUIState state)
     {
+        if(curState == state)
+        {
+            return;
+        }
+        curState = state;
         foreach(PokemonInvUI p in pokemon)
         {
             p.SetState(state);

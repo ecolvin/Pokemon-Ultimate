@@ -5,13 +5,13 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using System.Linq;
 
 public enum UIState {Items, Menu, Qty, Pokemon, Busy}
 
 public class InventoryUI : MonoBehaviour
 {
-    const int ITEMS_IN_VIEWPORT = 11;
-    const int MENU_SIZE = 3; //Use this item; Give to Pokemon; Cancel
+    const int ITEMS_IN_VIEWPORT = 12;
     const int LIST_SPACING = 5; //Get from Vertical Layout Group spacing field
 
     [SerializeField] GameObject itemListUI;
@@ -35,6 +35,7 @@ public class InventoryUI : MonoBehaviour
     int selectedPokemon = 0;
     int selectedQty = 0;
     int listSize = 0;
+    int menuSize = 3;
     int selectedTab = 0;
     int numTabs = 1;
     int numPokemon = 6;
@@ -42,6 +43,7 @@ public class InventoryUI : MonoBehaviour
     float slotHeight = 0;
 
     bool useItem = false;
+    bool battle = false;
 
     UIState state;
 
@@ -95,9 +97,37 @@ public class InventoryUI : MonoBehaviour
         UpdateItemSelection();
     }
 
-    /* Input Handling */
-    public void HandleUpdate(Action onClose)
+    void SetBattle()
     {
+        battle = true;
+        numTabs = 1;   //Update to 4 - Healing/Balls/Battle/Berries
+        menuSize = 2;
+    }
+
+    void SetOverworld()
+    {
+        battle = false;
+        numTabs = 1;    //Update to 8 - Healing/Balls/Battle/Berries/Comp/TMs/Treasures/Key Items
+        menuSize = 3;
+    }
+
+    /* Input Handling */
+    public void HandleUpdate(bool inBattle, Action<ItemBase, Pokemon> onClose)
+    {
+        if(inBattle)
+        {
+            if(battle != inBattle)
+            {
+                SetBattle();
+            }
+        }
+        else
+        {
+            if(battle != inBattle)
+            {
+                SetOverworld();
+            }
+        }
         if(state == UIState.Items)
         {
             HandleInputItems(onClose);
@@ -108,7 +138,7 @@ public class InventoryUI : MonoBehaviour
         }
         else if(state == UIState.Pokemon)
         {
-            HandleInputPokemon();
+            HandleInputPokemon(onClose);
         }
         else if(state == UIState.Qty)
         {
@@ -120,11 +150,11 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    void HandleInputItems(Action onClose)
+    void HandleInputItems(Action<ItemBase, Pokemon> onClose)
     {
         if(Input.GetKeyDown(KeyCode.Escape))
-        {            
-            onClose?.Invoke();
+        {
+            onClose?.Invoke(null, null);
         }
         if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
@@ -181,7 +211,7 @@ public class InventoryUI : MonoBehaviour
         || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
             menuSelection++;            
-            menuSelection %= MENU_SIZE;
+            menuSelection %= menuSize;
             UpdateMenuSelection();
         }
         if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) 
@@ -190,11 +220,11 @@ public class InventoryUI : MonoBehaviour
             menuSelection--;
             if(menuSelection < 0)
             {
-                menuSelection += MENU_SIZE;
+                menuSelection += menuSize;
             }
             else
             {
-                menuSelection %= MENU_SIZE;
+                menuSelection %= menuSize;
             }
             UpdateMenuSelection();
         }
@@ -209,7 +239,7 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    void HandleInputPokemon()
+    void HandleInputPokemon(Action<ItemBase, Pokemon> onClose)
     {
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)
         || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
@@ -239,8 +269,16 @@ public class InventoryUI : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
-            state = UIState.Busy;
-            StartCoroutine(HandlePokemonSelection());
+            if(battle)
+            {
+                //Check if item is useable
+                onClose?.Invoke(inventory.Items[selectedItem].Item, party.Pokemon[selectedPokemon]);
+            }
+            else
+            {
+                state = UIState.Busy;
+                StartCoroutine(HandlePokemonSelection());
+            }
         }
     }
 
@@ -316,13 +354,24 @@ public class InventoryUI : MonoBehaviour
         {
             useItem = true;
             OpenPokemonSelection();
-            StartCoroutine(DialogManager.Instance.ShowDialog("Which Pokemon will you use it on?"));
+                        
+            //yield return DialogManager.Instance.ShowDialog("Which Pokemon will you use it on?");
+            //Update to not block input to pokemon so the dialog box is visible while selecting a pokemon
+            //Also update the Dialog Box UI with it to fit better with the inventory screen
         }
         else if(menuSelection == 1)
         {
-            // Give the item to a pokemon *Not Implemented Yet*
-            // useItem = false;
-            // OpenPokemonSelection();
+            if(menuSize == 2)
+            {
+                state = UIState.Items;
+                CloseMenu();
+            }
+            else
+            {
+                // Give the item to a pokemon *Not Implemented Yet*
+                // useItem = false;
+                // OpenPokemonSelection();
+            }
         }
         else
         {
@@ -336,9 +385,13 @@ public class InventoryUI : MonoBehaviour
     {            
         if(useItem)
         {
-            if(maxQuantity > 1 && false)
+            if(maxQuantity > 1 && !battle && false)    //Check if the current item allows quantity
             {
                 OpenQty();
+            }
+            else if(battle)
+            {
+
             }
             else
             {
@@ -392,6 +445,10 @@ public class InventoryUI : MonoBehaviour
         int i = 0;
         foreach(Transform child in menu.transform)
         {
+            if(!child.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
             if(i == menuSelection)
             {
                 child.GetComponent<Image>().color = GlobalSettings.Instance.SelectedBarColor;
@@ -401,6 +458,18 @@ public class InventoryUI : MonoBehaviour
                 child.GetComponent<Image>().color = Color.clear;
             }
             i++;
+        }
+
+        if(!battle)
+        {
+            if(menuSelection == 1) //Give Item -> Show what held item the pokemon has
+            {
+                partySprites.SetState(InvUIState.HeldItem);
+            }
+            else
+            {                
+                partySprites.SetState(InvUIState.Healing);
+            }
         }
     }
 

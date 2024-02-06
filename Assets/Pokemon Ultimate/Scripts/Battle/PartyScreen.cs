@@ -12,7 +12,8 @@ public class PartyScreen : MonoBehaviour
     [SerializeField] Color cancelDefaultColor;
     [SerializeField] Color cancelSelectionColor;
   
-    //public event Action<Pokemon> OnClose;
+    public event Action<Pokemon> onSelect;
+    public event Action onClose;
 
     Party party;
 
@@ -27,6 +28,13 @@ public class PartyScreen : MonoBehaviour
         SetPartyMembers();
 
         party.OnUpdated += SetPartyMembers;
+    }
+
+    public void OpenScreen(Action<Pokemon> onSelection, Action onCloseWindow)
+    {
+        gameObject.SetActive(true);
+        onSelect = onSelection;
+        onClose = onCloseWindow;
     }
 
     public void SetPartyMembers()
@@ -102,7 +110,7 @@ public class PartyScreen : MonoBehaviour
         text.text = $"Please make a different selection.";
     }
 
-    public void HandleInput(Action<Pokemon> onSelection, Action onClose)
+    public void HandleInput()
     {       
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
@@ -118,6 +126,10 @@ public class PartyScreen : MonoBehaviour
             if(index == 6)
             {
                 index = partySize - 1;
+            }
+            else if(index == 0)
+            {
+                index = 6;
             }
             else
             {
@@ -168,7 +180,15 @@ public class PartyScreen : MonoBehaviour
             }
             else
             {
-                onSelection?.Invoke(members[index].Poke);
+                //Open Menu
+                if(onSelect != null)
+                {
+                    onSelect?.Invoke(members[index].Poke);
+                }
+                else
+                {
+                    //Pokemon called from Overworld - Do menu stuff
+                }
             }
         }
     }

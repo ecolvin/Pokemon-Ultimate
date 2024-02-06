@@ -12,6 +12,9 @@ public class PokemonInvUI : MonoBehaviour
     [SerializeField] Image heldItemSprite;
     [SerializeField] Image useableIcon;
     [SerializeField] TextMeshProUGUI useableText;
+    [SerializeField] Image heldItemBubble;
+    [SerializeField] TextMeshProUGUI heldItemText;
+    [SerializeField] HPBar expBar;
         
     public Image Sprite {get => sprite;}
     public Image UseableIcon {get => useableIcon;}
@@ -25,6 +28,13 @@ public class PokemonInvUI : MonoBehaviour
     Pokemon pokemon;
 
     InvUIState curState = InvUIState.Default;
+
+    InventoryUI inventory;
+
+    public void Awake()
+    {
+        inventory = GetComponentInParent<InventoryUI>();
+    }
 
     public void Set(Pokemon p)
     {   
@@ -72,7 +82,7 @@ public class PokemonInvUI : MonoBehaviour
             heldItemSprite.sprite = pokemon.HeldItem.Icon;
         }
 
-        if(hpBar.gameObject.activeSelf)
+        if(hpBar.gameObject.activeInHierarchy)
         {
             StartCoroutine(hpBar.SetHPSmoothly(pokemon.CurHP, pokemon.Stats.HP));
         }
@@ -95,6 +105,8 @@ public class PokemonInvUI : MonoBehaviour
                 statusIcon.gameObject.SetActive(false);
                 hpBar.gameObject.SetActive(false);
                 useableIcon.gameObject.SetActive(false);
+                heldItemBubble.gameObject.SetActive(false);
+                expBar.gameObject.SetActive(false);
                 break;
             case InvUIState.Healing:
                 if(pokemon.Status != NonVolatileStatus.None)
@@ -104,21 +116,47 @@ public class PokemonInvUI : MonoBehaviour
                 }
                 hpBar.gameObject.SetActive(true);
                 useableIcon.gameObject.SetActive(false);
+                heldItemBubble.gameObject.SetActive(false); 
+                expBar.gameObject.SetActive(false);
                 break;
             case InvUIState.Useable:
                 statusIcon.gameObject.SetActive(false);
                 hpBar.gameObject.SetActive(false);
                 useableIcon.gameObject.SetActive(true);
+                heldItemBubble.gameObject.SetActive(false); 
+                expBar.gameObject.SetActive(false);
                 break;
             case InvUIState.Learnable:
                 statusIcon.gameObject.SetActive(false);
                 hpBar.gameObject.SetActive(false);
                 useableIcon.gameObject.SetActive(true);
+                heldItemBubble.gameObject.SetActive(false); 
+                expBar.gameObject.SetActive(false);
+                break;
+            case InvUIState.HeldItem:
+                statusIcon.gameObject.SetActive(false);
+                hpBar.gameObject.SetActive(false);
+                useableIcon.gameObject.SetActive(false);
+                if(pokemon.HeldItem != null)
+                {
+                    heldItemText.text = pokemon.HeldItem.ItemName;
+                    heldItemBubble.gameObject.SetActive(true);                    
+                }
+                expBar.gameObject.SetActive(false);
+                break;
+            case InvUIState.Experience:
+                statusIcon.gameObject.SetActive(false);
+                hpBar.gameObject.SetActive(false);
+                useableIcon.gameObject.SetActive(false);
+                heldItemBubble.gameObject.SetActive(false); 
+                expBar.gameObject.SetActive(true);
                 break;
             default:
                 statusIcon.gameObject.SetActive(false);
                 hpBar.gameObject.SetActive(false);
                 useableIcon.gameObject.SetActive(false);
+                heldItemBubble.gameObject.SetActive(false); 
+                expBar.gameObject.SetActive(false);
                 break;
         }
     }

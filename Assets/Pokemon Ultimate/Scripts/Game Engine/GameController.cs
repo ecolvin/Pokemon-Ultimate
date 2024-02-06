@@ -87,34 +87,18 @@ public class GameController : MonoBehaviour
         }
         else if(state == GameState.Pokemon)
         {
-            Action<Pokemon> onSelection = (Pokemon p) =>
-            {
-                //Show pokemon options
-            };
-
-            Action onClose = () =>
-            {
-                pokemonScreen.gameObject.SetActive(false);
-                state = GameState.Menu;
-            };
-
-            pokemonScreen.HandleInput(onSelection, onClose);
+            pokemonScreen.HandleInput();
         }
         else if(state == GameState.Bag)
         {
-            // Action onSelection = () =>
-            // {
-            //     //Show item options
-            // };
-
-            Action onClose = () =>
+            Action<ItemBase, Pokemon> onClose = (ItemBase itemUsed, Pokemon p) =>
             {
                 inventoryUI.gameObject.SetActive(false);
                 menuController.OpenMenu();
                 state = GameState.Menu;
             };
 
-            inventoryUI.HandleUpdate(onClose);
+            inventoryUI.HandleUpdate(false, onClose);
         }
     }
 
@@ -165,16 +149,19 @@ public class GameController : MonoBehaviour
             case 2: //Bag
                 MenuBag();
                 break;
-            case 3: //Save
-                MenuSave();
-                break;
-            case 4: //Trainer 
+            case 3: //Trainer
                 MenuTrainer();               
                 break;
-            case 5: //Options   
+            case 4: //Map 
+                MenuMap();
+                break;
+            case 5: //Save
+                MenuSave();
+                break;
+            case 6: //Options   
                 MenuOptions();             
                 break;
-            case 6:  //Exit
+            case 7:  //Exit
                 MenuExit();
                 break;            
             default:
@@ -191,7 +178,14 @@ public class GameController : MonoBehaviour
     void MenuPokemon()
     {
         state = GameState.Pokemon;
-        pokemonScreen.gameObject.SetActive(true);
+
+        Action onClose = () =>
+        {
+            pokemonScreen.gameObject.SetActive(false);
+            state = GameState.Menu;
+        };
+
+        pokemonScreen.OpenScreen(null, onClose);
     }
 
     void MenuBag()
@@ -201,16 +195,21 @@ public class GameController : MonoBehaviour
         menuController.CloseMenu();
     }
 
+    void MenuTrainer()
+    {
+
+    }
+
+    void MenuMap()
+    {
+
+    }
+
     void MenuSave()
     {
         //Confirm if the player wants to save or not
         SaveManager.Instance.SaveGame();
         //Output text saying that the game was saved
-    }
-
-    void MenuTrainer()
-    {
-
     }
 
     void MenuOptions()

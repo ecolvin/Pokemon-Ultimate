@@ -10,7 +10,6 @@ public enum Weather {None, Sun, HarshSun, Rain, HeavyRain, Sand, Hail, Snow, Sha
 public enum Terrain {None, Electric, Misty, Psychic, Grassy}
 public enum FieldEffect {None, Spikes, ToxicSpikes, Rocks, Webs, Reflect, LightScreen, Tailwind, LuckyChant}
 public enum BattleChoice {Move, Item, Switch, Run}
-public enum SwitchReason {None, BattleSelection, Fainted, OppSwitch, SwitchMove}
 
 public class Battle : MonoBehaviour
 {
@@ -26,6 +25,7 @@ public class Battle : MonoBehaviour
     [SerializeField] SideBoxController sideBox;
     [SerializeField] PartyScreen partyScreen;
     [SerializeField] MoveSelectionController moveSelection;
+    [SerializeField] InventoryUI inventoryScreen;
 
 
     //TODO: Replace with parameters
@@ -49,9 +49,6 @@ public class Battle : MonoBehaviour
     int numRunAttempts = 0;
 
     bool isTrainerBattle = false;
-    SwitchReason switchReason = SwitchReason.None;
-    //bool switchBecauseFainted = false;
-    //bool switch
 
     Pokemon playerPokemon;
     Pokemon enemyPokemon;
@@ -85,6 +82,7 @@ public class Battle : MonoBehaviour
     //waterSport - last until the user switches out
     bool airLock = false; //Whether or not pokemon with Cloud Nine/Air Lock is on the field
 
+/* Initialization Functions */
     public void StartBattle(Pokemon wildPokemon)
     {   
         isTrainerBattle = false;
@@ -119,30 +117,6 @@ public class Battle : MonoBehaviour
         state = BattleState.Intro;
         InitField();
         StartCoroutine(InitBattle(playerPokemon, enemyPokemon));
-    }
-
-    public void HandleUpdate()
-    {
-        if(state == BattleState.Pokemon)
-        {
-            HandlePartySelection();            
-            return;
-        }
-        if(state == BattleState.Choice)
-        {
-            HandleChoiceInput();
-            return;
-        }
-        if(state == BattleState.ForgetMove)
-        {
-            HandleForgetMoveInput();
-            return;
-        }
-        if(state == BattleState.Busy)
-        {
-            return;
-        }
-        HandleInput();
     }
 
     void InitField()
@@ -184,96 +158,6 @@ public class Battle : MonoBehaviour
         fairyLockCounter = -1;
         ionDeluge = false;
     }
-
-//-----------------------Battle States--------------------------
-
-    void PlayerSelection()
-    {
-        state = BattleState.ActionSelection;
-        mainBox.PlayerSelection();
-        sideBox.PlayerSelection(curBattleOption);
-    }
-
-    void Fight()
-    {
-        state = BattleState.MoveSelection;
-        mainBox.Fight(curMoveOption, playerPokemon);
-        if(curMoveOption >= playerPokemon.Moves.Count)
-        {
-            sideBox.Fight(null);
-        }
-        else
-        {
-            sideBox.Fight(playerPokemon.Moves[curMoveOption]);
-        }
-    }
-
-    void Bag()
-    {
-        if(isTrainerBattle)
-        {
-            StartCoroutine(mainBox.CantCatchTrainer());
-            return;
-        }
-        StartCoroutine(ResolveTurn(BattleChoice.Item, null, null));
-    }
-
-    void Pokemon()
-    {
-        state = BattleState.Pokemon;
-        
-        partyScreen.gameObject.SetActive(true);
-    }
-
-    IEnumerator ClosePokemon(Pokemon pokemon)
-    {
-        if(switchReason == SwitchReason.Fainted)
-        {
-            if(pokemon != null && !pokemon.Fainted)
-            {
-                yield return SwitchPokemon(pokemon);
-                switchReason = SwitchReason.None;
-                yield return CheckIfOppFainted();
-                PlayerSelection();
-            }
-            else
-            {
-                Debug.LogError("Switching due to fainted Pokemon but no Pokemon selected. Shouldn't be able to get here.");
-            }
-        }
-        else if(switchReason == SwitchReason.OppSwitch)
-        {
-            if(pokemon != null && !pokemon.Fainted)
-            {
-                yield return SwitchPokemon(pokemon);
-            }
-            switchReason = SwitchReason.None;
-        }
-        else
-        {
-            if(pokemon == null)
-            {
-                state = BattleState.ActionSelection;
-                switchReason = SwitchReason.None;
-            }
-            else if(!pokemon.Fainted)
-            {
-                yield return ResolveTurn(BattleChoice.Switch, null, pokemon);
-            }
-        }
-    }
-
-    void Run()
-    {
-        if(isTrainerBattle)
-        {
-            StartCoroutine(mainBox.RunFromTrainer());
-            return;
-        }
-        StartCoroutine(ResolveTurn(BattleChoice.Run, null, null));
-    }
-
-//----------------------Timed Coroutines (and helper functions)------------------------
 
     public IEnumerator InitBattle(Pokemon playerPokemon, Pokemon enemyPokemon)
     {
@@ -344,13 +228,325 @@ public class Battle : MonoBehaviour
         }
     }
 
-    IEnumerator ChooseMove(PokemonMove move)
+/* Change Battle States */
+    void PlayerSelection()
     {
-        yield return ResolveTurn(BattleChoice.Move, move, null);
+        state = BattleState.ActionSelection;
+        mainBox.PlayerSelection();
+        sideBox.PlayerSelection(curBattleOption);
     }
 
-    //choice: 0-use a move, 1-use an item, 2-switch pokemon, 3-run attempt
-    IEnumerator ResolveTurn(BattleChoice choice, PokemonMove move, Pokemon pokemon)
+    void Fight()
+    {
+        state = BattleState.MoveSelection;
+        mainBox.Fight(curMoveOption, playerPokemon);
+        if(curMoveOption >= playerPokemon.Moves.Count)
+        {
+            sideBox.Fight(null);
+        }
+        else
+        {
+            sideBox.Fight(playerPokemon.Moves[curMoveOption]);
+        }
+    }
+
+    void Bag()
+    {
+        state = BattleState.Bag;
+        mainBox.gameObject.SetActive(false);
+        sideBox.gameObject.SetActive(false);
+        inventoryScreen.gameObject.SetActive(true);
+
+        // if(isTrainerBattle)
+        // {
+        //     StartCoroutine(mainBox.CantCatchTrainer());
+        //     return;
+        // }
+        // StartCoroutine(ResolveTurn(BattleChoice.Item, null, null));
+    }
+
+    void Pokemon()
+    {
+        state = BattleState.Pokemon;        
+    }
+    
+    void Run()
+    {
+        if(isTrainerBattle)
+        {            
+            StartCoroutine(mainBox.RunFromTrainer());
+            return;
+        }
+        StartCoroutine(ResolveTurn(BattleChoice.Run, null, null, null));
+    }
+
+/* Input Handling */
+    public void HandleUpdate()
+    {
+        switch(state)
+        {
+            case BattleState.Pokemon:
+                partyScreen.HandleInput(); 
+                break;
+            case BattleState.Bag:                
+                Action<ItemBase, Pokemon> onClose = (ItemBase itemUsed, Pokemon target) => 
+                {
+                    inventoryScreen.gameObject.SetActive(false);
+                    mainBox.gameObject.SetActive(true);
+                    sideBox.gameObject.SetActive(true);
+                    if(itemUsed == null)
+                    {
+                        PlayerSelection();
+                        return;
+                    }
+                    if(target == null)
+                    {
+                        //Poke Ball/Battle Item
+                        return;
+                    }
+                    StartCoroutine(ResolveTurn(BattleChoice.Item, null, target, itemUsed));
+                };
+                inventoryScreen.HandleUpdate(true, onClose);
+                break;
+            case BattleState.Choice:
+                HandleChoiceInput();
+                break;
+            case BattleState.ForgetMove:
+                HandleForgetMoveInput();
+                break;
+            case BattleState.ActionSelection:
+                HandleActionInput();
+                break;
+            case BattleState.MoveSelection:
+                HandleMoveInput();
+                break;
+            default:
+                break;
+        }
+    }
+
+    void HandleActionInput()
+    {
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        {
+            if(curBattleOption < 2)
+            {
+                curBattleOption+=2;
+            }
+            sideBox.updateBattleSelection(curBattleOption);
+        }
+        if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        {
+            if(curBattleOption > 1)
+            {
+                curBattleOption-=2;
+            }
+            sideBox.updateBattleSelection(curBattleOption);
+        }
+        if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            if(curBattleOption % 2 == 0)
+            {
+                curBattleOption++;
+            }
+            sideBox.updateBattleSelection(curBattleOption);
+        }
+        if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            if(curBattleOption % 2 == 1)
+            {
+                curBattleOption--;
+            }
+            sideBox.updateBattleSelection(curBattleOption);
+        }
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            if(curBattleOption == 0)
+            {
+                int totalPP = 0;
+                foreach(PokemonMove move in playerPokemon.Moves)
+                {
+                    if(move != null)
+                    {
+                        totalPP += move.CurPP;
+                    }
+                }
+                if(totalPP > 0)
+                {
+                    Fight();
+                }
+                else
+                {
+                    //mainBox.SetText("Struggle!");
+                }
+            } 
+            else if(curBattleOption == 1)
+            {
+                Bag();
+            }
+            else if(curBattleOption == 2)
+            {                
+                Pokemon();
+                Action<Pokemon> onSelected = (Pokemon poke) =>
+                {
+                    if(poke == null)
+                    {
+                        partyScreen.InvalidSelection();
+                    }
+                    else if(poke.Fainted)
+                    {
+                        partyScreen.SelectionFainted();
+                    }
+                    else if(poke.IsActive)
+                    {
+                        partyScreen.SelectionActive();
+                    }
+                    else
+                    {
+                        state = BattleState.Busy;
+                        partyScreen.gameObject.SetActive(false);
+                        StartCoroutine(ResolveTurn(BattleChoice.Switch, null, poke, null));
+                    }
+                };
+                Action onClose = () =>
+                {
+                    state = BattleState.Busy;
+                    partyScreen.gameObject.SetActive(false);
+                    PlayerSelection();
+                };
+                partyScreen.OpenScreen(onSelected, onClose);
+            }
+            else if(curBattleOption == 3)
+            {
+                Run();    
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(curBattleOption == 3)
+            {
+                Run();
+            }
+            else
+            {
+                curBattleOption = 3;
+                sideBox.updateBattleSelection(curBattleOption);
+            }
+        }
+    }
+
+    void HandleMoveInput()
+    {
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        {
+            if(curMoveOption < 2 && state == BattleState.MoveSelection)
+            {
+                curMoveOption+=2;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        {
+            if(curMoveOption > 1 && state == BattleState.MoveSelection)
+            {
+                curMoveOption-=2;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            if(curMoveOption % 2 == 0 && state == BattleState.MoveSelection)
+            {
+                curMoveOption++;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            if(curMoveOption % 2 == 1 && state == BattleState.MoveSelection)
+            {
+                curMoveOption--;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            if(curMoveOption < playerPokemon.Moves.Count && playerPokemon.Moves[curMoveOption] != null && playerPokemon.Moves[curMoveOption].CurPP > 0)
+            {
+                StartCoroutine(ResolveTurn(BattleChoice.Move, playerPokemon.Moves[curMoveOption], null, null));
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            PlayerSelection();
+        }
+        
+        mainBox.UpdateMoveSelection(curMoveOption);
+        if(curMoveOption < playerPokemon.Moves.Count)
+        {
+            sideBox.updateMoveDetails(playerPokemon.Moves[curMoveOption]);
+        }
+        else
+        {
+            sideBox.updateMoveDetails(null);
+        }
+    }
+
+    void HandleChoiceInput()
+    {
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) ||
+           Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
+           Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) ||
+           Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            choice = !choice;
+            mainBox.UpdateChoiceSelection(choice);
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            choice = false;
+            mainBox.UpdateChoiceSelection(choice);
+        }
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            state = BattleState.Busy;
+            mainBox.EnableChoiceBox(false);       
+        }
+    }
+
+    void HandleForgetMoveInput()
+    {
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || 
+           Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            moveChoice++;
+            if(moveChoice > 4)
+            {
+                moveChoice = 0;
+            }
+        }
+        else if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
+                Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            moveChoice--;
+            if(moveChoice < 0)
+            {
+                moveChoice = 4;
+            }
+        }
+
+        moveSelection.UpdateMoveSelection(moveChoice);
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            state = BattleState.Busy;
+            moveSelection.gameObject.SetActive(false);
+        }
+        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+        {
+            state = BattleState.Busy;
+            moveSelection.gameObject.SetActive(false);
+        }
+    }
+
+/* Main Battle Loop */
+    IEnumerator ResolveTurn(BattleChoice choice, PokemonMove move, Pokemon pokemon, ItemBase item)
     {
         sideBox.Clear();
         state = BattleState.Battle;
@@ -399,8 +595,7 @@ public class Battle : MonoBehaviour
         }
         else if(choice == BattleChoice.Switch) //Switch Pokemon
         {
-            yield return SwitchPokemon(pokemon);
-            switchReason = SwitchReason.None;            
+            yield return SwitchPokemon(pokemon);        
         }
         else if(enemyChoice == BattleChoice.Switch)
         {
@@ -418,11 +613,13 @@ public class Battle : MonoBehaviour
         }
         else if(choice == BattleChoice.Item)
         {
-            if(isTrainerBattle)
-            {
-                Debug.Log("You shouldn't be able to select bag against a trainer currently...");
-            }
-            yield return ThrowPokeball(1);
+            yield return UseItem(item, pokemon);
+
+            // if(isTrainerBattle)
+            // {
+            //     Debug.Log("You shouldn't be able to select bag against a trainer currently...");
+            // }
+            // yield return ThrowPokeball(1);
         }
         else if (enemyChoice == BattleChoice.Item)
         {
@@ -479,64 +676,173 @@ public class Battle : MonoBehaviour
         yield return CheckVictory();
 
         if(playerPokemon.Fainted)
-        {
-            switchReason = SwitchReason.Fainted;
+        {         
             Pokemon();
+
+            Action<Pokemon> onSelected = (Pokemon poke) =>
+            {
+                if(poke == null)
+                {
+                    partyScreen.InvalidSelection();
+                }
+                else if(poke.Fainted)
+                {
+                    partyScreen.SelectionFainted();
+                }
+                else if(poke.IsActive)
+                {
+                    partyScreen.SelectionActive();
+                }
+                else
+                {
+                    state = BattleState.Busy;
+                    partyScreen.gameObject.SetActive(false);
+                    StartCoroutine(ReplaceFaintedPokemon(poke));
+                }
+            };
+                
+            Action onClose = () =>
+            {
+                partyScreen.ForcedSelection();
+            };
+
+            partyScreen.OpenScreen(onSelected, onClose);
         }
         else
         {      
-            yield return CheckIfOppFainted();            
-            PlayerSelection();
+            yield return CheckIfOppFainted();
         }
     }
 
-    IEnumerator CheckVictory()
+/* Enemy AI */
+    BattleChoice getEnemyChoice()
     {
         if(isTrainerBattle)
         {
-            if(trainerParty.GetLeadPokemon() == null)
-            {
-                yield return mainBox.Victory(trainer.TrainerName);
-                yield return mainBox.PauseAfterText();
-                yield return trainerImage.Entrance();
-                yield return mainBox.SayDialog(trainer.LossDialog);
-                //int money = GetMoneyEarned();
-                //yield return mainBox.EarnedMoney(money);
-                CleanupBattle();
-                OnBattleOver(true);
-            }
+            //Logic to decide if you want to use an item or switch
+
+            return BattleChoice.Move;
         }
         else
         {
-            if(enemyPokemon.Fainted)
-            {
-                CleanupBattle();
-                OnBattleOver(true);
-            }
+            return BattleChoice.Move;
         }
     }
 
-    IEnumerator CheckLoss()
+    PokemonMove getEnemyMove()
     {
-        if(playerParty.GetLeadPokemon() == null)
+        //Random Algorithm
+        int numMoves = 0;
+        foreach(PokemonMove move in enemyPokemon.Moves)
         {
-            yield return mainBox.WhiteOut();
-            yield return mainBox.PauseAfterText();
-            CleanupBattle();
-            OnBattleOver(false);
+            if(move != null)
+            {
+                numMoves++;
+            }
         }
+        return enemyPokemon.Moves[UnityEngine.Random.Range(0, numMoves)];
+    }
+
+/* Run From Battle */
+    IEnumerator RunAttempt()
+    {
+        if(playerPokemon.Type1 == PokemonType.Ghost || playerPokemon.Type2 == PokemonType.Ghost)
+        {
+            yield return RunSuccess();
+        }
+
+        // if(enemyPokemon.Ability == "Arena Trap") //Shadow Tag & Magnet Pull if Steel Type ; Binding moves and Ingrain
+        // {
+        //     //yield return mainBox.FleePrevention()
+        //     yield return mainBox.PauseAfterText();
+        // }
+
+        // if(Smoke Ball or Run Away)
+        // {
+        //     Smoke Ball message???
+        //     yield return RunSuccess();
+        // }
+
+        if(playerPokemon.Stats.Spe >= enemyPokemon.Stats.Spe)
+        {
+            yield return RunSuccess();
+        }
+        else
+        {
+            numRunAttempts++;
+            float escapeOdds = (Mathf.Floor((playerPokemon.Stats.Spe * 32)/(enemyPokemon.Stats.Spe / 4)) + 30) * numRunAttempts;
+            
+            if(UnityEngine.Random.Range(0, 256) < escapeOdds)
+            {
+                yield return RunSuccess();
+            }
+            else
+            {
+                yield return RunFailure();
+            }
+        }        
+    }
+
+    IEnumerator RunSuccess()
+    {
+        yield return mainBox.Run();
+        yield return mainBox.PauseAfterText();
+        CleanupBattle();
+        OnBattleOver(false);
+        yield break;
+    }
+
+    IEnumerator RunFailure()
+    {
+        yield return mainBox.RunFailure();
+        yield return mainBox.PauseAfterText();
+    }
+
+/* Pokemon Switching */
+    IEnumerator SwitchPokemon(Pokemon pokemon)
+    {
+        sideBox.Clear();
+        curMoveOption = 0;
+
+        playerHUD.gameObject.SetActive(false);
+        if(!playerPokemon.Fainted)
+        {
+            yield return mainBox.PlayerPokemonReturn(playerPokemon.Nickname);
+            yield return playerSprite.Return();
+            yield return mainBox.PauseAfterText();
+        }
+
+        playerPokemon.IsActive = false;
+        playerPokemon = pokemon;
+        playerPokemon.IsActive = true;
+
+        playerSprite.Set(playerPokemon);
+        yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
+        yield return playerSprite.Entrance();
+        yield return mainBox.PauseAfterText();
+
+        playerHUD.GenerateBar(playerPokemon);
+        playerHUD.gameObject.SetActive(true);
+        partyScreen.SetPartyMembers();
+    }
+
+    IEnumerator ReplaceFaintedPokemon(Pokemon poke)
+    {
+        yield return SwitchPokemon(poke);
+        yield return CheckIfOppFainted();
     }
 
     IEnumerator CheckIfOppFainted()
     {
         if(!enemyPokemon.Fainted)
         {
+            PlayerSelection();
             yield break;
         }
-        CheckVictory();
+        yield return CheckVictory();
         if(isTrainerBattle)
         {   
-            yield return EnemyNewPokemon(trainerParty.GetLeadPokemon());
+            EnemyNewPokemon(trainerParty.GetLeadPokemon());
         }
         else
         {
@@ -544,27 +850,18 @@ public class Battle : MonoBehaviour
         }
     }
 
-    IEnumerator EnemyNewPokemon(Pokemon newPokemon)
+    void EnemyNewPokemon(Pokemon newPokemon)
     {           
         enemyPokemon = newPokemon;
-        enemySprite.Set(enemyPokemon);
-        
+
         if(GlobalSettings.Instance.BattleMode == BattleMode.Switch && playerParty.NumHealthyPokemon() > 1) //&& Not a switch move like u-turn or volt switch
         {
-            yield return TrainerSwitching();
-        }        
-
-        sideBox.Clear();
-        enemyHUD.gameObject.SetActive(false);
-        enemyPartyHUD.Set(trainerParty);
-        enemyPartyHUD.gameObject.SetActive(true);
-        yield return mainBox.PauseAfterText();
-        yield return mainBox.TrainerPokemonIntro(trainer.TrainerName, enemyPokemon.Species.SpeciesName);
-        yield return enemySprite.Entrance();
-        yield return mainBox.PauseAfterText();
-        enemyHUD.GenerateBar(enemyPokemon);
-        enemyHUD.gameObject.SetActive(true);
-        enemyPartyHUD.gameObject.SetActive(false);
+            StartCoroutine(TrainerSwitching());
+        }
+        else
+        {
+            StartCoroutine(TrainerSwapAnimation(null));
+        }
     }
 
     IEnumerator TrainerSwitching()
@@ -580,101 +877,241 @@ public class Battle : MonoBehaviour
 
         if(choice)
         {
-            switchReason = SwitchReason.OppSwitch;
             Pokemon();
-            while(switchReason == SwitchReason.OppSwitch)
+            
+            Action<Pokemon> onSelected = (Pokemon poke) =>
             {
-                yield return null;
+                if(poke == null)
+                {
+                    partyScreen.InvalidSelection();
+                }
+                else if(poke.Fainted)
+                {
+                    partyScreen.SelectionFainted();
+                }
+                else if(poke.IsActive)
+                {
+                    partyScreen.SelectionActive();
+                }
+                else
+                {
+                    state = BattleState.Busy;
+                    partyScreen.gameObject.SetActive(false);
+                    StartCoroutine(TrainerSwapAnimation(poke));
+                }
+            };
+                
+            Action onClose = () =>
+            {
+                state = BattleState.Busy;
+                partyScreen.gameObject.SetActive(false);
+                StartCoroutine(TrainerSwapAnimation(null));
+            };
+
+            partyScreen.OpenScreen(onSelected, onClose);
+        }
+        else
+        {
+            yield return TrainerSwapAnimation(null);
+        }
+    }
+
+    IEnumerator TrainerSwapAnimation(Pokemon newPlayerPokemon)
+    {
+        if(newPlayerPokemon != null)
+        {
+            yield return SwitchPokemon(newPlayerPokemon);
+        }
+
+        enemySprite.Set(enemyPokemon);
+        sideBox.Clear();
+        enemyHUD.gameObject.SetActive(false);
+        enemyPartyHUD.Set(trainerParty);
+        enemyPartyHUD.gameObject.SetActive(true);
+        yield return mainBox.PauseAfterText();
+        yield return mainBox.TrainerPokemonIntro(trainer.TrainerName, enemyPokemon.Species.SpeciesName);
+        yield return enemySprite.Entrance();
+        yield return mainBox.PauseAfterText();
+        enemyHUD.GenerateBar(enemyPokemon);
+        enemyHUD.gameObject.SetActive(true);
+        enemyPartyHUD.gameObject.SetActive(false);
+    }
+
+/* Items */
+    IEnumerator UseItem(ItemBase item, Pokemon target)
+    {
+        item.Use(target);
+        //Item use message
+        yield return null;
+    }
+
+    IEnumerator ThrowPokeball(float ballMultiplier) //Add parameter for type of ball
+    {
+        yield return mainBox.UsedBall("Poke Ball");
+        ballSprite.gameObject.SetActive(true);
+        yield return ballSprite.Thrown();
+        
+        yield return enemySprite.Return();
+
+
+        int success = TryCapture(ballMultiplier);
+        Debug.Log($"Catch success = {success}");
+        if(success < 0)
+        {
+            yield return ballSprite.Critical();
+            if(success == -1)
+            {
+                yield return ballSprite.Shake();
+                yield return ballSprite.BreakOut();
+                yield return enemySprite.SendOut();
+                yield return mainBox.BreakOut(0);
+                yield return mainBox.PauseAfterText();
+            }
+            else if(success == -2)
+            {
+                yield return ballSprite.Shake();
+                yield return ballSprite.Catch();
+                yield return mainBox.Caught(enemyPokemon.Nickname);
+                yield return mainBox.PauseAfterText();
+                yield return ballSprite.BreakOut(); //Get rid of the ball sprite
+                yield return CatchSuccess();
+            }
+            else
+            {
+                Debug.Log($"How did you get {success} from TryCapture()?!?!?!");
             }
         }
+        else if(success >= 0 && success <= 4)
+        {            
+            yield return ballSprite.Fall();
+            for(int i = 0; i < Mathf.Min(success, 3); i++)
+            {
+                yield return ballSprite.Shake();
+            }
+            if(success == 4)
+            {
+                yield return ballSprite.Catch();
+                yield return mainBox.Caught(enemyPokemon.Nickname);
+                yield return mainBox.PauseAfterText();
+                yield return ballSprite.BreakOut(); //Get rid of the ball sprite
+                yield return CatchSuccess();
+            }
+            else
+            {
+                yield return ballSprite.BreakOut();
+                yield return enemySprite.SendOut();
+                yield return mainBox.BreakOut(success);
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        else
+        {
+            Debug.Log($"How did you get {success} from TryCapture()?!?!?!");
+        }
     }
 
-    int GetEffectiveSpeed(Pokemon pokemon, bool tailwind)
+    int TryCapture(float ballMultiplier)
     {
-        int speed = pokemon.Stats.Spe;
+        //if Route 1 
+        //success
 
-        int modifier = 4096;
-        //Swift Swim/Chlorophyll/Slush Rush/Sand Rush/Surge Surger/Unburden *2 modifier
-        //Quick Feet *1.5 modifier
-        //Slow Start (still active) *0.5 modifier
-        //Quickpowder & species is Ditto *2 modifier
-        //Choice Scarf *1.5 modifier
-        //Iron Ball/Macho Brace/Power EV item *0.5 modifier
-        if(tailwind)
+        float modCatchRate = (3 * enemyPokemon.Stats.HP) - (2 * enemyPokemon.CurHP);
+        Debug.Log($"Catch Rate 1: {modCatchRate}");
+        modCatchRate *= 4096;
+        modCatchRate += 0.5f;
+        modCatchRate = Mathf.FloorToInt(modCatchRate);
+        Debug.Log($"Catch Rate 2: {modCatchRate}");
+        //Dark Grass modifier (see wiki if/when you implement dark grass)
+        //if(Heavy Ball Used)
+        //int heavyBall = Heavy Ball modifier
+        modCatchRate *= enemyPokemon.Species.CatchRate; //+ heavyBall;
+        modCatchRate *= ballMultiplier;
+        //Calculate badgePenalty based on badges missing
+        modCatchRate = modCatchRate/(3 * enemyPokemon.Stats.HP);  //(modCatchRate * BadgePenalty)
+        if(enemyPokemon.Level <= 13)
         {
-            modifier *= 2;
+            modCatchRate = ((36-(2*enemyPokemon.Level)) * modCatchRate)/10;
         }
-        //Pledge Swamp *0.25 modifier
+        modCatchRate = Mathf.FloorToInt(modCatchRate);
+        Debug.Log($"Catch Rate 3: {modCatchRate}");
+        modCatchRate *= GetStatusCatchBonus(enemyPokemon);
+        //modCatchRate *= (410/4096) if wild pokemon's level > player pokemon's level && <8 gym badges
+        //modCatchRate *= miscellaneous (2 for a backstrike, various for capture powers of some sort)
+        modCatchRate = Mathf.Min(modCatchRate, 1044480);
+        Debug.Log($"Catch Rate 4: {modCatchRate}");
+
+        float critModifier = 1f;
+        //int catchingCharm = 2;
+        int critRate = Mathf.FloorToInt(715827883f * modCatchRate * critModifier/(4294967296f*4096f));
+        Debug.Log($"Crit Rate = {critRate}");
         
-        speed *= modifier;
-        if(pokemon.Status == NonVolatileStatus.Paralysis) //&& !Quick Feet
+        int shakeProb = Mathf.FloorToInt(65536 / Mathf.Pow(1044480/modCatchRate, .1875f));
+        Debug.Log($"Shake Prob = {shakeProb}");
+
+        if(UnityEngine.Random.Range(0, 256) < critRate)
         {
-            speed /= 2;
+            if(ShakeCheck(shakeProb))
+            {
+                return -2; //Successful Crit Capture
+            }
+            else
+            {
+                return -1; //Failed Crit Capture
+            }
         }
-        if(speed > 10000)
+        else
         {
-            speed = 10000;
+            for(int i = 0; i < 4; i++)
+            {
+                if(!ShakeCheck(shakeProb))
+                {
+                    return i; //Return # of shakes
+                }
+            }
+            return 4; //Successful catch
         }
-        if(trickRoom)
-        {
-            speed = 10000 - speed;
-        }
-        if(speed > 8191)
-        {
-            speed -= 8192;
-        }
-        return speed;
     }
 
-    bool IsPlayerFaster() 
+    bool ShakeCheck(int shakeProb)
     {
-        int playerSpeed = GetEffectiveSpeed(playerPokemon, playerField[FieldEffect.Tailwind] > 0);
-        int enemySpeed = GetEffectiveSpeed(enemyPokemon, enemyField[FieldEffect.Tailwind] > 0); 
-        
-        return playerSpeed > enemySpeed;
+        return UnityEngine.Random.Range(0, 65536) < shakeProb;
     }
 
-    bool MissCheck(PokemonMove move, Pokemon attacker, Pokemon defender)
+    float GetStatusCatchBonus(Pokemon p)
     {
-        int accuracy = move.MoveBase.Accuracy;
-        if(accuracy == -1)
+        if(p.Status == NonVolatileStatus.Sleep || p.Status == NonVolatileStatus.Freeze)
         {
-            return false;
+            return 2.5f;
         }
-        
-        float modifier = 4096;
-        if(gravity)
+        if(p.Status == NonVolatileStatus.Paralysis || p.Status == NonVolatileStatus.Poison || p.Status == NonVolatileStatus.BadlyPoisoned || p.Status == NonVolatileStatus.Burn)
         {
-            modifier = RoundUp(modifier * 6840/4096);
+            return 1.5f;
         }
-        //Tangled Feet .5
-        //Hustle 3277/4096
-        //Sand Veil 3277/4096
-        //Snow Cloak 3277/4096
-        //Vicory Star 4506/4096 (can be applied multiple times)
-        //Compound Eyes 5325/4096
-        //Bright Powder 3686/4096
-        //Lax Incense 3686/4096
-        //Wide Lens 4505/4096
-        //Zoom Lens 4915/4096
-        
-        int accuracyModified = Round(accuracy * modifier/4096);
-
-        //Factor in simple/foresight
-        int adjustedStages = attacker.Accuracy - defender.Evasion;
-        int top = 3, bottom = 3;
-        if(adjustedStages > 0)
-        {
-            top += adjustedStages;
-        }
-        if(adjustedStages < 0)
-        {
-            bottom += adjustedStages;
-        }
-        accuracyModified = Round((float)accuracyModified * (float)top/(float)bottom);
-        return UnityEngine.Random.Range(1,101) > accuracyModified;
+        return 1f;
     }
 
+    IEnumerator CatchSuccess()
+    {
+        enemyPokemon.Captured();
+        if(playerParty.AddPokemon(enemyPokemon))
+        {
+            yield return mainBox.AddedToParty(enemyPokemon.Nickname);
+        }
+        else if(PC.Instance.AddPokemon(enemyPokemon))
+        {            
+            yield return mainBox.PartyFull(enemyPokemon.Nickname);
+        }
+        else
+        {
+            Debug.Log("No room in party or PC");
+        }
+        //Experience gain
+        CleanupBattle();
+        OnBattleOver(true);
+        yield return null;
+    }
+
+/* Move Usage */
     IEnumerator UseMove(PokemonMove move, Pokemon attacker, Pokemon defender) 
     {
         if(attacker.Fainted)
@@ -900,14 +1337,15 @@ public class Battle : MonoBehaviour
         //--Volt Absorb
         //--Water Absorb
         //--Wonder Guard
+
         float type = CalculateTypeAdvantage(move.MoveBase.MoveType, move, defender, attacker);
-        Debug.Log($"Move: {move.MoveBase.MoveName}; Type: {move.MoveBase.MoveType}; Defender Types: {defender.Type1}/{defender.Type2}; Effectiveness: {type}");        
         if(type == 0f)
         {
             yield return mainBox.Immune(defender);
             yield return mainBox.PauseAfterText();
             yield break;
         }
+
         //Levitate Ground-type immunity
         //Air Balloon/Magnet Rise Ground-type immunity
         //Safety Goggles
@@ -987,7 +1425,6 @@ public class Battle : MonoBehaviour
             yield break;
         }
 
-
         //Substitute blocking effect other than stat drop
         //Mirror Armor
         //Roar/Whirlwind into D-Max target
@@ -1060,6 +1497,7 @@ public class Battle : MonoBehaviour
         
         //Damage Calculation        
         //Perform the move
+
         if(attacker.IsPlayer)
         {
             yield return playerSprite.Attack();
@@ -1087,6 +1525,372 @@ public class Battle : MonoBehaviour
 
         yield return CalculateEffects(move, attacker, defender);
         //yield return CalculateOther()          -Things like contact for abilities and whatnot
+    }
+
+    bool MissCheck(PokemonMove move, Pokemon attacker, Pokemon defender)
+    {
+        int accuracy = move.MoveBase.Accuracy;
+        if(accuracy == -1)
+        {
+            return false;
+        }
+        
+        float modifier = 4096;
+        if(gravity)
+        {
+            modifier = RoundUp(modifier * 6840/4096);
+        }
+        //Tangled Feet .5
+        //Hustle 3277/4096
+        //Sand Veil 3277/4096
+        //Snow Cloak 3277/4096
+        //Vicory Star 4506/4096 (can be applied multiple times)
+        //Compound Eyes 5325/4096
+        //Bright Powder 3686/4096
+        //Lax Incense 3686/4096
+        //Wide Lens 4505/4096
+        //Zoom Lens 4915/4096
+        
+        int accuracyModified = Round(accuracy * modifier/4096);
+
+        //Factor in simple/foresight
+        int adjustedStages = attacker.Accuracy - defender.Evasion;
+        int top = 3, bottom = 3;
+        if(adjustedStages > 0)
+        {
+            top += adjustedStages;
+        }
+        if(adjustedStages < 0)
+        {
+            bottom += adjustedStages;
+        }
+        accuracyModified = Round((float)accuracyModified * (float)top/(float)bottom);
+        return UnityEngine.Random.Range(1,101) > accuracyModified;
+    }
+
+/* End of Round */
+    IEnumerator EndRound()
+    {
+        List<Pokemon> pokemonOrder = UpdateSpeedOrder();
+
+        if(weather != Weather.None)
+        {
+            if(--weatherCounter <= 0)
+            {
+                yield return mainBox.WeatherExpire(weather);
+                yield return mainBox.PauseAfterText();
+                weather = Weather.None;
+            }
+            else if(weather == Weather.Hail)
+            {
+                //Ice Body
+                //Hail Damage not implemented due to snow instead
+            }
+            else if(weather == Weather.Sand)
+            {
+                yield return EOTSand();
+            }
+            else if(weather == Weather.Rain)
+            {
+                //Rain Dish/Dry Skin/
+            }
+        }        
+
+        CheckForFainted(pokemonOrder);
+        
+        //Emergency Exit/Wimp Out switches from Weather
+
+        //Affection shrug off status
+        //Future Sight/Doom Desire/Wish (Queue from when set, not determined by speed)
+        //---Block A--- (First pokemon does all 4, then second pokemon does all 4)
+        //G-Max Chip/Sea of Fire (Grass+Fire Pledges) (Queue from when set, not determined by speed)
+        //Grassy Terrain Heal
+        //Healer/Hydration/Shed Skin
+        //Leftovers/Black Sludge
+        //-------------
+        //Emergency Exit/Wimp Out switches from Block A
+        //Aqua Ring
+        //Ingrain
+        //Leech Seed
+        
+        foreach(Pokemon p in pokemonOrder)
+        {
+            if(p.Status == NonVolatileStatus.Poison)
+            {
+                //Toxic Heal
+                int poisonDamage = Mathf.Max(1, p.Stats.HP/8);
+                yield return mainBox.PoisonDamage(p);
+                yield return mainBox.PauseAfterText();
+                p.TakeDamage(poisonDamage);
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Poison();
+                    yield return playerSprite.Poison();
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemySprite.Poison();
+                    yield return enemySprite.Poison();
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+            if(p.Status == NonVolatileStatus.BadlyPoisoned)
+            {
+                //Toxic Heal
+                int poisonDamage = Mathf.Max(1, p.PoisonCounter++ * (p.Stats.HP/16));
+                yield return mainBox.PoisonDamage(p);
+                yield return mainBox.PauseAfterText();
+                p.TakeDamage(poisonDamage);
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Poison();
+                    yield return playerSprite.Poison();
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemySprite.Poison();
+                    yield return enemySprite.Poison();
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();
+            }
+        }
+        foreach(Pokemon p in pokemonOrder)
+        {
+            if(p.Status == NonVolatileStatus.Burn)
+            {
+                int burnDamage = Mathf.Max(1, p.Stats.HP/16);
+                yield return mainBox.BurnDamage(p);
+                yield return mainBox.PauseAfterText();
+                p.TakeDamage(burnDamage);
+                if(p.IsPlayer)
+                {
+                    yield return playerSprite.Burn();
+                    yield return playerSprite.Burn();
+                    yield return playerHUD.UpdateHP();
+                }
+                else
+                {
+                    yield return enemySprite.Burn();
+                    yield return enemySprite.Burn();
+                    yield return enemyHUD.UpdateHP();
+                }
+                yield return mainBox.PauseAfterText();         
+            }
+        }
+        //Poison Heal
+
+        CheckForFainted(pokemonOrder);
+
+        //Nightmare
+        //Curse
+        //Bind/Clamp/Fire Spin/Infestation/Magma Storm/Sand Tomb/Whirlpool/Wrap (Binding Moves - both damage and freeing)
+        //Octolock
+        //Taunt fading
+        //Torment ending
+        //Encore fading
+        //Disable fading
+        //Magnet Rise fading
+        //Telekinesis fading
+        //Heal Block fading
+        //Embargo fading
+        //Yawn
+        //Perish Count
+        //Roost fading
+        //Emergency Exit/Wimp Out Checkpoint
+        //---Block B---
+        //Reflect dissipating
+        //Light Screen dissipating
+        //Safeguard dissipating
+        //Mist dissipating
+        //Tailwind dissipating
+        //Lucky Chant dissipating
+        //Rainbow (Water+Fire Pledges) dissipating
+        //Sea of Fire (Fire+Grass Pledges) dissipating
+        //Swamp (Grass+Water Pledges) dissipating
+        //Aurora Veil dissipating
+        //-------------
+
+        if(trickRoom)
+        {
+            trickRoomCounter--;
+            if(trickRoomCounter <= 0)
+            {
+                //yield return mainBox.Expire();
+                trickRoom = false;
+            }
+        }
+        
+        //Water Sport dissipating
+        //Mud Sport dissipating
+        
+        if(gravity)
+        {
+            gravityCounter--;
+            if(gravityCounter <= 0)
+            {
+                //yield return mainBox.Expire();
+                gravity = false;
+            }
+        }
+        if(wonderRoom)
+        {
+            wonderRoomCounter--;
+            if(wonderRoomCounter <= 0)
+            {
+                //yield return mainBox.Expire();
+                wonderRoom = false;
+            }
+        }
+        if(magicRoom)
+        {
+            magicRoomCounter--;
+            if(magicRoomCounter <= 0)
+            {
+                //yield return mainBox.Expire();
+                magicRoom = false;
+            }
+        }
+        if(terrain != Terrain.None)
+        {
+            if(terrain == Terrain.Grassy)
+            {
+                if(IsPlayerFaster())
+                {
+                    yield return GrassyTerrainHeal(playerPokemon);
+                    yield return GrassyTerrainHeal(enemyPokemon);
+                }
+                else
+                {
+                    yield return GrassyTerrainHeal(enemyPokemon);
+                    yield return GrassyTerrainHeal(playerPokemon);
+                }
+            }
+
+            if(--terrainCounter <= 0)
+            {
+                yield return mainBox.TerrainExpire(terrain);
+                yield return mainBox.PauseAfterText();
+                terrain = Terrain.None;
+            }
+        }
+        //---Block C---
+        //Uproar (active/ending)
+        //Bad Dreams/Ball Fetch/Harvest/Moody/Pickup/Slow Start/Speed Boost
+        //Flame Orb/Sticky Barb/Toxic Orb/White Herb
+        //-------------
+        //Emergency Exit/Wimp Out Checkpoint
+        //Power Construct/Schooling/Shields Down/Zen Mode
+        //---Block D---
+        //Hunger Switch
+        //Eject Pack
+        //-------------
+
+        if(fairyLock)
+        {
+            fairyLockCounter--;
+            if(fairyLockCounter < 0)
+            {
+                //yield return mainBox.Expire();
+                fairyLock = false;
+            }
+        }
+        if(ionDeluge)
+        {
+            //yield return mainBox.Expire();
+            ionDeluge = false;
+        }
+    }
+
+/*  */
+/*  */
+/*  */
+
+/* UNSORTED */
+
+    IEnumerator CheckVictory()
+    {
+        if(isTrainerBattle)
+        {
+            if(trainerParty.GetLeadPokemon() == null)
+            {
+                yield return mainBox.Victory(trainer.TrainerName);
+                yield return mainBox.PauseAfterText();
+                yield return trainerImage.Entrance();
+                yield return mainBox.SayDialog(trainer.LossDialog);
+                //int money = GetMoneyEarned();
+                //yield return mainBox.EarnedMoney(money);
+                CleanupBattle();
+                OnBattleOver(true);
+            }
+        }
+        else
+        {
+            if(enemyPokemon.Fainted)
+            {
+                CleanupBattle();
+                OnBattleOver(true);
+            }
+        }
+    }
+
+    IEnumerator CheckLoss()
+    {
+        if(playerParty.GetLeadPokemon() == null)
+        {
+            yield return mainBox.WhiteOut();
+            yield return mainBox.PauseAfterText();
+            CleanupBattle();
+            OnBattleOver(false);
+        }
+    }
+
+    int GetEffectiveSpeed(Pokemon pokemon, bool tailwind)
+    {
+        int speed = pokemon.Stats.Spe;
+
+        int modifier = 4096;
+        //Swift Swim/Chlorophyll/Slush Rush/Sand Rush/Surge Surger/Unburden *2 modifier
+        //Quick Feet *1.5 modifier
+        //Slow Start (still active) *0.5 modifier
+        //Quickpowder & species is Ditto *2 modifier
+        //Choice Scarf *1.5 modifier
+        //Iron Ball/Macho Brace/Power EV item *0.5 modifier
+        if(tailwind)
+        {
+            modifier *= 2;
+        }
+        //Pledge Swamp *0.25 modifier
+        
+        speed *= modifier;
+        if(pokemon.Status == NonVolatileStatus.Paralysis) //&& !Quick Feet
+        {
+            speed /= 2;
+        }
+        if(speed > 10000)
+        {
+            speed = 10000;
+        }
+        if(trickRoom)
+        {
+            speed = 10000 - speed;
+        }
+        if(speed > 8191)
+        {
+            speed -= 8192;
+        }
+        return speed;
+    }
+
+    bool IsPlayerFaster() 
+    {
+        int playerSpeed = GetEffectiveSpeed(playerPokemon, playerField[FieldEffect.Tailwind] > 0);
+        int enemySpeed = GetEffectiveSpeed(enemyPokemon, enemyField[FieldEffect.Tailwind] > 0); 
+        
+        return playerSpeed > enemySpeed;
     }
 
     IEnumerator CalculateEffects(PokemonMove move, Pokemon attacker, Pokemon defender)
@@ -1509,11 +2313,6 @@ public class Battle : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator UseItem(string itemName)
-    {
-        yield return null;
-    }
-
     List <Pokemon> UpdateSpeedOrder()
     {
         List <Pokemon> order = new List<Pokemon>();
@@ -1686,242 +2485,6 @@ public class Battle : MonoBehaviour
         }
     }
 
-    IEnumerator EndRound()
-    {
-        List<Pokemon> pokemonOrder = UpdateSpeedOrder();
-
-        if(weather != Weather.None)
-        {
-            if(--weatherCounter <= 0)
-            {
-                yield return mainBox.WeatherExpire(weather);
-                yield return mainBox.PauseAfterText();
-                weather = Weather.None;
-            }
-            else if(weather == Weather.Hail)
-            {
-                //Ice Body
-                //Hail Damage not implemented due to snow instead
-            }
-            else if(weather == Weather.Sand)
-            {
-                yield return EOTSand();
-            }
-            else if(weather == Weather.Rain)
-            {
-                //Rain Dish/Dry Skin/
-            }
-        }        
-
-        CheckForFainted(pokemonOrder);
-        
-        //Emergency Exit/Wimp Out switches from Weather
-
-        //Affection shrug off status
-        //Future Sight/Doom Desire/Wish (Queue from when set, not determined by speed)
-        //---Block A--- (First pokemon does all 4, then second pokemon does all 4)
-        //G-Max Chip/Sea of Fire (Grass+Fire Pledges) (Queue from when set, not determined by speed)
-        //Grassy Terrain Heal
-        //Healer/Hydration/Shed Skin
-        //Leftovers/Black Sludge
-        //-------------
-        //Emergency Exit/Wimp Out switches from Block A
-        //Aqua Ring
-        //Ingrain
-        //Leech Seed
-        
-        foreach(Pokemon p in pokemonOrder)
-        {
-            if(p.Status == NonVolatileStatus.Poison)
-            {
-                //Toxic Heal
-                int poisonDamage = Mathf.Max(1, p.Stats.HP/8);
-                yield return mainBox.PoisonDamage(p);
-                yield return mainBox.PauseAfterText();
-                p.TakeDamage(poisonDamage);
-                if(p.IsPlayer)
-                {
-                    yield return playerSprite.Poison();
-                    yield return playerSprite.Poison();
-                    yield return playerHUD.UpdateHP();
-                }
-                else
-                {
-                    yield return enemySprite.Poison();
-                    yield return enemySprite.Poison();
-                    yield return enemyHUD.UpdateHP();
-                }
-                yield return mainBox.PauseAfterText();
-            }
-            if(p.Status == NonVolatileStatus.BadlyPoisoned)
-            {
-                //Toxic Heal
-                int poisonDamage = Mathf.Max(1, p.PoisonCounter++ * (p.Stats.HP/16));
-                yield return mainBox.PoisonDamage(p);
-                yield return mainBox.PauseAfterText();
-                p.TakeDamage(poisonDamage);
-                if(p.IsPlayer)
-                {
-                    yield return playerSprite.Poison();
-                    yield return playerSprite.Poison();
-                    yield return playerHUD.UpdateHP();
-                }
-                else
-                {
-                    yield return enemySprite.Poison();
-                    yield return enemySprite.Poison();
-                    yield return enemyHUD.UpdateHP();
-                }
-                yield return mainBox.PauseAfterText();
-            }
-        }
-        foreach(Pokemon p in pokemonOrder)
-        {
-            if(p.Status == NonVolatileStatus.Burn)
-            {
-                int burnDamage = Mathf.Max(1, p.Stats.HP/16);
-                yield return mainBox.BurnDamage(p);
-                yield return mainBox.PauseAfterText();
-                p.TakeDamage(burnDamage);
-                if(p.IsPlayer)
-                {
-                    yield return playerSprite.Burn();
-                    yield return playerSprite.Burn();
-                    yield return playerHUD.UpdateHP();
-                }
-                else
-                {
-                    yield return enemySprite.Burn();
-                    yield return enemySprite.Burn();
-                    yield return enemyHUD.UpdateHP();
-                }
-                yield return mainBox.PauseAfterText();         
-            }
-        }
-        //Poison Heal
-
-        CheckForFainted(pokemonOrder);
-
-        //Nightmare
-        //Curse
-        //Bind/Clamp/Fire Spin/Infestation/Magma Storm/Sand Tomb/Whirlpool/Wrap (Binding Moves - both damage and freeing)
-        //Octolock
-        //Taunt fading
-        //Torment ending
-        //Encore fading
-        //Disable fading
-        //Magnet Rise fading
-        //Telekinesis fading
-        //Heal Block fading
-        //Embargo fading
-        //Yawn
-        //Perish Count
-        //Roost fading
-        //Emergency Exit/Wimp Out Checkpoint
-        //---Block B---
-        //Reflect dissipating
-        //Light Screen dissipating
-        //Safeguard dissipating
-        //Mist dissipating
-        //Tailwind dissipating
-        //Lucky Chant dissipating
-        //Rainbow (Water+Fire Pledges) dissipating
-        //Sea of Fire (Fire+Grass Pledges) dissipating
-        //Swamp (Grass+Water Pledges) dissipating
-        //Aurora Veil dissipating
-        //-------------
-
-        if(trickRoom)
-        {
-            trickRoomCounter--;
-            if(trickRoomCounter <= 0)
-            {
-                //yield return mainBox.Expire();
-                trickRoom = false;
-            }
-        }
-        
-        //Water Sport dissipating
-        //Mud Sport dissipating
-        
-        if(gravity)
-        {
-            gravityCounter--;
-            if(gravityCounter <= 0)
-            {
-                //yield return mainBox.Expire();
-                gravity = false;
-            }
-        }
-        if(wonderRoom)
-        {
-            wonderRoomCounter--;
-            if(wonderRoomCounter <= 0)
-            {
-                //yield return mainBox.Expire();
-                wonderRoom = false;
-            }
-        }
-        if(magicRoom)
-        {
-            magicRoomCounter--;
-            if(magicRoomCounter <= 0)
-            {
-                //yield return mainBox.Expire();
-                magicRoom = false;
-            }
-        }
-        if(terrain != Terrain.None)
-        {
-            if(terrain == Terrain.Grassy)
-            {
-                if(IsPlayerFaster())
-                {
-                    yield return GrassyTerrainHeal(playerPokemon);
-                    yield return GrassyTerrainHeal(enemyPokemon);
-                }
-                else
-                {
-                    yield return GrassyTerrainHeal(enemyPokemon);
-                    yield return GrassyTerrainHeal(playerPokemon);
-                }
-            }
-
-            if(--terrainCounter <= 0)
-            {
-                yield return mainBox.TerrainExpire(terrain);
-                yield return mainBox.PauseAfterText();
-                terrain = Terrain.None;
-            }
-        }
-        //---Block C---
-        //Uproar (active/ending)
-        //Bad Dreams/Ball Fetch/Harvest/Moody/Pickup/Slow Start/Speed Boost
-        //Flame Orb/Sticky Barb/Toxic Orb/White Herb
-        //-------------
-        //Emergency Exit/Wimp Out Checkpoint
-        //Power Construct/Schooling/Shields Down/Zen Mode
-        //---Block D---
-        //Hunger Switch
-        //Eject Pack
-        //-------------
-
-        if(fairyLock)
-        {
-            fairyLockCounter--;
-            if(fairyLockCounter < 0)
-            {
-                //yield return mainBox.Expire();
-                fairyLock = false;
-            }
-        }
-        if(ionDeluge)
-        {
-            //yield return mainBox.Expire();
-            ionDeluge = false;
-        }
-    }
-
     int CalculateExperience()
     {
         float b = enemyPokemon.Species.BaseXPYield;
@@ -2068,258 +2631,6 @@ public class Battle : MonoBehaviour
         }
 
         yield return playerHUD.UpdateXP(playerPokemon.GetExpPercent());
-        yield return mainBox.PauseAfterText();
-    }
-
-    IEnumerator SwitchPokemon(Pokemon pokemon)
-    {
-        sideBox.Clear();
-        curMoveOption = 0;
-
-        playerHUD.gameObject.SetActive(false);
-        if(switchReason != SwitchReason.Fainted)
-        {
-            yield return mainBox.PlayerPokemonReturn(playerPokemon.Nickname);
-            yield return playerSprite.Return();
-            yield return mainBox.PauseAfterText();
-        }
-
-        playerPokemon.IsActive = false;
-        playerPokemon = pokemon;
-        playerPokemon.IsActive = true;
-
-        playerSprite.Set(playerPokemon);
-        yield return mainBox.PlayerPokemonIntro(playerPokemon.Species.SpeciesName);
-        yield return playerSprite.Entrance();
-        yield return mainBox.PauseAfterText();
-
-        playerHUD.GenerateBar(playerPokemon);
-        playerHUD.gameObject.SetActive(true);
-        partyScreen.SetPartyMembers();
-    }
-
-    //-------------Pokemon Catching Methods-----------------
-
-    IEnumerator ThrowPokeball(float ballMultiplier) //Add parameter for type of ball
-    {
-        yield return mainBox.UsedBall("Poke Ball");
-        ballSprite.gameObject.SetActive(true);
-        yield return ballSprite.Thrown();
-        
-        yield return enemySprite.Return();
-
-
-        int success = TryCapture(ballMultiplier);
-        Debug.Log($"Catch success = {success}");
-        if(success < 0)
-        {
-            yield return ballSprite.Critical();
-            if(success == -1)
-            {
-                yield return ballSprite.Shake();
-                yield return ballSprite.BreakOut();
-                yield return enemySprite.SendOut();
-                yield return mainBox.BreakOut(0);
-                yield return mainBox.PauseAfterText();
-            }
-            else if(success == -2)
-            {
-                yield return ballSprite.Shake();
-                yield return ballSprite.Catch();
-                yield return mainBox.Caught(enemyPokemon.Nickname);
-                yield return mainBox.PauseAfterText();
-                yield return ballSprite.BreakOut(); //Get rid of the ball sprite
-                yield return CatchSuccess();
-            }
-            else
-            {
-                Debug.Log($"How did you get {success} from TryCapture()?!?!?!");
-            }
-        }
-        else if(success >= 0 && success <= 4)
-        {            
-            yield return ballSprite.Fall();
-            for(int i = 0; i < Mathf.Min(success, 3); i++)
-            {
-                yield return ballSprite.Shake();
-            }
-            if(success == 4)
-            {
-                yield return ballSprite.Catch();
-                yield return mainBox.Caught(enemyPokemon.Nickname);
-                yield return mainBox.PauseAfterText();
-                yield return ballSprite.BreakOut(); //Get rid of the ball sprite
-                yield return CatchSuccess();
-            }
-            else
-            {
-                yield return ballSprite.BreakOut();
-                yield return enemySprite.SendOut();
-                yield return mainBox.BreakOut(success);
-                yield return mainBox.PauseAfterText();
-            }
-        }
-        else
-        {
-            Debug.Log($"How did you get {success} from TryCapture()?!?!?!");
-        }
-    }
-
-    int TryCapture(float ballMultiplier)
-    {
-        //if Route 1 
-        //success
-
-        float modCatchRate = (3 * enemyPokemon.Stats.HP) - (2 * enemyPokemon.CurHP);
-        Debug.Log($"Catch Rate 1: {modCatchRate}");
-        modCatchRate *= 4096;
-        modCatchRate += 0.5f;
-        modCatchRate = Mathf.FloorToInt(modCatchRate);
-        Debug.Log($"Catch Rate 2: {modCatchRate}");
-        //Dark Grass modifier (see wiki if/when you implement dark grass)
-        //if(Heavy Ball Used)
-        //int heavyBall = Heavy Ball modifier
-        modCatchRate *= enemyPokemon.Species.CatchRate; //+ heavyBall;
-        modCatchRate *= ballMultiplier;
-        //Calculate badgePenalty based on badges missing
-        modCatchRate = modCatchRate/(3 * enemyPokemon.Stats.HP);  //(modCatchRate * BadgePenalty)
-        if(enemyPokemon.Level <= 13)
-        {
-            modCatchRate = ((36-(2*enemyPokemon.Level)) * modCatchRate)/10;
-        }
-        modCatchRate = Mathf.FloorToInt(modCatchRate);
-        Debug.Log($"Catch Rate 3: {modCatchRate}");
-        modCatchRate *= GetStatusCatchBonus(enemyPokemon);
-        //modCatchRate *= (410/4096) if wild pokemon's level > player pokemon's level && <8 gym badges
-        //modCatchRate *= miscellaneous (2 for a backstrike, various for capture powers of some sort)
-        modCatchRate = Mathf.Min(modCatchRate, 1044480);
-        Debug.Log($"Catch Rate 4: {modCatchRate}");
-
-        float critModifier = 1f;
-        //int catchingCharm = 2;
-        int critRate = Mathf.FloorToInt(715827883f * modCatchRate * critModifier/(4294967296f*4096f));
-        Debug.Log($"Crit Rate = {critRate}");
-        
-        int shakeProb = Mathf.FloorToInt(65536 / Mathf.Pow(1044480/modCatchRate, .1875f));
-        Debug.Log($"Shake Prob = {shakeProb}");
-
-        if(UnityEngine.Random.Range(0, 256) < critRate)
-        {
-            if(ShakeCheck(shakeProb))
-            {
-                return -2; //Successful Crit Capture
-            }
-            else
-            {
-                return -1; //Failed Crit Capture
-            }
-        }
-        else
-        {
-            for(int i = 0; i < 4; i++)
-            {
-                if(!ShakeCheck(shakeProb))
-                {
-                    return i; //Return # of shakes
-                }
-            }
-            return 4; //Successful catch
-        }
-    }
-
-    bool ShakeCheck(int shakeProb)
-    {
-        return UnityEngine.Random.Range(0, 65536) < shakeProb;
-    }
-
-    float GetStatusCatchBonus(Pokemon p)
-    {
-        if(p.Status == NonVolatileStatus.Sleep || p.Status == NonVolatileStatus.Freeze)
-        {
-            return 2.5f;
-        }
-        if(p.Status == NonVolatileStatus.Paralysis || p.Status == NonVolatileStatus.Poison || p.Status == NonVolatileStatus.BadlyPoisoned || p.Status == NonVolatileStatus.Burn)
-        {
-            return 1.5f;
-        }
-        return 1f;
-    }
-
-    IEnumerator CatchSuccess()
-    {
-        enemyPokemon.Captured();
-        if(playerParty.AddPokemon(enemyPokemon))
-        {
-            yield return mainBox.AddedToParty(enemyPokemon.Nickname);
-        }
-        else if(PC.Instance.AddPokemon(enemyPokemon))
-        {            
-            yield return mainBox.PartyFull(enemyPokemon.Nickname);
-        }
-        else
-        {
-            Debug.Log("No room in party or PC");
-        }
-        //Experience gain
-        CleanupBattle();
-        OnBattleOver(true);
-        yield return null;
-    }
-
-    //-----------------------------------------------------------
-
-    IEnumerator RunAttempt()
-    {
-        if(playerPokemon.Type1 == PokemonType.Ghost || playerPokemon.Type2 == PokemonType.Ghost)
-        {
-            yield return RunSuccess();
-        }
-
-        // if(enemyPokemon.Ability == "Arena Trap") //Shadow Tag & Magnet Pull if Steel Type ; Binding moves and Ingrain
-        // {
-        //     //yield return mainBox.FleePrevention()
-        //     yield return mainBox.PauseAfterText();
-        // }
-
-        // if(Smoke Ball or Run Away)
-        // {
-        //     Smoke Ball message???
-        //     yield return RunSuccess();
-        // }
-
-        if(playerPokemon.Stats.Spe >= enemyPokemon.Stats.Spe)
-        {
-            yield return RunSuccess();
-        }
-        else
-        {
-            numRunAttempts++;
-            float escapeOdds = (Mathf.Floor((playerPokemon.Stats.Spe * 32)/(enemyPokemon.Stats.Spe / 4)) + 30) * numRunAttempts;
-            Debug.Log($"Run Attempt #{numRunAttempts}: Player Speed = {playerPokemon.Stats.Spe}; Enemy Speed = {enemyPokemon.Stats.Spe}; Escape Odds = {escapeOdds}");
-
-            if(UnityEngine.Random.Range(0, 256) < escapeOdds)
-            {
-                yield return RunSuccess();
-            }
-            else
-            {
-                yield return RunFailure();
-            }
-        }        
-    }
-
-    IEnumerator RunSuccess()
-    {
-        yield return mainBox.Run();
-        yield return mainBox.PauseAfterText();
-        CleanupBattle();
-        OnBattleOver(false);
-        yield break;
-    }
-
-    IEnumerator RunFailure()
-    {
-        yield return mainBox.RunFailure();
         yield return mainBox.PauseAfterText();
     }
 
@@ -2838,254 +3149,6 @@ public class Battle : MonoBehaviour
 
 //------------------------Battle Functions--------------------------------------
 
-    BattleChoice getEnemyChoice()
-    {
-        if(isTrainerBattle)
-        {
-            //Logic to decide if you want to use an item or switch
-
-            return BattleChoice.Move;
-        }
-        else
-        {
-            return BattleChoice.Move;
-        }
-    }
-
-    PokemonMove getEnemyMove()
-    {
-        //Random Algorithm
-        int numMoves = 0;
-        foreach(PokemonMove move in enemyPokemon.Moves)
-        {
-            if(move != null)
-            {
-                numMoves++;
-            }
-        }
-        return enemyPokemon.Moves[UnityEngine.Random.Range(0, numMoves)];
-    }
-
-//---------------------------Input Handling---------------------------------------    
-
-    void HandlePartySelection()
-    {
-        Action<Pokemon> onSelected = (Pokemon p) =>
-        {
-            if(p == null)
-            {
-                partyScreen.InvalidSelection();
-                Debug.LogError("The selected pokemon was null.");
-            }
-            else if(p.Fainted)
-            {
-                partyScreen.SelectionFainted();
-            }
-            else if(p.IsActive)
-            {
-                partyScreen.SelectionActive();
-            }
-            else
-            {
-                state = BattleState.Busy;
-                partyScreen.gameObject.SetActive(false);
-                StartCoroutine(ClosePokemon(p));
-            }
-        };
-
-        Action onClose = () =>
-        {
-            if(switchReason == SwitchReason.Fainted)
-            {
-                partyScreen.ForcedSelection();
-            }
-            else
-            {
-                state = BattleState.Busy;
-                partyScreen.gameObject.SetActive(false);
-                StartCoroutine(ClosePokemon(null));
-            }
-        };
-
-        partyScreen.HandleInput(onSelected, onClose);
-    }
-
-    void HandleChoiceInput()
-    {
-        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) ||
-           Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
-           Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) ||
-           Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-            choice = !choice;
-        }
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            choice = false;
-        }
-        mainBox.UpdateChoiceSelection(choice);
-        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-        {
-            state = BattleState.Busy;
-            mainBox.EnableChoiceBox(false);       
-        }
-    }
-
-    void HandleForgetMoveInput()
-    {
-        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) || 
-           Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-        {
-            moveChoice++;
-            if(moveChoice > 4)
-            {
-                moveChoice = 0;
-            }
-        }
-        else if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W) ||
-                Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-            moveChoice--;
-            if(moveChoice < 0)
-            {
-                moveChoice = 4;
-            }
-        }
-
-        moveSelection.UpdateMoveSelection(moveChoice);
-
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            state = BattleState.Busy;
-            moveSelection.gameObject.SetActive(false);
-        }
-        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-        {
-            state = BattleState.Busy;
-            moveSelection.gameObject.SetActive(false);
-        }
-    }
-
-    void HandleInput()
-    {
-        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-        {
-            if(curBattleOption < 2 && state == BattleState.ActionSelection)
-            {
-                curBattleOption+=2;
-            }
-            if(curMoveOption < 2 && state == BattleState.MoveSelection)
-            {
-                curMoveOption+=2;
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-        {
-            if(curBattleOption > 1 && state == BattleState.ActionSelection)
-            {
-                curBattleOption-=2;
-            }
-            if(curMoveOption > 1 && state == BattleState.MoveSelection)
-            {
-                curMoveOption-=2;
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-        {
-            if(curBattleOption % 2 == 0 && state == BattleState.ActionSelection)
-            {
-                curBattleOption++;
-            }
-            if(curMoveOption % 2 == 0 && state == BattleState.MoveSelection)
-            {
-                curMoveOption++;
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-            if(curBattleOption % 2 == 1 && state == BattleState.ActionSelection)
-            {
-                curBattleOption--;
-            }
-            if(curMoveOption % 2 == 1 && state == BattleState.MoveSelection)
-            {
-                curMoveOption--;
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-        {
-            if(state == BattleState.ActionSelection)
-            {
-                if(curBattleOption == 0)
-                {
-                    int totalPP = 0;
-                    foreach(PokemonMove move in playerPokemon.Moves)
-                    {
-                        if(move != null)
-                        {
-                            totalPP += move.CurPP;
-                        }
-                    }
-                    if(totalPP > 0)
-                    {
-                        Fight();
-                    }
-                    else
-                    {
-                        //mainBox.SetText("Struggle!");
-                    }
-                }
-                else if(curBattleOption == 1)
-                {
-                    Bag();
-                }
-                else if(curBattleOption == 2)
-                {
-                    switchReason = SwitchReason.BattleSelection;
-                    Pokemon();
-                }
-                else if(curBattleOption == 3)
-                {
-                    Run();    
-                }
-            }
-            else if(state == BattleState.MoveSelection)
-            {
-                if(curMoveOption < playerPokemon.Moves.Count && playerPokemon.Moves[curMoveOption] != null && playerPokemon.Moves[curMoveOption].CurPP > 0)
-                {
-                    StartCoroutine(ChooseMove(playerPokemon.Moves[curMoveOption]));
-                }
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            if(state == BattleState.ActionSelection)
-            {
-                curBattleOption = 3;
-            }
-            else if(state == BattleState.MoveSelection)
-            {
-                PlayerSelection();
-            }
-        }
-
-        if(state == BattleState.ActionSelection)
-        {
-            sideBox.updateBattleSelection(curBattleOption);
-        }
-        if(state == BattleState.MoveSelection)
-        {
-            mainBox.UpdateMoveSelection(curMoveOption);
-            if(curMoveOption < playerPokemon.Moves.Count)
-            {
-                sideBox.updateMoveDetails(playerPokemon.Moves[curMoveOption]);
-            }
-            else
-            {
-                sideBox.updateMoveDetails(null);
-            }
-        }
-    }
 }
 
 //Implement option to run after pokemon fainted
