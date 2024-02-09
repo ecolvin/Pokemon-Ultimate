@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "Water with high mineral content. It can be used to restore 30 HP
     to a Pok\xE9mon."
   icon: {fileID: 1261713536, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 0
+  uiState: 1
   healingAmount: 30
   maxHeal: 0
   ppAmount: 0

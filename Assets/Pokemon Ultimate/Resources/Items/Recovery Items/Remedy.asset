@@ -17,6 +17,8 @@ MonoBehaviour:
     a Potion does. Yet the bitter taste will make the Pok\xE9mon less friendly toward
     you."
   icon: {fileID: 0}
+  tab: 0
+  uiState: 1
   healingAmount: 60
   maxHeal: 0
   ppAmount: 0

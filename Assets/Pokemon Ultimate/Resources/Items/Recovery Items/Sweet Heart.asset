@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "A piece of cloyingly sweet chocolate. It can be used to restore 20
     HP to a Pok\xE9mon."
   icon: {fileID: 0}
+  tab: 0
+  uiState: 1
   healingAmount: 20
   maxHeal: 0
   ppAmount: 0

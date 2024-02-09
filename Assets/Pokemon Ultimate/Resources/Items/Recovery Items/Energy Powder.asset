@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "A very bitter medicinal powder. It can be used to restore 60 HP to
     a Pok\xE9mon."
   icon: {fileID: 564695508, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 0
+  uiState: 1
   healingAmount: 60
   maxHeal: 0
   ppAmount: 0

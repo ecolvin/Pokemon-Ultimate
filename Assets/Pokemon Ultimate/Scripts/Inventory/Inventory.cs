@@ -3,10 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+public enum InventoryTab {Medicines, Balls, Battle, Berries, Other, TMs, Treasures, KeyItems}
+
 public class Inventory : MonoBehaviour
 {
-    [SerializeField] List<ItemSlot> items;
-    public List<ItemSlot> Items {get => items;}
+    [SerializeField] List<ItemSlot> medicines;
+    [SerializeField] List<ItemSlot> balls;
+    [SerializeField] List<ItemSlot> battleItems;
+    [SerializeField] List<ItemSlot> berries;
+    [SerializeField] List<ItemSlot> otherItems;
+    [SerializeField] List<ItemSlot> tms;
+    [SerializeField] List<ItemSlot> treasures;
+    [SerializeField] List<ItemSlot> keyItems;
+
+    Dictionary<InventoryTab, List<ItemSlot>> inventory = new Dictionary<InventoryTab, List<ItemSlot>>();
+    public Dictionary<InventoryTab, List<ItemSlot>> Inv {get => inventory;}
 
     public event System.Action OnUpdated;
 
@@ -15,17 +26,41 @@ public class Inventory : MonoBehaviour
         return FindObjectOfType<PlayerController>().GetComponent<Inventory>();
     }
 
-    public void SetInventory(List<ItemSlot> newItems)
+    void Awake()
     {
-        if(newItems.Count > 0)
+        SetInventory(null);
+    }
+
+    public void SetInventory(List<Tab> newInv)
+    {
+        inventory[InventoryTab.Medicines] = medicines != null ? medicines : new List<ItemSlot>();
+        inventory[InventoryTab.Balls] = balls != null ? balls : new List<ItemSlot>();
+        inventory[InventoryTab.Battle] = battleItems != null ? battleItems : new List<ItemSlot>();
+        inventory[InventoryTab.Berries] = berries != null ? berries : new List<ItemSlot>();
+        inventory[InventoryTab.Other] = otherItems != null ? otherItems : new List<ItemSlot>();
+        inventory[InventoryTab.TMs] = tms != null ? tms : new List<ItemSlot>();
+        inventory[InventoryTab.Treasures] = treasures != null ? treasures : new List<ItemSlot>();
+        inventory[InventoryTab.KeyItems] = keyItems != null ? keyItems : new List<ItemSlot>();      
+
+        if(newInv == null)
         {
-            items = newItems;
+            return;
+        }
+
+        foreach(Tab tab in newInv)
+        {
+            if(tab.items.Count > 0)
+            {
+                inventory[tab.tab] = tab.items;
+            }
         }
     }
 
     public bool AddItem(ItemBase item, int qty)
     {
-        foreach(ItemSlot i in items)
+        InventoryTab tab = item.Tab;
+
+        foreach(ItemSlot i in inventory[tab])
         {
             if(i.Item == item)
             {
@@ -38,17 +73,17 @@ public class Inventory : MonoBehaviour
                 return true;
             }
         }
-        Items.Add(new ItemSlot(item, qty));
+        inventory[tab].Add(new ItemSlot(item, qty));
         return true;
     }
 
-    public ItemBase UseItem(int selectedItem, Pokemon selectedPokemon)
+    public ItemBase UseItem(int selectedItem, Pokemon selectedPokemon, InventoryTab selectedTab)
     {
-        ItemBase item = Items[selectedItem].Item;
+        ItemBase item = inventory[selectedTab][selectedItem].Item;
         bool itemUsed = item.Use(selectedPokemon);
         if(itemUsed)
         {
-            bool itemRemoved = RemoveItem(Items[selectedItem].Item, 1);
+            bool itemRemoved = RemoveItem(inventory[selectedTab][selectedItem].Item, 1);
             if(!itemRemoved)
             {
                 Debug.LogError("Tried to remove an item that didn't exist. Not sure how that's possible.");
@@ -62,16 +97,16 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public ItemBase UseItem(int selectedItem, Pokemon selectedPokemon, int quantity)
+    public ItemBase UseItem(int selectedItem, Pokemon selectedPokemon, InventoryTab selectedTab, int quantity)
     {
         /* Refactor to actually use the item multiple times additively*/
 
-        ItemBase item = Items[selectedItem].Item;
+        ItemBase item = inventory[selectedTab][selectedItem].Item;
         //int itemUsed = item.Use(selectedPokemon, quantity); //Only implemented for medicine and false for everything else
         bool itemUsed = item.Use(selectedPokemon); 
         if(itemUsed)
         {
-            bool itemRemoved = RemoveItem(Items[selectedItem].Item, quantity);
+            bool itemRemoved = RemoveItem(inventory[selectedTab][selectedItem].Item, quantity);
             if(!itemRemoved)
             {
                 Debug.LogError("Tried to remove an item that didn't exist. Not sure how that's possible.");
@@ -87,7 +122,8 @@ public class Inventory : MonoBehaviour
 
     public bool RemoveItem(ItemBase item, int qty)
     {
-        ItemSlot itemSlot = items.First(slot => slot.Item == item);
+        InventoryTab tab = item.Tab;
+        ItemSlot itemSlot = inventory[tab].First(slot => slot.Item == item);
         if(itemSlot == null)
         {
             return false;
@@ -97,7 +133,7 @@ public class Inventory : MonoBehaviour
             itemSlot.Quantity -= qty;
             if(itemSlot.Quantity <= 0)
             {
-                items.Remove(itemSlot);
+                inventory[tab].Remove(itemSlot);
             }
             OnUpdated?.Invoke();
             return true;
@@ -118,4 +154,11 @@ public class ItemSlot
         item = i;
         quantity = qty;
     }
+}
+
+[System.Serializable]
+public class Tab
+{
+    public InventoryTab tab;
+    public List<ItemSlot> items;
 }

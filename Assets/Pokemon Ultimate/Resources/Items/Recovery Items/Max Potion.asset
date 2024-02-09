@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "A spray-type medicine for treating wounds. It can be used to fully
     restore the max HP of a Pok\xE9mon."
   icon: {fileID: 480859081, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 1
   ppAmount: 0

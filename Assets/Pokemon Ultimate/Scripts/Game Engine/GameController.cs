@@ -41,8 +41,11 @@ public class GameController : MonoBehaviour
 
         DialogManager.Instance.OnShowDialog += () => 
         {
-            savedState = state;
-            state = GameState.Dialog;
+            if(state == GameState.Overworld)
+            {
+                savedState = state;
+                state = GameState.Dialog;
+            }
         };
 
         DialogManager.Instance.OnCloseDialog += () => 
@@ -91,14 +94,7 @@ public class GameController : MonoBehaviour
         }
         else if(state == GameState.Bag)
         {
-            Action<ItemBase, Pokemon> onClose = (ItemBase itemUsed, Pokemon p) =>
-            {
-                inventoryUI.gameObject.SetActive(false);
-                menuController.OpenMenu();
-                state = GameState.Menu;
-            };
-
-            inventoryUI.HandleUpdate(false, onClose);
+            inventoryUI.HandleUpdate();
         }
     }
 
@@ -191,7 +187,15 @@ public class GameController : MonoBehaviour
     void MenuBag()
     {
         state = GameState.Bag;
-        inventoryUI.gameObject.SetActive(true);
+            
+        Action<ItemBase, Pokemon> onClose = (ItemBase itemUsed, Pokemon p) =>
+        {
+            inventoryUI.gameObject.SetActive(false);
+            menuController.OpenMenu();
+            state = GameState.Menu;
+        };
+
+        inventoryUI.OpenInventory(false, onClose);
         menuController.CloseMenu();
     }
 

@@ -26,6 +26,7 @@ public class PokemonInvUI : MonoBehaviour
     public bool IsMoving {get; set;}
 
     Pokemon pokemon;
+    public Pokemon Pokemon {get => pokemon;}
 
     InvUIState curState = InvUIState.Default;
 

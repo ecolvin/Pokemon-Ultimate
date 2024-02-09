@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "A spray-type medicine for treating freezing. It can be used to thaw
     out a Pok\xE9mon that has been frozen solid."
   icon: {fileID: 555808009, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 0
   ppAmount: 0

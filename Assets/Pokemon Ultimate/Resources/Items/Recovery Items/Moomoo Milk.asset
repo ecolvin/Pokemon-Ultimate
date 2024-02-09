@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "A bottle of highly nutritious milk. It can be used to restore 100
     HP to a Pok\xE9mon."
   icon: {fileID: 1017446731, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 0
+  uiState: 1
   healingAmount: 100
   maxHeal: 0
   ppAmount: 0

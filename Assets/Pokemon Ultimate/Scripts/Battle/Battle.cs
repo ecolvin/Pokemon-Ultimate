@@ -255,14 +255,21 @@ public class Battle : MonoBehaviour
         state = BattleState.Bag;
         mainBox.gameObject.SetActive(false);
         sideBox.gameObject.SetActive(false);
-        inventoryScreen.gameObject.SetActive(true);
 
-        // if(isTrainerBattle)
-        // {
-        //     StartCoroutine(mainBox.CantCatchTrainer());
-        //     return;
-        // }
-        // StartCoroutine(ResolveTurn(BattleChoice.Item, null, null));
+        Action<ItemBase, Pokemon> onClose = (ItemBase itemUsed, Pokemon target) => 
+        {
+            inventoryScreen.gameObject.SetActive(false);
+            mainBox.gameObject.SetActive(true);
+            sideBox.gameObject.SetActive(true);
+            if(itemUsed == null)
+            {
+                PlayerSelection();
+                return;
+            }
+            StartCoroutine(ResolveTurn(BattleChoice.Item, null, target, itemUsed));
+        };
+
+        inventoryScreen.OpenInventory(true, onClose);
     }
 
     void Pokemon()
@@ -289,24 +296,7 @@ public class Battle : MonoBehaviour
                 partyScreen.HandleInput(); 
                 break;
             case BattleState.Bag:                
-                Action<ItemBase, Pokemon> onClose = (ItemBase itemUsed, Pokemon target) => 
-                {
-                    inventoryScreen.gameObject.SetActive(false);
-                    mainBox.gameObject.SetActive(true);
-                    sideBox.gameObject.SetActive(true);
-                    if(itemUsed == null)
-                    {
-                        PlayerSelection();
-                        return;
-                    }
-                    if(target == null)
-                    {
-                        //Poke Ball/Battle Item
-                        return;
-                    }
-                    StartCoroutine(ResolveTurn(BattleChoice.Item, null, target, itemUsed));
-                };
-                inventoryScreen.HandleUpdate(true, onClose);
+                inventoryScreen.HandleUpdate();
                 break;
             case BattleState.Choice:
                 HandleChoiceInput();
@@ -609,17 +599,12 @@ public class Battle : MonoBehaviour
         
         if(choice == BattleChoice.Item && enemyChoice == BattleChoice.Item) //Use an Item
         {
-
+            yield return UseItem(item, pokemon);
+            //yield return TrainerItem();
         }
         else if(choice == BattleChoice.Item)
         {
             yield return UseItem(item, pokemon);
-
-            // if(isTrainerBattle)
-            // {
-            //     Debug.Log("You shouldn't be able to select bag against a trainer currently...");
-            // }
-            // yield return ThrowPokeball(1);
         }
         else if (enemyChoice == BattleChoice.Item)
         {
@@ -940,21 +925,39 @@ public class Battle : MonoBehaviour
 /* Items */
     IEnumerator UseItem(ItemBase item, Pokemon target)
     {
-        item.Use(target);
-        //Item use message
-        yield return null;
+        if(item == null)
+        {
+            Debug.LogError("Tried to use a null item in function UseItem()!");
+            yield break;
+        }
+        if(item is Pokeball)
+        {
+            if(isTrainerBattle)
+            {
+                Debug.LogError("Tried to throw a poke ball in a trainer battle. This bug needs to be patched.");
+                yield break;
+            }
+            yield return ThrowPokeball((Pokeball) item);
+        }
+        else
+        {
+            item.Use(target);
+            //Item use message
+            yield return null;
+        }
     }
 
-    IEnumerator ThrowPokeball(float ballMultiplier) //Add parameter for type of ball
+    IEnumerator ThrowPokeball(Pokeball ball) //Add parameter for type of ball
     {
-        yield return mainBox.UsedBall("Poke Ball");
+        yield return mainBox.UsedBall(ball.ItemName);
+        ballSprite.GetComponent<Image>().sprite = ball.Icon;
         ballSprite.gameObject.SetActive(true);
         yield return ballSprite.Thrown();
         
         yield return enemySprite.Return();
 
 
-        int success = TryCapture(ballMultiplier);
+        int success = TryCapture(ball);
         Debug.Log($"Catch success = {success}");
         if(success < 0)
         {
@@ -1010,22 +1013,43 @@ public class Battle : MonoBehaviour
         }
     }
 
-    int TryCapture(float ballMultiplier)
+    int GetHeavyBallModifier(float weight)
+    {
+        if(weight < 100f)
+        {
+            return -20;
+        }
+        else if(weight < 200f)
+        {
+            return 0;
+        }
+        else if(weight < 300f)
+        {
+            return 20;
+        }
+        else
+        {
+            return 40;
+        }
+    }
+
+    int TryCapture(Pokeball ball)
     {
         //if Route 1 
         //success
 
         float modCatchRate = (3 * enemyPokemon.Stats.HP) - (2 * enemyPokemon.CurHP);
-        Debug.Log($"Catch Rate 1: {modCatchRate}");
         modCatchRate *= 4096;
         modCatchRate += 0.5f;
         modCatchRate = Mathf.FloorToInt(modCatchRate);
-        Debug.Log($"Catch Rate 2: {modCatchRate}");
         //Dark Grass modifier (see wiki if/when you implement dark grass)
-        //if(Heavy Ball Used)
-        //int heavyBall = Heavy Ball modifier
-        modCatchRate *= enemyPokemon.Species.CatchRate; //+ heavyBall;
-        modCatchRate *= ballMultiplier;
+        int heavyBall = 0;
+        if(ball.IsHeavyBall)
+        {
+            heavyBall = GetHeavyBallModifier(enemyPokemon.Species.Weight);
+        }
+        modCatchRate *= enemyPokemon.Species.CatchRate + heavyBall;
+        modCatchRate *= ball.GetCatchRate(enemyPokemon);
         //Calculate badgePenalty based on badges missing
         modCatchRate = modCatchRate/(3 * enemyPokemon.Stats.HP);  //(modCatchRate * BadgePenalty)
         if(enemyPokemon.Level <= 13)
@@ -1033,20 +1057,16 @@ public class Battle : MonoBehaviour
             modCatchRate = ((36-(2*enemyPokemon.Level)) * modCatchRate)/10;
         }
         modCatchRate = Mathf.FloorToInt(modCatchRate);
-        Debug.Log($"Catch Rate 3: {modCatchRate}");
         modCatchRate *= GetStatusCatchBonus(enemyPokemon);
         //modCatchRate *= (410/4096) if wild pokemon's level > player pokemon's level && <8 gym badges
         //modCatchRate *= miscellaneous (2 for a backstrike, various for capture powers of some sort)
         modCatchRate = Mathf.Min(modCatchRate, 1044480);
-        Debug.Log($"Catch Rate 4: {modCatchRate}");
 
         float critModifier = 1f;
         //int catchingCharm = 2;
         int critRate = Mathf.FloorToInt(715827883f * modCatchRate * critModifier/(4294967296f*4096f));
-        Debug.Log($"Crit Rate = {critRate}");
         
         int shakeProb = Mathf.FloorToInt(65536 / Mathf.Pow(1044480/modCatchRate, .1875f));
-        Debug.Log($"Shake Prob = {shakeProb}");
 
         if(UnityEngine.Random.Range(0, 256) < critRate)
         {
@@ -2535,10 +2555,18 @@ public class Battle : MonoBehaviour
 
             if(choice)
             {
-                p.LearnMove(newMove, moveChoice);
+                PokemonMove oldMove = p.ReplaceMove(newMove, moveChoice);
 
-                yield return mainBox.ForgottenMove(p.Nickname, moves[moveChoice].MoveBase.MoveName, newMove.MoveBase.MoveName);
-                yield return mainBox.PauseAfterText();
+                if(oldMove == null)
+                {
+                    yield return mainBox.MoveLearned(p.Nickname, newMove.MoveBase.MoveName);
+                    yield return mainBox.PauseAfterText();
+                }
+                else
+                {
+                    yield return mainBox.ForgottenMove(p.Nickname, oldMove.MoveBase.MoveName, newMove.MoveBase.MoveName);
+                    yield return mainBox.PauseAfterText();
+                }
             }
             else
             {
@@ -2578,9 +2606,15 @@ public class Battle : MonoBehaviour
     IEnumerator LearnNewMove(Pokemon p, PokemonMove newMove)
     {
         Debug.Log("New Move Learnable");
-        int slot = p.AvailableMoveSlot();
-        if(slot == -1)
+        if(p.AvailableMoveSlot())
         {
+            p.LearnMove(newMove);
+            yield return mainBox.MoveLearned(p.Nickname, newMove.MoveBase.MoveName);
+            yield return mainBox.PauseAfterText();
+
+        }
+        else
+        {            
             yield return mainBox.NewMove(p.Nickname, newMove.MoveBase.MoveName);
             yield return mainBox.PauseAfterText();
 
@@ -2598,12 +2632,6 @@ public class Battle : MonoBehaviour
                 yield return mainBox.PauseAfterText();
                 yield return ForgetAMove(p, newMove);
             }  
-        }
-        else
-        {
-            p.LearnMove(newMove, slot);
-            yield return mainBox.MoveLearned(p.Nickname, newMove.MoveBase.MoveName);
-            yield return mainBox.PauseAfterText();
         }
     }
 

@@ -151,12 +151,24 @@ public class PlayerController : MonoBehaviour, ISaveable
 
     public void SaveData(ref GameData data)
     {
-        PlayerSaveData saveData = new PlayerSaveData()
+        List<Tab> inv = new List<Tab>();
+        foreach(KeyValuePair<InventoryTab, List<ItemSlot>> pair in Inventory.GetInventory().Inv)
         {
+            Tab t = new Tab()
+            {
+                tab = pair.Key,
+                items = pair.Value
+            };
+
+            inv.Add(t);
+        }
+
+        PlayerSaveData saveData = new PlayerSaveData()
+        {            
             position = transform.position,
             rotation = body.transform.rotation,
             pokemon = GetComponent<Party>().Pokemon.Select(p => p.GetSaveData()).ToList(),
-            inventory = Inventory.GetInventory().Items
+            inventory = inv
         };
 
         data.player = saveData;
@@ -169,5 +181,5 @@ public class PlayerSaveData
     public Vector3 position;
     public Quaternion rotation;
     public List<PokemonSaveData> pokemon;
-    public List<ItemSlot> inventory;
+    public List<Tab> inventory = new List<Tab>();
 }

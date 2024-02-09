@@ -7,11 +7,11 @@ using TMPro;
 using Unity.VisualScripting;
 using System.Linq;
 
-public enum UIState {Items, Menu, Qty, Pokemon, Busy}
+public enum UIState {Items, Menu, Qty, Pokemon, ForgetMove, Choice, Busy}
 
 public class InventoryUI : MonoBehaviour
 {
-    const int ITEMS_IN_VIEWPORT = 12;
+    const int ITEMS_IN_VIEWPORT = 10;
     const int LIST_SPACING = 5; //Get from Vertical Layout Group spacing field
 
     [SerializeField] GameObject itemListUI;
@@ -19,31 +19,46 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] GameObject descriptionBox;
     [SerializeField] TextMeshProUGUI descriptionName;
     [SerializeField] TextMeshProUGUI descriptionText;
-    [SerializeField] GameObject menu;
+    [SerializeField] GameObject twoOptionMenu;
+    [SerializeField] GameObject threeOptionMenu;
     [SerializeField] InvParty partySprites;
     [SerializeField] GameObject emptyText;
+    [SerializeField] TextMeshProUGUI tabName;
+    [SerializeField] ForgetMoveScreen forgetMoveScreen;
+
+    [SerializeField] GameObject choiceBox;
+    [SerializeField] Image yesBox;
+    [SerializeField] Image noBox;
 
     List<ItemSlotUI> items = new List<ItemSlotUI>();
 
     RectTransform itemListRect;
 
+    GameObject menu;
+
     Party party;
     Inventory inventory;
+
     int selectedItem = 0;
     int menuSelection = 0;
-    float defaultMenuY = 0;
     int selectedPokemon = 0;
     int selectedQty = 0;
+    InventoryTab selectedTab = InventoryTab.Medicines;
+    bool choice = true;
+
     int listSize = 0;
     int menuSize = 3;
-    int selectedTab = 0;
-    int numTabs = 1;
+    int numTabs = 8;
     int numPokemon = 6;
     int maxQuantity = 1;
+
     float slotHeight = 0;
+    float defaultMenuY = 0;
 
     bool useItem = false;
     bool battle = false;
+
+    Action<ItemBase, Pokemon> onClose;
 
     UIState state;
 
@@ -51,16 +66,19 @@ public class InventoryUI : MonoBehaviour
     void Awake()
     {
         itemListRect = itemListUI.GetComponent<RectTransform>();
+        menu = threeOptionMenu;
         defaultMenuY = menu.transform.localPosition.y;
     }
 
     void Start()
     {
-        inventory = Inventory.GetInventory();
+        if(inventory == null)
+        {
+            inventory = Inventory.GetInventory();
+        }
         party = Party.GetParty();
         numPokemon = party.Pokemon.Count;
         UpdateItemList(selectedTab);
-        partySprites.SetState(InvUIState.Healing);
 
         inventory.OnUpdated += RefreshItems;
     }
@@ -70,7 +88,7 @@ public class InventoryUI : MonoBehaviour
         UpdateItemList(selectedTab);
     }
 
-    void UpdateItemList(int tab)
+    void UpdateItemList(InventoryTab tab)
     {
         foreach(Transform child in itemListUI.transform)
         {
@@ -78,13 +96,17 @@ public class InventoryUI : MonoBehaviour
         }
 
         items.Clear();
-        foreach(ItemSlot itemSlot in inventory.Items)
+        if(inventory == null)
+        {
+            inventory = Inventory.GetInventory();
+        }
+        foreach(ItemSlot itemSlot in inventory.Inv[tab])
         {
             ItemSlotUI slotUI = Instantiate(itemSlotUI, itemListUI.transform);
             slotUI.SetData(itemSlot);
             items.Add(slotUI);
         }
-        listSize = inventory.Items.Count;
+        listSize = inventory.Inv[tab].Count;
         if(listSize == 0)
         {
             return;
@@ -95,39 +117,42 @@ public class InventoryUI : MonoBehaviour
             selectedItem = listSize - 1;
         }
         UpdateItemSelection();
+        UpdateTabName();     
+    }
+
+    public void OpenInventory(bool inBattle, Action<ItemBase, Pokemon> onClose)
+    {
+        selectedTab = InventoryTab.Medicines;
+        if(inBattle)
+        {
+            SetBattle();
+        }
+        else
+        {
+            SetOverworld();
+        }
+        this.onClose = onClose;
+        gameObject.SetActive(true);
+        RefreshItems();
     }
 
     void SetBattle()
     {
         battle = true;
-        numTabs = 1;   //Update to 4 - Healing/Balls/Battle/Berries
+        numTabs = 4;
         menuSize = 2;
     }
 
     void SetOverworld()
     {
         battle = false;
-        numTabs = 1;    //Update to 8 - Healing/Balls/Battle/Berries/Comp/TMs/Treasures/Key Items
+        numTabs = 8;
         menuSize = 3;
     }
 
     /* Input Handling */
-    public void HandleUpdate(bool inBattle, Action<ItemBase, Pokemon> onClose)
+    public void HandleUpdate()
     {
-        if(inBattle)
-        {
-            if(battle != inBattle)
-            {
-                SetBattle();
-            }
-        }
-        else
-        {
-            if(battle != inBattle)
-            {
-                SetOverworld();
-            }
-        }
         if(state == UIState.Items)
         {
             HandleInputItems(onClose);
@@ -144,6 +169,14 @@ public class InventoryUI : MonoBehaviour
         {
             HandleInputQty();
         }
+        else if(state == UIState.ForgetMove)
+        {
+            forgetMoveScreen.HandleUpdate();
+        }
+        else if(state == UIState.Choice)
+        {
+            HandleInputChoice();
+        }
         else if(state == UIState.Busy)
         {
             //Do nothing
@@ -158,14 +191,24 @@ public class InventoryUI : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
-            selectedTab--;
-            selectedTab %= numTabs;
+            int tab = (int) selectedTab;
+            tab--;
+            while(tab < 0)
+            {
+                tab += numTabs;
+            }
+            selectedTab = (InventoryTab) tab;
             UpdateTab();
         }
         if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
-            selectedTab++;
-            selectedTab %= numTabs;
+            int tab = (int) selectedTab;
+            tab++;
+            while(tab >= numTabs)
+            {
+                tab -= numTabs;
+            }
+            selectedTab = (InventoryTab) tab;
             UpdateTab();
         }
         if(listSize <= 0)
@@ -200,7 +243,7 @@ public class InventoryUI : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
-            maxQuantity = inventory.Items[selectedItem].Quantity;
+            maxQuantity = inventory.Inv[selectedTab][selectedItem].Quantity;
             OpenMenu();
         }
     }
@@ -269,16 +312,8 @@ public class InventoryUI : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
-            if(battle)
-            {
-                //Check if item is useable
-                onClose?.Invoke(inventory.Items[selectedItem].Item, party.Pokemon[selectedPokemon]);
-            }
-            else
-            {
-                state = UIState.Busy;
-                StartCoroutine(HandlePokemonSelection());
-            }
+            state = UIState.Busy;
+            StartCoroutine(HandlePokemonSelection());
         }
     }
 
@@ -347,17 +382,56 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
+    void HandleInputChoice()
+    {
+        if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)
+        || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)
+        || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S) 
+        || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+            choice = !choice;
+            UpdateChoiceSelection();
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            choice = false;
+            UpdateChoiceSelection();            
+        }
+        if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(HandleChoiceSelection());
+        }
+    }
+
     /* Perform the chosen selection */
     IEnumerator HandleMenuSelection()
     {
         if(menuSelection == 0)
         {
             useItem = true;
-            OpenPokemonSelection();
-                        
-            //yield return DialogManager.Instance.ShowDialog("Which Pokemon will you use it on?");
-            //Update to not block input to pokemon so the dialog box is visible while selecting a pokemon
-            //Also update the Dialog Box UI with it to fit better with the inventory screen
+            if(selectedTab == InventoryTab.Balls || selectedTab == InventoryTab.Battle || 
+               selectedTab == InventoryTab.Treasures || selectedTab == InventoryTab.KeyItems)
+            {
+                state = UIState.Busy;
+                if(battle)
+                {
+                    CloseMenu();
+                    inventory.RemoveItem(inventory.Inv[selectedTab][selectedItem].Item, 1);
+                    onClose?.Invoke(inventory.Inv[selectedTab][selectedItem].Item, null);
+                    state = UIState.Items;
+                }
+                else
+                {
+                    CloseMenu();
+                    yield return UseItem();
+                }
+            }
+            else
+            {
+                state = UIState.Busy;
+                yield return DialogManager.Instance.DisplayText("Which Pokemon will you use it on?");
+                OpenPokemonSelection();
+            }
         }
         else if(menuSelection == 1)
         {
@@ -368,9 +442,10 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {
-                // Give the item to a pokemon *Not Implemented Yet*
-                // useItem = false;
-                // OpenPokemonSelection();
+                state = UIState.Busy;
+                useItem = false;
+                OpenPokemonSelection();
+                yield return DialogManager.Instance.DisplayText("Which Pokemon do you want to give this item to?");
             }
         }
         else
@@ -385,46 +460,202 @@ public class InventoryUI : MonoBehaviour
     {            
         if(useItem)
         {
-            if(maxQuantity > 1 && !battle && false)    //Check if the current item allows quantity
+            if(selectedTab == InventoryTab.TMs)
+            {
+                yield return UseTM();
+            }
+            else if(maxQuantity > 1 && !battle && false)    //Check if the current item allows quantity
             {
                 OpenQty();
             }
             else if(battle)
             {
-
+                ClosePokemonSelection();
+                inventory.RemoveItem(inventory.Inv[selectedTab][selectedItem].Item, 1);
+                onClose?.Invoke(inventory.Inv[selectedTab][selectedItem].Item, party.Pokemon[selectedPokemon]);
+                state = UIState.Items;
             }
             else
             {
-                ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon]);
-                if(usedItem != null)
+                ClosePokemonSelection();
+                yield return UseItem();
+            }
+        }
+        else //Give Item
+        {
+            if(party.Pokemon[selectedPokemon].HeldItem == null)
+            {
+                inventory.RemoveItem(inventory.Inv[selectedTab][selectedItem].Item, 1);
+                ItemBase prevItem = party.Pokemon[selectedPokemon].GiveItem(inventory.Inv[selectedTab][selectedItem].Item);
+                yield return DialogManager.Instance.ShowDialog($"Your Pokemon is now holding the {inventory.Inv[selectedTab][selectedItem].Item.ItemName}");
+                if(prevItem != null)
                 {
-                    yield return DialogManager.Instance.ShowDialog($"{party.Pokemon[selectedPokemon]}'s HP was restored.");
-                }
-                else
-                {
-                    yield return DialogManager.Instance.ShowDialog("It would have no effect.");
+                    Debug.Log($"Gave an item to {party.Pokemon[selectedPokemon].Nickname} and received {prevItem.ItemName} back despite the pokemon holding no item previously...");
                 }
                 state = UIState.Items;
             }
+            else
+            {
+                yield return DialogManager.Instance.DisplayText($"Swap in the {inventory.Inv[selectedTab][selectedItem].Item.ItemName} for the {party.Pokemon[selectedPokemon].HeldItem.ItemName} it's holding now?");
+                choice = true;
+                UpdateChoiceSelection();
+                choiceBox.SetActive(true);
+                state = UIState.Choice;
+            }
+        }
+    }
+
+    IEnumerator UseItem()
+    {
+        state = UIState.Busy;
+       
+        ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon], selectedTab);
+        if(usedItem != null)
+        {
+            //UPDATE TO DETERMINE DIALOG DYNAMICALLY!!!!
+            yield return DialogManager.Instance.ShowDialog($"{party.Pokemon[selectedPokemon]}'s HP was restored.");
         }
         else
         {
-            //GiveItem(selectedPokemon);
+            yield return DialogManager.Instance.ShowDialog("It would have no effect.");
         }
+        state = UIState.Items;
+    }
+
+    IEnumerator UseTM()
+    {
+        state = UIState.Busy;
+
+        ItemBase item = inventory.Inv[selectedTab][selectedItem].Item;
+        Pokemon poke = party.Pokemon[selectedPokemon];
+        if(!(item is TM))
+        {
+            Debug.LogError($"Non-TM item ({item.ItemName}) stored in the TM tab of the bag.");
+            ClosePokemonSelection();
+            state = UIState.Items;
+            yield break;
+        }
+
+        TM tm = (TM) item;
+        if(!poke.Species.TMLearnset.Contains(tm.Move))
+        {
+            yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} can't learn {tm.Move.MoveName}! The two are incompatible!");            
+            ClosePokemonSelection();
+            state = UIState.Items;
+            yield break;
+        }
+
+        if(poke.AvailableMoveSlot())
+        {
+            poke.LearnMove(new PokemonMove(tm.Move));
+            yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} learned {tm.Move.MoveName}.");
+            ClosePokemonSelection();
+            state = UIState.Items;
+        }
+        else
+        {            
+            yield return DialogManager.Instance.ShowDialog($"Please choose a move that will be replaced with {tm.Move.MoveName}.");
+
+            state = UIState.ForgetMove;
+
+            PokemonMove move = new PokemonMove(tm.Move);
+            Action<int> forgetMoveCloseAction = (int chosenSlot) => 
+            {
+                StartCoroutine(HandleMoveToForget(chosenSlot));
+            };
+
+            forgetMoveScreen.OpenScreen(poke, move, forgetMoveCloseAction);
+        }
+
         yield return null;
+    }
+
+    IEnumerator HandleMoveToForget(int chosenSlot)
+    {
+        state = UIState.Busy;
+        TM tm = (TM) inventory.Inv[selectedTab][selectedItem].Item;
+        Pokemon poke = party.Pokemon[selectedPokemon];
+
+        if(chosenSlot < poke.Moves.Count)
+        {
+            PokemonMove oldMove = poke.ReplaceMove(new PokemonMove(tm.Move), chosenSlot);
+            yield return DialogManager.Instance.ShowDialog("One...two...and...ta-da!"); 
+            yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} forgot {oldMove.MoveBase.MoveName}...\n and it learned {tm.Move.MoveName} instead!");
+        }
+        else
+        {
+            yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} did not learn {tm.Move.MoveName}.");
+        }
+        ClosePokemonSelection();
+        state = UIState.Items;
     }
 
     IEnumerator HandleQtySelection()
     {
-        ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon], selectedQty);           
+        ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon], selectedTab, selectedQty);           
         CloseQty(); 
         state = UIState.Items;
         yield return null;
     }
 
-    /* UI Updates */
-    void UpdateItemSelection()
+    IEnumerator HandleChoiceSelection()
     {
+        state = UIState.Busy;
+        choiceBox.SetActive(false);
+        if(choice)
+        {                
+            inventory.RemoveItem(inventory.Inv[selectedTab][selectedItem].Item, 1);
+            ItemBase prevItem = party.Pokemon[selectedPokemon].GiveItem(inventory.Inv[selectedTab][selectedItem].Item);
+            ClosePokemonSelection();
+            yield return DialogManager.Instance.ShowDialog($"You took your Pokemon's {prevItem.ItemName} and gave it the {inventory.Inv[selectedTab][selectedItem].Item.ItemName}.");
+            if(prevItem != null)
+            {
+                inventory.AddItem(prevItem, 1);
+            }
+            state = UIState.Items;
+        }
+        else
+        {                
+            yield return DialogManager.Instance.DisplayText("Which Pokemon do you want to give this item to?");
+            state = UIState.Pokemon;
+        }
+    }
+
+    /* UI Updates */
+    void UpdateItemSelection() 
+    {
+        if(items.Count == 0)
+        {
+            partySprites.SetState(InvUIState.Default);
+            return;
+        }
+
+        ItemBase item = inventory.Inv[selectedTab][selectedItem].Item;
+
+        if(selectedItem >= items.Count)
+        {
+            selectedItem = items.Count - 1;
+        }
+
+        InvUIState newState = item.UIState;
+        partySprites.SetState(newState);
+        if(newState == InvUIState.Learnable)
+        {
+            if(item is TM)
+            {
+                partySprites.UpdateLearnable((TM) item);
+            }
+            else
+            {
+                Debug.LogError($"Why does this non-TM ({item.ItemName})set the state to learnable?");
+            }
+        }
+        else if(newState == InvUIState.Useable)
+        {
+            partySprites.UpdateUseable(item);
+        }
+        
+
         for(int i = 0; i < listSize; i++)
         {
             if(i == selectedItem)
@@ -436,7 +667,8 @@ public class InventoryUI : MonoBehaviour
                 UnselectItem(i);
             }
         }
-        UpdateDescription(inventory.Items[selectedItem].Item);
+
+        UpdateDescription(item);
         UpdateScrolling();
     }
 
@@ -468,7 +700,7 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {                
-                partySprites.SetState(InvUIState.Healing);
+                partySprites.SetState(inventory.Inv[selectedTab][selectedItem].Item.UIState);
             }
         }
     }
@@ -480,16 +712,80 @@ public class InventoryUI : MonoBehaviour
 
     void UpdateTab()
     {
+        if(battle || selectedTab == InventoryTab.KeyItems)
+        {
+            menu = twoOptionMenu;
+            menuSize = 2;
+        }
+        else
+        {
+            menu = threeOptionMenu;
+            menuSize = 3;
+        }
+
         selectedItem = 0; //Reset selection to the top of the new tab
         UpdateItemList(selectedTab);
+        UpdateTabName();
+        //Update Icon at the top
+    }
 
-        //Change the state of the InvParty to reflect necessary UI Icons
-        partySprites.SetState(InvUIState.Healing);
+    void UpdateChoiceSelection()
+    {
+        if(choice)
+        {
+            yesBox.color = GlobalSettings.Instance.SelectedBarColor;
+            noBox.color = Color.clear;
+        }
+        else
+        {
+            yesBox.color = Color.clear;
+            noBox.color = GlobalSettings.Instance.SelectedBarColor;
+        }
+    }
 
+    void UpdateTabName()
+    {
+        string name;
+        switch(selectedTab)
+        {
+            case InventoryTab.Medicines:
+                name = "Medicines";
+                break;
+            case InventoryTab.Balls:
+                name = "Poke Balls";
+                break;
+            case InventoryTab.Battle:
+                name = "Battle Items";
+                break;
+            case InventoryTab.Berries:
+                name = "Berries";
+                break;
+            case InventoryTab.Other:
+                name = "Other Items";
+                break;
+            case InventoryTab.TMs:
+                name = "TMs";
+                break;
+            case InventoryTab.Treasures:
+                name = "Treasures";
+                break;
+            case InventoryTab.KeyItems:
+                name = "Key Items";
+                break;
+            default:
+                name = "Items";
+                Debug.LogError($"Non-existent InventoryTab selected: {selectedTab}");
+                break;
+        }
+        tabName.text = name;
     }
 
     void UpdateDescription(ItemBase item)
     {
+        if(item == null)
+        {
+            return;
+        }
         descriptionName.text = item.ItemName;
         descriptionText.text = item.Description;
     }
@@ -506,6 +802,7 @@ public class InventoryUI : MonoBehaviour
         items[i].NameText.color = Color.black;
         items[i].QtyText.color = Color.black;
         items[i].XText.color = Color.black;
+        partySprites.SetState(inventory.Inv[selectedTab][i].Item.UIState);
     }
 
     void UnselectItem(int i)
@@ -514,7 +811,6 @@ public class InventoryUI : MonoBehaviour
         items[i].NameText.color = Color.white;
         items[i].QtyText.color = Color.white;
         items[i].XText.color = Color.white;
-
     }
 
     /* State Changes */
@@ -528,10 +824,10 @@ public class InventoryUI : MonoBehaviour
             float targetY = defaultMenuY + (diff * slotHeight);
             menu.transform.localPosition = new Vector3(menu.transform.localPosition.x, targetY, menu.transform.localPosition.z);
         }
-        else if(selectedItem >= listSize - (ITEMS_IN_VIEWPORT/2))
+        else if(selectedItem >= listSize - ((ITEMS_IN_VIEWPORT-1)/2))
         {
-            int diff = Mathf.Min(((ITEMS_IN_VIEWPORT/2)-(listSize - selectedItem)) + 1, 3);
-            float targetY = defaultMenuY - (diff * slotHeight);
+            //int diff = Mathf.Min((((ITEMS_IN_VIEWPORT-1)/2)-(listSize - selectedItem)) + 1, 3);
+            float targetY = defaultMenuY - slotHeight; //- (slotHeight*diff);
             menu.transform.localPosition = new Vector3(menu.transform.localPosition.x, targetY, menu.transform.localPosition.z);
         }
         else
@@ -573,12 +869,24 @@ public class InventoryUI : MonoBehaviour
 
     void CloseQty()
     {
-        if(listSize == 0 || selectedItem >= inventory.Items.Count)
+        if(listSize == 0 || selectedItem >= inventory.Inv[selectedTab].Count)
         {
             return;
         }
-        int curQty = inventory.Items[selectedItem].Quantity;
+        int curQty = inventory.Inv[selectedTab][selectedItem].Quantity;
         items[selectedItem].CloseQtySelector(curQty);
         SelectItem(selectedItem);
     }
 }
+
+
+
+//Inventory TO-DOs:
+//------------------
+//Fix Dialog Box being behind forget a move screen in the main world (not in the prefab)
+//Type Icon and Category Icon Dictionaries
+//---------
+//Update Description for TMs
+//Move Selection Screen for Ether
+//Add sorting options to the UI
+

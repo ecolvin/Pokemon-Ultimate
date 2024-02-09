@@ -20,6 +20,7 @@ public class PokemonMoveBase : ScriptableObject
     public string MoveName{get{return moveName;}}
     [TextArea]
     [SerializeField] string description;
+    public string Description {get => description;}
 
     [Header("Battle Info")]
     [SerializeField] PokemonType moveType;

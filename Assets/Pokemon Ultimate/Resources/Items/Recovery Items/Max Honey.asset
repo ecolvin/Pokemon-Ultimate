@@ -16,6 +16,8 @@ MonoBehaviour:
   description: Honey that Dynamax Vespiquen produces. Adding this honey to Max Soup
     makes the taste very smooth. It also has the same effect as a Max Revive.
   icon: {fileID: 0}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 0
   ppAmount: 0

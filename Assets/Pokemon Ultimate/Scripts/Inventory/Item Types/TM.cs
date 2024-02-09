@@ -6,5 +6,11 @@ using UnityEngine;
 public class TM : ItemBase
 {
     [SerializeField] int number;
-    [SerializeField] PokemonMove move;
+    [SerializeField] PokemonMoveBase move;
+    public PokemonMoveBase Move => move;
+
+    public override bool Use(Pokemon pokemon)
+    {
+        return true;
+    }
 }

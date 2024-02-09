@@ -660,21 +660,33 @@ public class Pokemon
         return moves;
     }
 
-    public int AvailableMoveSlot()
+    public bool AvailableMoveSlot()
     {
-        for(int i = 0; i < moves.Count; i++)
-        {
-            if(moves[i] == null)
-            {
-                return i;
-            }
-        }
-        return -1;
+        return moves.Count < 4;
     }
 
-    public void LearnMove(PokemonMove move, int slot)
+    public PokemonMove ReplaceMove(PokemonMove move, int slot)
     {
+        if(slot >= moves.Count)
+        {
+            if(moves.Count < 4)
+            {
+                LearnMove(move);
+            }
+            else
+            {
+                Debug.Log($"Invalid move slot: {slot}; Could not learn move {move.MoveBase.MoveName}");
+            }
+            return null;
+        }
+        PokemonMove oldMove = moves[slot];
         moves[slot] = move;
+        return oldMove;
+    }
+
+    public void LearnMove(PokemonMove move)
+    {
+        moves.Add(move);
     }
 
     public void ClearStatChanges()
@@ -936,6 +948,14 @@ public class Pokemon
         curHP = 0;
         fainted = true;
         ClearNVStatus();
+    }
+
+    public ItemBase GiveItem(ItemBase newItem)
+    {
+        ItemBase oldItem = heldItem;
+        heldItem = newItem;
+        OnDataChange?.Invoke();
+        return oldItem;
     }
 
 }

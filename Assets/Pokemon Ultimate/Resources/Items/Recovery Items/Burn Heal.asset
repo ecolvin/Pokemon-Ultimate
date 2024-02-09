@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "A spray-type medicine for treating burns. It can be used to cure
     a Pok\xE9mon suffering from a burn."
   icon: {fileID: 1792310460, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 0
   ppAmount: 0

@@ -15,8 +15,11 @@ public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IS
         values.Clear();
         foreach(KeyValuePair<TKey, TValue> pair in this)
         {
-            keys.Add(pair.Key);
-            values.Add(pair.Value);
+            if(pair.Key != null && pair.Value != null)
+            {
+                keys.Add(pair.Key);
+                values.Add(pair.Value);
+            }
         }
     }
 

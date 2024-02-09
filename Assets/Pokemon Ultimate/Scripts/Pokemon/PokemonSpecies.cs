@@ -42,6 +42,7 @@ public class PokemonSpecies : ScriptableObject
     [Tooltip("Use metric (easier to program)")]
     [SerializeField] float height;
     [SerializeField] float weight;
+    public float Weight {get => weight;}
     
     [Header("Other Info")]
     [SerializeField] int baseHappiness;
@@ -77,8 +78,9 @@ public class PokemonSpecies : ScriptableObject
     public Sprite FemaleSpriteShiny {get{return femaleSpriteShiny;}}
 
     [SerializeField] List<LearnableMove> learnset;
-    public List<LearnableMove> Learnset{get{return learnset;}}
+    public List<LearnableMove> Learnset{get => learnset;}
     [SerializeField] List<PokemonMoveBase> tmLearnset;
+    public List<PokemonMoveBase> TMLearnset {get => tmLearnset;}
 
 
     //[Header("Movepool")]

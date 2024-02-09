@@ -13,8 +13,6 @@ public class DialogManager : MonoBehaviour
     public event Action OnShowDialog;
     public event Action OnCloseDialog;
     
-    Action onDialogFinished;
-
     public static DialogManager Instance {get; private set;}
 
     bool typing = false;
@@ -29,21 +27,27 @@ public class DialogManager : MonoBehaviour
         //Do things on update (update selected option if dialog has options)
     }
 
+    public IEnumerator DisplayText(string text)
+    {
+        dialogBox.SetActive(true);
+        yield return SlowText(text);
+    }
+
+    public void CloseDialog()
+    {
+        dialogBox.SetActive(false);
+    }
+
     public IEnumerator ShowDialog(string text, Action onFinished=null)
     {
-        Debug.Log("Invoking OnShowDialog");
         OnShowDialog?.Invoke();
         dialogBox.SetActive(true);
-        onDialogFinished = onFinished;
-
-        Debug.Log($"Calling SlowText(\"{text}\")");
 
         yield return SlowText(text);
         yield return PauseAfterText();
     
-        Debug.Log("Invoking OnCloseDialog");
         dialogBox.SetActive(false);
-        onDialogFinished?.Invoke();
+        onFinished?.Invoke();
         OnCloseDialog?.Invoke();
     }
 
@@ -51,7 +55,6 @@ public class DialogManager : MonoBehaviour
     {
         OnShowDialog?.Invoke();
         dialogBox.SetActive(true);
-        onDialogFinished = onFinished;
 
         foreach(string line in dialog.Lines)
         {
@@ -60,12 +63,13 @@ public class DialogManager : MonoBehaviour
         }
 
         dialogBox.SetActive(false);
-        onDialogFinished?.Invoke();
+        onFinished?.Invoke();
         OnCloseDialog?.Invoke();
     }
 
     public IEnumerator PauseAfterText()
     {  
+        //Make triangle appear in bottom right corner to indicate more pending text
         if(GlobalSettings.Instance.WaitForInputAfterText)
         {   
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Escape));
@@ -78,10 +82,8 @@ public class DialogManager : MonoBehaviour
 
     IEnumerator SlowText(string line)
     {
-        Debug.Log($"Slow Text = {line}");
         while(typing)
         {
-            Debug.Log("Typing");
             yield return null;
         }
         typing = true;  
@@ -90,7 +92,6 @@ public class DialogManager : MonoBehaviour
         {
             dialogText.text += letter;
             yield return new WaitForSeconds(textDelay);
-            Debug.Log($"{dialogText.text}");
         }
         typing = false;
     }

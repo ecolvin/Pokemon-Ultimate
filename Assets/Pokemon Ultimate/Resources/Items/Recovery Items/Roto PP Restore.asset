@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "One of the Rotom Powers. When used, it fully restores the max PP
     of your battling Pok\xE9mon."
   icon: {fileID: 0}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 0
   ppAmount: 0

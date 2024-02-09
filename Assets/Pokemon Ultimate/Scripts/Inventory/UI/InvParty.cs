@@ -71,13 +71,16 @@ public class InvParty : MonoBehaviour
     {
         foreach(PokemonInvUI p in pokemon)
         {
-            //figure out if the tm is learnable
-
-            p.UseableIcon.color = Color.red;
-            p.UseableText.text = "Cannot Learn";
-
-            //useableIcon.color = Color.green;
-            //useableText.text = "Can Learn";
+            if(p.Pokemon.Species.TMLearnset.Contains(tm.Move))
+            {
+                p.UseableIcon.color = Color.green;
+                p.UseableText.text = "Can Learn";
+            }
+            else
+            {
+                p.UseableIcon.color = Color.red;
+                p.UseableText.text = "Cannot Learn";
+            }
         }
     }
 

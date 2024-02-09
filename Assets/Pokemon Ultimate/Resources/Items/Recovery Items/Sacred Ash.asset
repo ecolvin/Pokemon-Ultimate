@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "Ash that can be used to revive all party Pok\xE9mon that have fainted.
     It also fully restores the Pok\xE9mon's max HP."
   icon: {fileID: 0}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 0
   ppAmount: 0

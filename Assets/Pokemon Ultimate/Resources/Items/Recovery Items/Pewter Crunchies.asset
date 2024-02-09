@@ -16,6 +16,8 @@ MonoBehaviour:
   description: "Pewter City's famous crunchy snack. They can be used to cure any
     status condition a Pok\xE9mon may have."
   icon: {fileID: 0}
+  tab: 0
+  uiState: 1
   healingAmount: 0
   maxHeal: 0
   ppAmount: 0
