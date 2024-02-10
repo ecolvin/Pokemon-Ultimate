@@ -29,7 +29,7 @@ public class ForgetMoveOption : MonoBehaviour
     public void SetMove(PokemonMove move)
     {
         this.move = move;
-        //typeIcon = move.Type.Icon;
+        typeIcon.sprite = GlobalSpriteDictionary.Instance.TypeIcons[move.MoveBase.MoveType];
         moveName.text = move.MoveBase.MoveName;
         ppText.text = $"{move.CurPP}/{move.MaxPP}";
     }

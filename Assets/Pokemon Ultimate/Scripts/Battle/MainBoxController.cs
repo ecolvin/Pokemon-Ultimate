@@ -158,6 +158,8 @@ public class MainBoxController : MonoBehaviour
 
     //-----------------Catching----------------
 
+
+
     //Get Exact Text
     public IEnumerator CantCatchTrainer()
     {
@@ -165,9 +167,14 @@ public class MainBoxController : MonoBehaviour
     }
 
     //Confirmed
-    public IEnumerator UsedBall(string ballName)
+    public IEnumerator ItemUsed(string itemName)
     {
-        yield return SlowText($"You used a {ballName}!");
+        yield return SlowText($"You used a {itemName}!");
+    }
+
+    public IEnumerator NoEffect()
+    {
+        yield return SlowText("But it had no effect!");
     }
 
     //Confirmed

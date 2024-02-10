@@ -78,9 +78,7 @@ public class PlayerController : MonoBehaviour, ISaveable
         Collider[] interactables = Physics.OverlapBox(targetPos, new Vector3(GlobalSettings.Instance.GridSize/2, .5f, GlobalSettings.Instance.GridSize/2), Quaternion.identity, GameLayers.Instance.InteractableLayer);
         if(interactables.Length != 0)
         {
-            interactables[0].GetComponent<Interactable>()?.Interact(transform.position);
-            //if trainer battle
-            //OnTrainerBattle?.Invoke(interactables[0]);
+            StartCoroutine(interactables[0].GetComponent<Interactable>()?.Interact(transform.position));
         } 
     }
 

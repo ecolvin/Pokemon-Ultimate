@@ -6,8 +6,8 @@ public class Sign : MonoBehaviour, Interactable
 {
     [SerializeField] Dialog signText;
 
-    public void Interact(Vector3 playerPos)
+    public IEnumerator Interact(Vector3 playerPos)
     {
-        StartCoroutine(DialogManager.Instance.ShowDialog(signText, () => {}));
+        yield return DialogManager.Instance.ShowDialog(signText);
     }
 }

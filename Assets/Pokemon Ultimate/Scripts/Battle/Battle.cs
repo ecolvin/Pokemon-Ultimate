@@ -941,15 +941,24 @@ public class Battle : MonoBehaviour
         }
         else
         {
-            item.Use(target);
-            //Item use message
-            yield return null;
+            if(item.Use(target) == true)
+            {
+                yield return mainBox.ItemUsed(item.ItemName);
+                yield return mainBox.PauseAfterText();
+            }
+            else
+            {
+                yield return mainBox.ItemUsed(item.ItemName);
+                yield return mainBox.PauseAfterText();
+                yield return mainBox.NoEffect();
+                yield return mainBox.PauseAfterText();
+            }
         }
     }
 
     IEnumerator ThrowPokeball(Pokeball ball) //Add parameter for type of ball
     {
-        yield return mainBox.UsedBall(ball.ItemName);
+        yield return mainBox.ItemUsed(ball.ItemName);
         ballSprite.GetComponent<Image>().sprite = ball.Icon;
         ballSprite.gameObject.SetActive(true);
         yield return ballSprite.Thrown();

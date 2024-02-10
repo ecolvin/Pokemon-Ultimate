@@ -113,6 +113,10 @@
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Inventory\Item Types\BattleItem.cs" />
      <Compile Include="Assets\Pokemon Ultimate\Scripts\UI\ForgetMoveScreen.cs" />
      <Compile Include="Assets\Pokemon Ultimate\Scripts\UI\ForgetMoveOption.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\Pokemon\PokemonSummary.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\UI\StatBox.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\Game Engine\GlobalSpriteDictionary.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\UI\TMDescriptionBox.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

@@ -25,6 +25,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] GameObject emptyText;
     [SerializeField] TextMeshProUGUI tabName;
     [SerializeField] ForgetMoveScreen forgetMoveScreen;
+    [SerializeField] TMDescriptionBox tmDescription;
 
     [SerializeField] GameObject choiceBox;
     [SerializeField] Image yesBox;
@@ -123,6 +124,8 @@ public class InventoryUI : MonoBehaviour
     public void OpenInventory(bool inBattle, Action<ItemBase, Pokemon> onClose)
     {
         selectedTab = InventoryTab.Medicines;
+        tmDescription.gameObject.SetActive(false);
+        descriptionBox.gameObject.SetActive(true);
         if(inBattle)
         {
             SetBattle();
@@ -192,12 +195,15 @@ public class InventoryUI : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
             int tab = (int) selectedTab;
+            Debug.Log($"Current Tab is {selectedTab} ({tab})");
             tab--;
             while(tab < 0)
             {
                 tab += numTabs;
             }
+            Debug.Log($"Tab = {tab}");
             selectedTab = (InventoryTab) tab;
+            Debug.Log($"New Tab is {selectedTab} ({tab})");
             UpdateTab();
         }
         if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
@@ -211,15 +217,29 @@ public class InventoryUI : MonoBehaviour
             selectedTab = (InventoryTab) tab;
             UpdateTab();
         }
+
         if(listSize <= 0)
         {
             descriptionBox.SetActive(false);
+            tmDescription.gameObject.SetActive(false);
             emptyText.SetActive(true);
             return;
         }
         else
         {
-            descriptionBox.SetActive(true);
+            if(selectedTab == InventoryTab.TMs)
+            {
+                tmDescription.gameObject.SetActive(true);
+                descriptionBox.SetActive(false);
+                UpdateTMDescription();
+            }
+            else
+            {
+                tmDescription.gameObject.SetActive(false);
+                descriptionBox.SetActive(true);
+                UpdateDescription();
+            }
+            
             emptyText.SetActive(false);
         }
         if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
@@ -457,7 +477,9 @@ public class InventoryUI : MonoBehaviour
     }
 
     IEnumerator HandlePokemonSelection()
-    {            
+    {
+        ItemBase itemSelection = inventory.Inv[selectedTab][selectedItem].Item;
+
         if(useItem)
         {
             if(selectedTab == InventoryTab.TMs)
@@ -471,8 +493,8 @@ public class InventoryUI : MonoBehaviour
             else if(battle)
             {
                 ClosePokemonSelection();
-                inventory.RemoveItem(inventory.Inv[selectedTab][selectedItem].Item, 1);
-                onClose?.Invoke(inventory.Inv[selectedTab][selectedItem].Item, party.Pokemon[selectedPokemon]);
+                inventory.RemoveItem(itemSelection, 1);
+                onClose?.Invoke(itemSelection, party.Pokemon[selectedPokemon]);
                 state = UIState.Items;
             }
             else
@@ -485,9 +507,9 @@ public class InventoryUI : MonoBehaviour
         {
             if(party.Pokemon[selectedPokemon].HeldItem == null)
             {
-                inventory.RemoveItem(inventory.Inv[selectedTab][selectedItem].Item, 1);
-                ItemBase prevItem = party.Pokemon[selectedPokemon].GiveItem(inventory.Inv[selectedTab][selectedItem].Item);
-                yield return DialogManager.Instance.ShowDialog($"Your Pokemon is now holding the {inventory.Inv[selectedTab][selectedItem].Item.ItemName}");
+                inventory.RemoveItem(itemSelection, 1);
+                ItemBase prevItem = party.Pokemon[selectedPokemon].GiveItem(itemSelection);
+                yield return DialogManager.Instance.ShowDialog($"Your Pokemon is now holding the {itemSelection.ItemName}");
                 if(prevItem != null)
                 {
                     Debug.Log($"Gave an item to {party.Pokemon[selectedPokemon].Nickname} and received {prevItem.ItemName} back despite the pokemon holding no item previously...");
@@ -496,7 +518,7 @@ public class InventoryUI : MonoBehaviour
             }
             else
             {
-                yield return DialogManager.Instance.DisplayText($"Swap in the {inventory.Inv[selectedTab][selectedItem].Item.ItemName} for the {party.Pokemon[selectedPokemon].HeldItem.ItemName} it's holding now?");
+                yield return DialogManager.Instance.DisplayText($"Swap in the {itemSelection.ItemName} for the {party.Pokemon[selectedPokemon].HeldItem.ItemName} it's holding now?");
                 choice = true;
                 UpdateChoiceSelection();
                 choiceBox.SetActive(true);
@@ -537,6 +559,15 @@ public class InventoryUI : MonoBehaviour
         }
 
         TM tm = (TM) item;
+
+        if(poke.Moves.FirstOrDefault(m => m.MoveBase == tm.Move) != null)
+        {
+            yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} already knows {tm.Move.MoveName}.");
+            ClosePokemonSelection();
+            state = UIState.Items;
+            yield break;
+        }
+
         if(!poke.Species.TMLearnset.Contains(tm.Move))
         {
             yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} can't learn {tm.Move.MoveName}! The two are incompatible!");            
@@ -548,6 +579,10 @@ public class InventoryUI : MonoBehaviour
         if(poke.AvailableMoveSlot())
         {
             poke.LearnMove(new PokemonMove(tm.Move));
+            if(!inventory.RemoveItem(item, 1))
+            {
+                Debug.LogError($"Failed to remove a copy of {item.ItemName} from the inventory.");
+            }
             yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} learned {tm.Move.MoveName}.");
             ClosePokemonSelection();
             state = UIState.Items;
@@ -579,6 +614,10 @@ public class InventoryUI : MonoBehaviour
         if(chosenSlot < poke.Moves.Count)
         {
             PokemonMove oldMove = poke.ReplaceMove(new PokemonMove(tm.Move), chosenSlot);
+            if(!inventory.RemoveItem(tm, 1))
+            {
+                Debug.LogError($"Failed to remove a copy of {tm.ItemName} from the inventory.");
+            }
             yield return DialogManager.Instance.ShowDialog("One...two...and...ta-da!"); 
             yield return DialogManager.Instance.ShowDialog($"{poke.Nickname} forgot {oldMove.MoveBase.MoveName}...\n and it learned {tm.Move.MoveName} instead!");
         }
@@ -668,7 +707,8 @@ public class InventoryUI : MonoBehaviour
             }
         }
 
-        UpdateDescription(item);
+        UpdateTMDescription();
+        UpdateDescription();
         UpdateScrolling();
     }
 
@@ -780,14 +820,36 @@ public class InventoryUI : MonoBehaviour
         tabName.text = name;
     }
 
-    void UpdateDescription(ItemBase item)
+    void UpdateDescription()
     {
+        if(inventory.Inv[selectedTab] == null || inventory.Inv[selectedTab].Count == 0)
+        {
+            return;
+        }
+        ItemBase item = inventory.Inv[selectedTab][selectedItem].Item;
         if(item == null)
         {
             return;
         }
         descriptionName.text = item.ItemName;
         descriptionText.text = item.Description;
+    }
+
+    void UpdateTMDescription()
+    {
+        if(selectedTab != InventoryTab.TMs)
+        {
+            return;
+        }
+        ItemBase item = inventory.Inv[selectedTab][selectedItem].Item;
+        if(item is TM)
+        {
+            tmDescription.Set((TM) item);
+        }
+        else
+        {
+            tmDescription.Set(null);
+        }
     }
 
     void UpdateScrolling()
@@ -880,11 +942,9 @@ public class InventoryUI : MonoBehaviour
 }
 
 
-
 //Inventory TO-DOs:
 //------------------
 //Fix Dialog Box being behind forget a move screen in the main world (not in the prefab)
-//Type Icon and Category Icon Dictionaries
 //---------
 //Update Description for TMs
 //Move Selection Screen for Ether

@@ -5,5 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Items/Battle Item")]
 public class BattleItem : ItemBase
 {
-
+    
+    public override bool CanUseOutsideBattle => false;
 }

@@ -71,7 +71,12 @@ public class InvParty : MonoBehaviour
     {
         foreach(PokemonInvUI p in pokemon)
         {
-            if(p.Pokemon.Species.TMLearnset.Contains(tm.Move))
+            if(p.Pokemon.Moves.FirstOrDefault(m => m.MoveBase == tm.Move) != null)
+            {
+                p.UseableIcon.color = Color.grey;
+                p.UseableText.text = "Learned"; //"Already Learned" is the correct text but it doesn't fit in the bubble currently
+            }
+            else if(p.Pokemon.Species.TMLearnset.Contains(tm.Move))
             {
                 p.UseableIcon.color = Color.green;
                 p.UseableText.text = "Can Learn";

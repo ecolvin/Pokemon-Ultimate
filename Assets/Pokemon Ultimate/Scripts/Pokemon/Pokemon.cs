@@ -30,6 +30,19 @@ public class Pokemon
 
     PokemonNature nature;
     PokemonNature natureMint = PokemonNature.None;
+
+    public PokemonNature Nature {get
+    {
+        if(natureMint != PokemonNature.None)
+        {
+            return natureMint;
+        }
+        else
+        {
+            return nature;
+        }
+    }}
+
     StatBlock stats = new StatBlock(0,0,0,0,0,0);
     public StatBlock Stats{get{return stats;}}
     StatBlock evs = new StatBlock(0,0,0,0,0,0);
@@ -991,9 +1004,9 @@ public enum PokemonGender
     None
 }
 
-public enum PokemonNature
+public enum PokemonNature   //## = Increase Decrease (e.g. 24 = increase Defense, decrease Sp. Def)
 {
-    Hardy = 11,
+    Hardy = 11,   
     Lonely = 12,
     Adamant = 13,
     Naughty = 14,

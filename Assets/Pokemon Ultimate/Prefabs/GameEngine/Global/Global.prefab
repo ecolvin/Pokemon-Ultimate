@@ -895,6 +895,7 @@ GameObject:
   - component: {fileID: 3116474247767719169}
   - component: {fileID: 3116474247767719168}
   - component: {fileID: 7929692496381724069}
+  - component: {fileID: 4322293757919210245}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -1014,6 +1015,80 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menu: {fileID: 3593164678655493607}
+--- !u!114 &4322293757919210245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3116474247767719172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a689ed5b8509928489264c41f747ee47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  types:
+  - type: 1
+    icon: {fileID: 1991210235, guid: a9dd49a29136d4d46b1a45cb41b27383, type: 3}
+    bar: {fileID: 21300000, guid: 19270a2a5eae3334ab28bb089e7d382a, type: 3}
+  - type: 2
+    icon: {fileID: 145981336, guid: 02b837b69aa1d9944bc077e22c989a2a, type: 3}
+    bar: {fileID: 21300000, guid: bd0aa463b3b7c9541ba08580f2446353, type: 3}
+  - type: 3
+    icon: {fileID: -269253971, guid: 25aaf031966e22d4e8a345b4f9805c09, type: 3}
+    bar: {fileID: 21300000, guid: 7adcc0d3291358b40aa7bd296e835a76, type: 3}
+  - type: 4
+    icon: {fileID: -1461477493, guid: e562280578a866c4da067f7cd5858d3d, type: 3}
+    bar: {fileID: 21300000, guid: 19eba1b944cbd9f41ad188de3c4b1683, type: 3}
+  - type: 5
+    icon: {fileID: -351740549, guid: 7c4a563cc16e67049bc6d05260f73d86, type: 3}
+    bar: {fileID: 21300000, guid: 44268665499100946980fea7aef9905f, type: 3}
+  - type: 6
+    icon: {fileID: -2009785575, guid: d104064e5d386fd419268beebd6ab386, type: 3}
+    bar: {fileID: 21300000, guid: a969e23024b3839478cc047259fe6e7b, type: 3}
+  - type: 7
+    icon: {fileID: 1053678732, guid: f0c13123005fa3044bc2aa4cd568b6b2, type: 3}
+    bar: {fileID: 21300000, guid: da30ed2648d035c4e9cb4436c4a63791, type: 3}
+  - type: 8
+    icon: {fileID: -380169880, guid: 5f28113a63a00764e95608215d7ab3b7, type: 3}
+    bar: {fileID: 21300000, guid: 78bb5b1039187cf4eb926a28a3b07bf6, type: 3}
+  - type: 9
+    icon: {fileID: -1260854506, guid: 11ff76fe9c44dcf41b30d072ea21e45f, type: 3}
+    bar: {fileID: 21300000, guid: 06faef7a4e143c54b91037d556abecd1, type: 3}
+  - type: 10
+    icon: {fileID: -1643790239, guid: 726ba4d72000d2b47a2676a1f06ea97d, type: 3}
+    bar: {fileID: 21300000, guid: 2207d78ae619804489248f0c6c88ab51, type: 3}
+  - type: 11
+    icon: {fileID: -1794982552, guid: 0a5cbad471fbc4947a786e25e2ff4e46, type: 3}
+    bar: {fileID: 21300000, guid: de53e7b87e9975d4da10e753e9faf11b, type: 3}
+  - type: 12
+    icon: {fileID: 954069990, guid: 56ce19de755138f40a81e86f21d8444b, type: 3}
+    bar: {fileID: 21300000, guid: 5ace3f57904ae614599f4a1fef65f7fb, type: 3}
+  - type: 13
+    icon: {fileID: -1880022986, guid: d6b7446f972ede34ca4b7660e52b1c7a, type: 3}
+    bar: {fileID: 21300000, guid: a253f1a8754fda74e9337fdf3fbf0c22, type: 3}
+  - type: 14
+    icon: {fileID: 276595291, guid: 8334ef3a9280c9a44828c1c034e7a392, type: 3}
+    bar: {fileID: 21300000, guid: a75c441162e40e44b9595be7014920b5, type: 3}
+  - type: 15
+    icon: {fileID: 763295109, guid: 5882e0330c8961243889f30dd4a87a0d, type: 3}
+    bar: {fileID: 21300000, guid: 0e5832b97de2a9240b1210a172d8f905, type: 3}
+  - type: 16
+    icon: {fileID: 2130105443, guid: ff0a02357d24a49428f481e7a19f6f01, type: 3}
+    bar: {fileID: 21300000, guid: f9497b951369ec843b43737843b321b1, type: 3}
+  - type: 17
+    icon: {fileID: 790879769, guid: f04b72d3a8b59434f9b7886637db6870, type: 3}
+    bar: {fileID: 21300000, guid: f89aa3539dc7bac4ab5460a462698b4a, type: 3}
+  - type: 18
+    icon: {fileID: 56120418, guid: 8e08c1c68716cf948a886f80844a883d, type: 3}
+    bar: {fileID: 21300000, guid: 49e6c5028d163214d8ff650fe90bf837, type: 3}
+  moveCategorys:
+  - moveCategory: 2
+    icon: {fileID: 21300000, guid: e3007f11be9ab894a8536f1b9939fa60, type: 3}
+  - moveCategory: 3
+    icon: {fileID: 21300000, guid: a5b061f47ee662b4eacd408113fa661f, type: 3}
+  - moveCategory: 1
+    icon: {fileID: 21300000, guid: 9cca008ae8c5db045bd48682d1876e2b, type: 3}
 --- !u!1 &3116474247804772732
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,4 +6,5 @@ using UnityEngine;
 public class HoldItem : ItemBase
 {
 
+    public override bool CanUseInBattle => false;
 }

@@ -137,11 +137,12 @@ public class NPCController : MonoBehaviour, Interactable
         }
     }
 
-    public void Interact(Vector3 playerPos)
+    public IEnumerator Interact(Vector3 playerPos)
     {
         state = NPCState.Dialog;
         body.transform.LookAt(playerPos);
-        StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () => {state = NPCState.Idle;}));      
+        yield return DialogManager.Instance.ShowDialog(dialog);
+        state = NPCState.Idle;      
     }
 }
 

@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: Thunderbolt
   m_EditorClassIdentifier: 
   itemName: Thunderbolt
-  description: The user attacks the target with a strong electric blast. This may
-    also leave the target with paralysis.
+  description: 
   icon: {fileID: -1150126132, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
   tab: 5
   uiState: 3
-  number: 24
+  number: 126
   move: {fileID: 11400000, guid: 0e3cedddcc67a4840a259d45d4342234, type: 2}

@@ -126,4 +126,40 @@ public class RecoveryItem : ItemBase
 
         return hasEffect;
     }
+
+    // public override bool UsableOn(Pokemon target)
+    // {
+    //     //If target is fainted, only revives are usable. Everything else returns false.
+    //     if(target.Fainted)
+    //     {
+    //         if(revive || maxRevive || maxReviveAll)
+    //         {
+    //             return true;
+    //         }
+    //         else
+    //         {
+    //             return false;
+    //         }
+    //     }
+
+    //     //If item heals hp and pokemon is not at full HP return true;
+    //     if(target.CurHP < target.Stats.HP &&  (maxHeal || healingAmount > 0))
+    //     {
+    //         return true;
+    //     }
+
+    //     //If item heals pp and target has a move that can be restored
+    //     if(!target.PPFull() && (restoreAllMoves || restoreMaxPP || ppAmount > 0))
+    //     {        
+    //         return true;
+    //     }
+
+    //     //If item heals status conditions and target has a status condition that is healed by the item
+    //     if(target.Status != NonVolatileStatus.None && (healAllStatus || target.Status == healedStatus))
+    //     {
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
 }

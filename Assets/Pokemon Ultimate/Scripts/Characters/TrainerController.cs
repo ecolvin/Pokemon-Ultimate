@@ -127,23 +127,22 @@ public class TrainerController : MonoBehaviour, Interactable, ISaveable
 
     //IEnumerator RandomRotation(){}
 
-    public void Interact(Vector3 playerPos)
+    public IEnumerator Interact(Vector3 playerPos)
     {
         body.transform.LookAt(playerPos);
         if(challenge.activeSelf)
         {            
             state = TrainerState.Dialog;
-            StartCoroutine(DialogManager.Instance.ShowDialog(dialog, () => 
-            {                
-                state = TrainerState.Battle;
-                GameController.Instance.StartTrainerBattle(this);
-                challenge.SetActive(false);
-            })); 
+            yield return DialogManager.Instance.ShowDialog(dialog);         
+            state = TrainerState.Battle;
+            GameController.Instance.StartTrainerBattle(this);
+            challenge.SetActive(false); 
         }
         else
         {
             state = TrainerState.Dialog;
-            StartCoroutine(DialogManager.Instance.ShowDialog(postDialog, () => {state = TrainerState.Idle;}));
+            yield return DialogManager.Instance.ShowDialog(postDialog);
+            state = TrainerState.Idle;
         }
     }    
 

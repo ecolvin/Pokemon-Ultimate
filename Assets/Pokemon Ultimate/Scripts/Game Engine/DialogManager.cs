@@ -38,7 +38,7 @@ public class DialogManager : MonoBehaviour
         dialogBox.SetActive(false);
     }
 
-    public IEnumerator ShowDialog(string text, Action onFinished=null)
+    public IEnumerator ShowDialog(string text)
     {
         OnShowDialog?.Invoke();
         dialogBox.SetActive(true);
@@ -47,11 +47,10 @@ public class DialogManager : MonoBehaviour
         yield return PauseAfterText();
     
         dialogBox.SetActive(false);
-        onFinished?.Invoke();
         OnCloseDialog?.Invoke();
     }
 
-    public IEnumerator ShowDialog(Dialog dialog, Action onFinished=null)
+    public IEnumerator ShowDialog(Dialog dialog)
     {
         OnShowDialog?.Invoke();
         dialogBox.SetActive(true);
@@ -63,7 +62,6 @@ public class DialogManager : MonoBehaviour
         }
 
         dialogBox.SetActive(false);
-        onFinished?.Invoke();
         OnCloseDialog?.Invoke();
     }
 

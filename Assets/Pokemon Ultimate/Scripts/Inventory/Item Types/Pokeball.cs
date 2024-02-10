@@ -9,6 +9,8 @@ public class Pokeball : ItemBase
     [SerializeField] bool isHeavyBall = false;
     public bool IsHeavyBall {get => isHeavyBall;}
 
+    public override bool CanUseOutsideBattle => false;
+
     public void OnCatch(Pokemon caughtPokemon)
     {
         //if(healBall)

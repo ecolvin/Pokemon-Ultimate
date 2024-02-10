@@ -16,6 +16,8 @@ public class ForgetMoveScreen : MonoBehaviour
     [SerializeField] TextMeshProUGUI movePowerText;
     [SerializeField] TextMeshProUGUI moveAccuracyText;
 
+    [SerializeField] PokemonSummary summary;
+
     [SerializeField] GameObject choiceBox;
     [SerializeField] Image yesBox;
     [SerializeField] Image noBox;
@@ -44,6 +46,7 @@ public class ForgetMoveScreen : MonoBehaviour
         }
         moveOptions[moveOptions.Count-1].SetMove(move);
         UpdateMoveSelection();
+        summary.Set(pokemon);
         gameObject.SetActive(true);
     }
 
@@ -140,9 +143,9 @@ public class ForgetMoveScreen : MonoBehaviour
     void UpdateMoveDetails(PokemonMove move)
     {
         descriptionText.text = move.MoveBase.Description;
-        //categoryIcon.sprite = ;
+        categoryIcon.sprite = GlobalSpriteDictionary.Instance.MoveCategorySprites[move.MoveBase.Category];
         string power = $"{move.MoveBase.BasePower}";
-        if(move.MoveBase.BasePower == 1)
+        if(move.MoveBase.BasePower <= 1)
         {
             power = "--";
         }

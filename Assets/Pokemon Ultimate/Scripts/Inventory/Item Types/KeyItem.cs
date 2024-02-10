@@ -6,4 +6,5 @@ using UnityEngine;
 public class KeyItem : ItemBase
 {
 
+    public override bool CanUseInBattle => false;
 }
