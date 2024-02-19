@@ -4308,6 +4308,10 @@ PrefabInstance:
       value: e06f47bf-ae63-4218-8f3d-f6a71e2f3de5
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: id
+      value: e8fa2fe1-b42a-44c3-95a0-d100835901a4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: moveChance
       value: 5000
       objectReference: {fileID: 0}
@@ -6461,6 +6465,14 @@ PrefabInstance:
       propertyPath: id
       value: 7f5c8995-6dd4-4b60-b2d3-bdfc443bee5a
       objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: id
+      value: 0c0f679a-f400-4914-b7fb-278a285c90a6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: quest
+      value: 
+      objectReference: {fileID: 11400000, guid: bceb5c32917b9d741b40ea2b8bd7d35c, type: 2}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.size
       value: 2

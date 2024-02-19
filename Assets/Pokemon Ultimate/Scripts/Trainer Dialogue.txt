@@ -1,0 +1,27 @@
+Trainer Dialogue:
+----------------------------------------------------
+Route 1 First trainer:
+Hi!
+I work at a POKEMON MART.
+----
+It's part of a convenient chain selling all sorts of items.
+----
+Please, visit us in VIRIDIAN CITY.
+----
+I know, I'll give you a sample. 
+Here you go!
+----
+Obtained the Potion!
+----
+E-rekt put the POTION away in the BAG's ITEMS POCKET.
+----
+----
+----
+Please come see us if you need POKE BALLS for catching POKEMON.
+
+
+
+
+See those ledges along the road?
+It's a bit scary, but you can hop down from them.
+You'll get back to Pallet Town quicker that way.

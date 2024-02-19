@@ -71,6 +71,10 @@ public class InvParty : MonoBehaviour
     {
         foreach(PokemonInvUI p in pokemon)
         {
+            if(p.Pokemon == null)
+            {
+                continue;
+            }
             if(p.Pokemon.Moves.FirstOrDefault(m => m.MoveBase == tm.Move) != null)
             {
                 p.UseableIcon.color = Color.grey;

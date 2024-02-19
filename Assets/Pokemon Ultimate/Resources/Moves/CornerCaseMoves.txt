@@ -72,3 +72,10 @@ A, B,
 Variable Power:
 Electro Ball
 Mirror Coat
+
+
+
+-Acrobatics (No Held Item)
+-Body Press (Use Defense)
+-Brick Break (Remove Reflect/Light Screen/Aurora Veil)
+-Bullet Seed (Multi-hit Move)

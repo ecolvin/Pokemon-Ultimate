@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd1e8cb241a2ef4c80f422d72d50651, type: 3}
+  m_Name: Sample Revive Quest
+  m_EditorClassIdentifier: 
+  questName: Sample Revive Quest
+  description: Sample quest to give a revive to an NPC that needs one
+  startDialog:
+    lines:
+    - Oh dear, my only Pokemon has fainted!
+    - If only someone had a spare Revive they could give me!
+  inProgressDialog:
+    lines:
+    - My poor Pokemon!
+    - I hope I can find a revive soon before a wild Pokemon ambushes me!
+  completedDialog:
+    lines:
+    - What's that? You have a Revive?!
+    - 'You''re a lifesaver!
+
+      I don''t know how I could ever repay you!'
+    - 'I know!
+
+      You can have this TM!'
+  requiredItem:
+  - {fileID: 11400000, guid: f193434ce0430f04aad8ff08a2ad7ea5, type: 2}
+  rewardItems:
+  - {fileID: 11400000, guid: c5a4ed1da118c844abe270ed3840c873, type: 2}

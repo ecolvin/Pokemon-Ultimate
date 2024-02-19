@@ -127,9 +127,9 @@ public class TrainerController : MonoBehaviour, Interactable, ISaveable
 
     //IEnumerator RandomRotation(){}
 
-    public IEnumerator Interact(Vector3 playerPos)
+    public IEnumerator Interact(PlayerController player)
     {
-        body.transform.LookAt(playerPos);
+        body.transform.LookAt(player.transform.position);
         if(challenge.activeSelf)
         {            
             state = TrainerState.Dialog;

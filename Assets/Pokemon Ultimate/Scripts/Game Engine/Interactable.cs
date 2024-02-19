@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface Interactable
 {
-    IEnumerator Interact(Vector3 playerPos);
+    IEnumerator Interact(PlayerController player);
 }

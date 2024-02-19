@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8346612399603086395}
   - component: {fileID: 1755483879482274463}
   - component: {fileID: 3670053517343730553}
+  - component: {fileID: 6145639428609549236}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -116,7 +117,7 @@ MonoBehaviour:
     teraType: 0
     gender: 3
     ability: 
-    heldItem: 
+    heldItem: {fileID: 0}
     isShiny: 0
     isPlayer: 0
     moves:
@@ -144,7 +145,7 @@ MonoBehaviour:
     teraType: 0
     gender: 3
     ability: 
-    heldItem: 
+    heldItem: {fileID: 0}
     isShiny: 0
     isPlayer: 0
     moves:
@@ -172,7 +173,7 @@ MonoBehaviour:
     teraType: 0
     gender: 3
     ability: 
-    heldItem: 
+    heldItem: {fileID: 0}
     isShiny: 0
     isPlayer: 0
     moves:
@@ -200,7 +201,7 @@ MonoBehaviour:
     teraType: 0
     gender: 3
     ability: 
-    heldItem: 
+    heldItem: {fileID: 0}
     isShiny: 0
     isPlayer: 0
     moves:
@@ -228,7 +229,7 @@ MonoBehaviour:
     teraType: 0
     gender: 3
     ability: 
-    heldItem: 
+    heldItem: {fileID: 0}
     isShiny: 0
     isPlayer: 0
     moves:
@@ -256,7 +257,7 @@ MonoBehaviour:
     teraType: 0
     gender: 3
     ability: 
-    heldItem: 
+    heldItem: {fileID: 0}
     isShiny: 0
     isPlayer: 0
     moves:
@@ -276,41 +277,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8ed35c37a84f1c4b82b9c119ef2e35e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items:
-  - item: {fileID: 11400000, guid: e36b7a2b4fca08349a3917a053296a65, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: c86d1f2fcc2a57340ba2c085efb64ddb, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: be6cc77d68022554f87249b778d0dd9e, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 0f0bb202466e34c43b81d4260d2a75aa, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 0281b98b65abd17488fc81adca8f5622, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: bab51e40c7df7034691661c472311957, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 8da6a6e192ab05d4792bded3050774ff, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 49c472fd6602970468ebcfb7c04d762b, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: a7a75af874aea3749acbfa6c9c24ba18, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 289e80a99099bcc4da9ae53c330c7ac5, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: be55ba9f6718971479436e97a415357c, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 18915a8020377874dbc6d90c791cf94a, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: e104e7bad05aa484e99ad49f19152147, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: cd47f3b42de219340ba514d757516e5b, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: e961479def388cb409af3a4d5ebbe8f9, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: f193434ce0430f04aad8ff08a2ad7ea5, type: 2}
-    quantity: 1
-  - item: {fileID: 11400000, guid: 416d75a8688c7664bac9bea3bce20036, type: 2}
-    quantity: 1
+  medicines: []
+  balls: []
+  battleItems: []
+  berries: []
+  otherItems: []
+  tms: []
+  treasures: []
+  keyItems: []
+--- !u!114 &6145639428609549236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893737773868731304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5b56918ea6813842aa3779ab6b693af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1755483879256919517
 GameObject:
   m_ObjectHideFlags: 0

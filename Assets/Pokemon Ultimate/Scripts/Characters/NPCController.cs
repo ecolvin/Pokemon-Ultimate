@@ -1,20 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum NPCState {Idle, Walking, Dialog}
 
-public class NPCController : MonoBehaviour, Interactable
+public class NPCController : MonoBehaviour, Interactable, ISaveable
 {
+    [SerializeField] string id;
+
+    [Header("Basic Components")]
     [SerializeField] Dialog dialog;
     [SerializeField] Transform body;
 
+    [Header("Quest")]
+    [SerializeField] List<QuestAction> questActions;
+
+    [Header("Movement")]
     [SerializeField] [Range(100,9999)] int moveOdds = 2500; //Rand(0,n); 0 or 1 to succeed
     [SerializeField] [Range(100,9999)] int rotateOdds = 2500; //Rand(0,n); 0 or 1 to succeed
     [SerializeField] List<Vector2> movementPattern;
     [SerializeField] float patternDelay;
     [SerializeField] bool onlyRotate;
-
+    [SerializeField] bool lockMovement;
 
     Character character;
 
@@ -43,7 +51,7 @@ public class NPCController : MonoBehaviour, Interactable
             {
                 StartCoroutine(ScriptedMovement());
             }
-            else
+            else if(!lockMovement)
             {
                 StartCoroutine(RandomMovement());
             }
@@ -137,13 +145,41 @@ public class NPCController : MonoBehaviour, Interactable
         }
     }
 
-    public IEnumerator Interact(Vector3 playerPos)
+    public IEnumerator Interact(PlayerController player)
     {
         state = NPCState.Dialog;
-        body.transform.LookAt(playerPos);
-        yield return DialogManager.Instance.ShowDialog(dialog);
+        body.transform.LookAt(player.transform.position);
+
+        QuestList questList = player.GetComponent<QuestList>();
+        foreach(QuestAction action in questActions)
+        {
+            int stage = questList.GetStage(action.Quest);
+            if(stage == action.Stage)
+            {
+                yield return action.PerformAction(player);
+                state = NPCState.Idle; 
+                yield break;   //If quest performed, don't show main dialog
+            }
+        }
+
+        yield return DialogManager.Instance.ShowDialog(dialog);    
         state = NPCState.Idle;      
     }
-}
 
+    [ContextMenu("Generate guid for id")]
+    void GenerateGUID()
+    {
+        id = System.Guid.NewGuid().ToString();
+    }
+
+    public void LoadData(GameData data)
+    {
+    }
+
+    public void SaveData(ref GameData data)
+    {
+    }
+}
 //Implement limited rotation (specific directions only)
+
+

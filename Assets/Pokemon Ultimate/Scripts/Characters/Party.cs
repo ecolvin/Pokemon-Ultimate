@@ -76,7 +76,7 @@ public class Party : MonoBehaviour
 
     public bool AddPokemon(Pokemon p)
     {
-        if(IsFull())
+        if(IsFull() || p == null)
         {
             return false;
         }

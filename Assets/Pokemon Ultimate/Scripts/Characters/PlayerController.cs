@@ -47,6 +47,22 @@ public class PlayerController : MonoBehaviour, ISaveable
         }
     }
 
+    public IEnumerator ScriptedMovement(List<Vector2> movementPattern)
+    {
+        foreach(Vector2 offset in movementPattern)
+        {
+            Vector3 curPos = transform.position;
+            float xOffset = offset.x * GlobalSettings.Instance.GridSize;
+            float zOffset = offset.y * GlobalSettings.Instance.GridSize;
+            Vector3 newPos = new Vector3(curPos.x + xOffset, curPos.y, curPos.z + zOffset);
+            Vector3 prevPos = curPos;
+    
+            yield return character.SmoothGridMovement(newPos);
+        }
+
+        isMoving = false;
+    }
+
     Vector3 getPosLookingAt()
     {
         Vector3 curPos = transform.position;
@@ -76,9 +92,17 @@ public class PlayerController : MonoBehaviour, ISaveable
         Vector3 targetPos = getPosLookingAt();
 
         Collider[] interactables = Physics.OverlapBox(targetPos, new Vector3(GlobalSettings.Instance.GridSize/2, .5f, GlobalSettings.Instance.GridSize/2), Quaternion.identity, GameLayers.Instance.InteractableLayer);
-        if(interactables.Length != 0)
+        if(interactables.Length > 0)
         {
-            StartCoroutine(interactables[0].GetComponent<Interactable>()?.Interact(transform.position));
+            Interactable inter = interactables[0].GetComponent<Interactable>();
+            if(inter != null)
+            {
+                StartCoroutine(inter.Interact(this));
+            }
+            else
+            {
+                Debug.LogError($"Interactables[0] does not have an Interactable component. Object name = {interactables[0].gameObject.name}");
+            }
         } 
     }
 
@@ -101,27 +125,16 @@ public class PlayerController : MonoBehaviour, ISaveable
 
         Collider[] triggers = Physics.OverlapBox(transform.position, new Vector3(GlobalSettings.Instance.GridSize/4, .5f, GlobalSettings.Instance.GridSize/4), Quaternion.identity, GameLayers.Instance.TriggerLayers);
         
-        bool waitForTriggers = false;
-
-        foreach(var trig in triggers)
+        foreach(Collider trig in triggers)
         {
             IPlayerTrigger trigger = trig.GetComponent<IPlayerTrigger>();
             if(trigger != null)
             {
-                trigger.OnPlayerTriggered(this);
-                waitForTriggers = true;
+                yield return trigger.OnPlayerTriggered(this);
                 break;
             }
         }      
 
-        if(!waitForTriggers)
-        {
-            isMoving = false;
-        }
-    }
-
-    public void EndTrigger()
-    {
         isMoving = false;
     }
 
@@ -144,6 +157,7 @@ public class PlayerController : MonoBehaviour, ISaveable
             body.transform.rotation = saveData.rotation;
             GetComponent<Party>().Pokemon = saveData.pokemon.Select(s => new Pokemon(s)).ToList();
             GetComponent<Inventory>().SetInventory(saveData.inventory);
+            GetComponent<QuestList>().Set(saveData.questList);
         }
     }
 
@@ -166,7 +180,8 @@ public class PlayerController : MonoBehaviour, ISaveable
             position = transform.position,
             rotation = body.transform.rotation,
             pokemon = GetComponent<Party>().Pokemon.Select(p => p.GetSaveData()).ToList(),
-            inventory = inv
+            inventory = inv,
+            questList = GetComponent<QuestList>().Quests
         };
 
         data.player = saveData;
@@ -180,4 +195,5 @@ public class PlayerSaveData
     public Quaternion rotation;
     public List<PokemonSaveData> pokemon;
     public List<Tab> inventory = new List<Tab>();
+    public List<Quest> questList = new List<Quest>();
 }

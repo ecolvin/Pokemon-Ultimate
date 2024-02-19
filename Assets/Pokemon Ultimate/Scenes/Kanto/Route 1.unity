@@ -19563,6 +19563,10 @@ PrefabInstance:
       value: d19f5289-a038-4c43-92ee-f3f1fc831d31
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: id
+      value: 02df5179-9078-440e-ae58-668613ae4623
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -40307,36 +40311,158 @@ PrefabInstance:
       value: eafc392d-fa69-477c-ab80-b8fb5dc7cfc1
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: id
+      value: 2ebb2345-7d5b-4a87-899b-058c25c70120
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: itemGift
+      value: 
+      objectReference: {fileID: 11400000, guid: e961479def388cb409af3a4d5ebbe8f9, type: 2}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: hasItemGift
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: itemGiftQuantity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.size
-      value: 6
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.data[0]
-      value: 'Hi!
-
-        I work at a Poke Mart.'
+      value: We also carry Poke Balls for catching Pokemon!
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.data[1]
-      value: It's part of a convenient chain selling all sorts of items.
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.data[2]
-      value: Please, visit us in Viridian City.
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: dialog.lines.Array.data[4]
       value: 'I know, I''ll give you a sample.
 
         Here you go!'
       objectReference: {fileID: 0}
     - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
-      propertyPath: dialog.lines.Array.data[4]
-      value: Obtained the Potion!
-      objectReference: {fileID: 0}
-    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
       propertyPath: dialog.lines.Array.data[5]
       value: E-rekt put the Potion away in the Bag's Items pocket.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].quest
+      value: 
+      objectReference: {fileID: 11400000, guid: a99f04245f687594a90baa41b1e96033, type: 2}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].quest
+      value: 
+      objectReference: {fileID: 11400000, guid: a99f04245f687594a90baa41b1e96033, type: 2}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: itemAlreadyGivenDialog.lines.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: itemAlreadyGivenDialog.lines.Array.data[0]
+      value: Please come see us if you need Poke Balls for catching Pokemon.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].actionToPerform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].actionToPerform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].itemsGiven.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].itemsGiven.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].itemsGiven.Array.data[0].item
+      value: 
+      objectReference: {fileID: 11400000, guid: e961479def388cb409af3a4d5ebbe8f9, type: 2}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].itemsGiven.Array.data[0].item
+      value: 
+      objectReference: {fileID: 11400000, guid: e961479def388cb409af3a4d5ebbe8f9, type: 2}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].itemsGiven.Array.data[1].item
+      value: 
+      objectReference: {fileID: 11400000, guid: e961479def388cb409af3a4d5ebbe8f9, type: 2}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].initialDialog.lines.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].initialDialog.lines.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].initialDialog.lines.Array.data[0]
+      value: 'Hi!
+
+        I work at a Poke Mart.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].initialDialog.lines.Array.data[1]
+      value: It's part of a convenient chain selling all sorts of items.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].initialDialog.lines.Array.data[2]
+      value: Please, visit us in Viridian City.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].initialDialog.lines.Array.data[3]
+      value: 'I know, I''ll give you a sample.
+
+        Here you go!'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[0].itemsGiven.Array.data[0].quantity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].initialDialog.lines.Array.data[0]
+      value: 'Hi!
+
+        I work at a Poke Mart.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].initialDialog.lines.Array.data[1]
+      value: It's part of a convenient chain selling all sorts of items.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].initialDialog.lines.Array.data[2]
+      value: Please, visit us in Viridian City.
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].initialDialog.lines.Array.data[3]
+      value: 'I know, I''ll give you a sample.
+
+        Here you go!'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].itemsGiven.Array.data[0].quantity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4621933833499896511, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}
+      propertyPath: questActions.Array.data[1].itemsGiven.Array.data[1].quantity
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c9a17050bbc7244aaec50ad41bb694e, type: 3}

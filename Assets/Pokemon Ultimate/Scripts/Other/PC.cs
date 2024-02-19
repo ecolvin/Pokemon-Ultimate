@@ -42,11 +42,10 @@ public class PC : MonoBehaviour
 
     public bool AddPokemon(Pokemon p)
     {
-        if(PCFull())
+        if(PCFull() || p == null)
         {
-            Debug.Log("PC is full.");
             return false;
-        }
+        }        
 
         for(int i = curBox; i < numBoxes; i++)  //curBox -> end
         {

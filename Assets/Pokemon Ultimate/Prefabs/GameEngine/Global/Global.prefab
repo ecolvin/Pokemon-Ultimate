@@ -982,6 +982,9 @@ MonoBehaviour:
   ledgeLayer:
     serializedVersion: 2
     m_Bits: 16384
+  playerTriggerLayer:
+    serializedVersion: 2
+    m_Bits: 32768
 --- !u!114 &3116474247767719168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11502,6 +11505,10 @@ PrefabInstance:
     - target: {fileID: 5745961673116420882, guid: f421043f884937f4f97da8b04d52990c, type: 3}
       propertyPath: m_Name
       value: Inventory Screen
+      objectReference: {fileID: 0}
+    - target: {fileID: 5745961673116420882, guid: f421043f884937f4f97da8b04d52990c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9216283784675531666, guid: f421043f884937f4f97da8b04d52990c, type: 3}
       propertyPath: m_Pivot.x

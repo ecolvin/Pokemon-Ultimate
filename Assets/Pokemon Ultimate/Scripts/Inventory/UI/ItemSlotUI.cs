@@ -23,7 +23,13 @@ public class ItemSlotUI : MonoBehaviour
     public Image Background {get => background;}
 
     RectTransform rectTransform;
-    public float Height => rectTransform.rect.height;
+    public float Height {get{
+        if(rectTransform == null)
+        {
+            rectTransform = GetComponent<RectTransform>();
+        }
+        return rectTransform.rect.height;
+    }}
 
     void Awake()
     {

@@ -18,10 +18,12 @@ public class GameLayers : MonoBehaviour
     public LayerMask WaterLayer {get => waterLayer;}
     [SerializeField] LayerMask ledgeLayer;
     public LayerMask LedgeLayer {get => ledgeLayer;}
+    [SerializeField] LayerMask playerTriggerLayer;
+    public LayerMask PlayerTriggerLayer {get => playerTriggerLayer;}
 
     public LayerMask BlockingLayers {get => obstacleLayer | interactableLayer | playerLayer | waterLayer | ledgeLayer;}
     public LayerMask InteractableLayers {get => interactableLayer | waterLayer;}
-    public LayerMask TriggerLayers {get => spawnerLayer | portalLayer;}
+    public LayerMask TriggerLayers {get => spawnerLayer | portalLayer | playerTriggerLayer;}
     public static GameLayers Instance {get; set;}
     
     void Awake()

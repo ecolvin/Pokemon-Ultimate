@@ -15,10 +15,10 @@ public class Portal : MonoBehaviour, IPlayerTrigger
     PlayerController player;
     Fader fader;
 
-    public void OnPlayerTriggered(PlayerController player)
+    public IEnumerator OnPlayerTriggered(PlayerController player)
     {
         this.player = player;
-        StartCoroutine(SwitchScene()); 
+        yield return SwitchScene(); 
     }
 
     void Start()
@@ -38,7 +38,6 @@ public class Portal : MonoBehaviour, IPlayerTrigger
         yield return new WaitForSeconds(1f);
         yield return fader.Fade(0f);
 
-        player.EndTrigger();
         Destroy(gameObject);
     }
 }

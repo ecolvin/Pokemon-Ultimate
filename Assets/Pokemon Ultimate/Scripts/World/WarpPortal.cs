@@ -14,10 +14,10 @@ public class WarpPortal : MonoBehaviour, IPlayerTrigger
     PlayerController player;
     Fader fader;
 
-    public void OnPlayerTriggered(PlayerController player)
+    public IEnumerator OnPlayerTriggered(PlayerController player)
     {
         this.player = player;
-        StartCoroutine(Warp()); 
+        yield return Warp(); 
     }
 
     void Start()
@@ -30,11 +30,10 @@ public class WarpPortal : MonoBehaviour, IPlayerTrigger
         yield return fader.Fade(1f);
 
         WarpPortal destPortal = FindObjectsOfType<WarpPortal>().First(x => x != this && x.Link == this.link);
+
         player.Character.SnapToPos(destPortal.SpawnPoint.position);
   
         yield return new WaitForSeconds(1f);
         yield return fader.Fade(0f);
-
-        player.EndTrigger();
     }
 }

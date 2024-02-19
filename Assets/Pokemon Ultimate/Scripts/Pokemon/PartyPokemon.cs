@@ -14,9 +14,10 @@ public class KnownMove
 public class PartyPokemon
 {
     [SerializeField] PokemonSpecies species = null;
+    public PokemonSpecies Species => species;
     [SerializeField] [Range(1,100)] int level = 1;
     [SerializeField] StatBlock evs = new StatBlock(0,0,0,0,0,0);
-    [SerializeField] StatBlock ivs = new StatBlock(0,0,0,0,0,0);
+    [SerializeField] int numPerfectIVs = 0;
     [SerializeField] PokemonNature nature = PokemonNature.None;
     [SerializeField] PokemonType teraType = PokemonType.None;
     [SerializeField] PokemonGender gender = PokemonGender.None;
@@ -47,6 +48,6 @@ public class PartyPokemon
             }
         }
 
-        return new Pokemon(species, level, ivs, evs, nature, teraType, gender, ability, heldItem, pokemonMoves, isShiny, false, isPlayer);
+        return new Pokemon(species, level, numPerfectIVs, evs, nature, teraType, gender, ability, heldItem, pokemonMoves, isShiny, false, isPlayer);
     }
 }

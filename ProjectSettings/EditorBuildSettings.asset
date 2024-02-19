@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pokemon Ultimate/Scenes/Kanto/Route 1.unity
     guid: f70c787e3c4ec294d9ae777ae9003200
+  - enabled: 1
+    path: Assets/Pokemon Ultimate/Scenes/Kanto/Prof Oak's Lab.unity
+    guid: 0387f17a1f2704643a6d56d662f73e66
   m_configObjects: {}

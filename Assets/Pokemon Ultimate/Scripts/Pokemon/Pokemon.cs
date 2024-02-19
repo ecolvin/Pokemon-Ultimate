@@ -125,7 +125,7 @@ public class Pokemon
         experience = GetExpAtLevel(this.level);
 
         SetTypes();
-        RandomizeIVs();
+        RandomizeIVs(0);
         RandomizeNature();
         RandomizeTeraType(true);        
         DetermineGender();
@@ -167,7 +167,7 @@ public class Pokemon
         SetModelAndSprite();
     }
 
-    public Pokemon(PokemonSpecies species, int level, StatBlock ivs = null, StatBlock evs = null, 
+    public Pokemon(PokemonSpecies species, int level, int numPerfectIVs = 0, StatBlock evs = null, 
                    PokemonNature nature = PokemonNature.None, PokemonType teraType = PokemonType.None,
                    PokemonGender gender = PokemonGender.None, string ability = "", ItemBase heldItem = null,
                    List<PokemonMove> moves = null, bool isShiny=false, bool isWild=false, bool isPlayer=false)
@@ -184,14 +184,7 @@ public class Pokemon
 
         SetTypes();
 
-        if(ivs == null)
-        {
-            RandomizeIVs();
-        }
-        else
-        {
-            this.ivs = ivs;
-        }
+        RandomizeIVs(numPerfectIVs);
 
         if(evs == null)
         {
@@ -246,7 +239,6 @@ public class Pokemon
         ClearVolatileStatuses();
     }
 
-
 //-------------------Initialization Functions------------------
 
     void SetTypes()
@@ -255,14 +247,29 @@ public class Pokemon
         type2 = species.Type2;
     }
 
-    void RandomizeIVs()
+    void RandomizeIVs(int numRandom)
     {
-        int hp = Random.Range(0, 32);
-        int atk = Random.Range(0, 32);
-        int def = Random.Range(0, 32);
-        int spa = Random.Range(0, 32);
-        int spd = Random.Range(0, 32);
-        int spe = Random.Range(0, 32);
+        int [] perfectStats = new int[6];
+
+        for(int i = 0; i < numRandom; i++)
+        {
+            int index = Random.Range(0,6);
+            if(perfectStats[index] == 31)
+            {
+                i--;
+            }
+            else
+            {
+                perfectStats[index] = 31;
+            }
+        }
+
+        int hp = perfectStats[0] == 31 ? 31 : Random.Range(0, 32);
+        int atk = perfectStats[1] == 31 ? 31 : Random.Range(0, 32);
+        int def = perfectStats[2] == 31 ? 31 : Random.Range(0, 32);
+        int spa = perfectStats[3] == 31 ? 31 : Random.Range(0, 32);
+        int spd = perfectStats[4] == 31 ? 31 : Random.Range(0, 32);
+        int spe = perfectStats[5] == 31 ? 31 : Random.Range(0, 32);
 
         ivs = new StatBlock(hp, atk, def, spa, spd, spe);
     }

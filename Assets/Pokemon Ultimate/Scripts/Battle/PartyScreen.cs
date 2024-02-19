@@ -69,7 +69,18 @@ public class PartyScreen : MonoBehaviour
         }
         else
         {
-            members[0].Set(notFainted.Dequeue());
+            if(notFainted.Count > 0)
+            {
+                members[0].Set(notFainted.Dequeue());
+            }
+            else if(fainted.Count > 0)
+            {
+                members[0].Set(fainted.Dequeue());
+            }
+            else
+            {
+                members[0].Disable();
+            }
         }  
         int i = 1;
         while(notFainted.Count > 0)

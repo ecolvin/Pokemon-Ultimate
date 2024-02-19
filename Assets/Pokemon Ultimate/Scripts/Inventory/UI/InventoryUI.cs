@@ -123,7 +123,6 @@ public class InventoryUI : MonoBehaviour
 
     public void OpenInventory(bool inBattle, Action<ItemBase, Pokemon> onClose)
     {
-        selectedTab = InventoryTab.Medicines;
         tmDescription.gameObject.SetActive(false);
         descriptionBox.gameObject.SetActive(true);
         if(inBattle)
@@ -195,15 +194,12 @@ public class InventoryUI : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
             int tab = (int) selectedTab;
-            Debug.Log($"Current Tab is {selectedTab} ({tab})");
             tab--;
             while(tab < 0)
             {
                 tab += numTabs;
             }
-            Debug.Log($"Tab = {tab}");
             selectedTab = (InventoryTab) tab;
-            Debug.Log($"New Tab is {selectedTab} ({tab})");
             UpdateTab();
         }
         if(Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))

@@ -56,25 +56,47 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public bool AddItem(ItemBase item, int qty)
+    public bool HasItem(ItemBase item, int quantity)
     {
-        InventoryTab tab = item.Tab;
-
-        foreach(ItemSlot i in inventory[tab])
+        foreach(KeyValuePair<InventoryTab, List<ItemSlot>> tab in inventory)
         {
-            if(i.Item == item)
+            ItemSlot slot = tab.Value.FirstOrDefault(slot => slot.Item == item);
+            if(slot != null && slot.Quantity >= quantity)
             {
-                i.Quantity += qty;
-                if(i.Quantity > GlobalSettings.Instance.MaxItemQuantity)
-                {
-                    i.Quantity = GlobalSettings.Instance.MaxItemQuantity;
-                    return false;
-                }
                 return true;
             }
         }
-        inventory[tab].Add(new ItemSlot(item, qty));
-        return true;
+        return false;
+    }
+
+    public bool AddItem(ItemBase item, int qty)
+    {
+        if(item == null)
+        {
+            return false;
+        }
+        InventoryTab tab = item.Tab;
+
+        ItemSlot selectedSlot = inventory[tab].FirstOrDefault(i => i.Item == item);
+        if(selectedSlot == null)
+        {
+            inventory[tab].Add(new ItemSlot(item, qty));
+            OnUpdated?.Invoke();
+            return true;
+        }
+        else
+        {
+            if(selectedSlot.Quantity + qty > GlobalSettings.Instance.MaxItemQuantity)
+            {
+                return false;
+            }
+            else
+            {
+                selectedSlot.Quantity += qty;
+                OnUpdated?.Invoke();
+                return true;
+            }
+        }
     }
 
     public ItemBase UseItem(int selectedItem, Pokemon selectedPokemon, InventoryTab selectedTab)
@@ -139,6 +161,7 @@ public class Inventory : MonoBehaviour
             return true;
         }
     }
+
 }
 
 [System.Serializable]
