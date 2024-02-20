@@ -14,7 +14,6 @@ public class GameController : MonoBehaviour
 
     GameState state;
     GameState savedState;
-    //Route curRoute;
 
     MenuController menuController;
 
@@ -36,7 +35,7 @@ public class GameController : MonoBehaviour
     {
         pokemonScreen.Init();
         player.OnEncounter += StartBattle;    
-        battle.OnBattleOver += EndBattle;
+        battle.OnBattleOver += (bool win) => {StartCoroutine(EndBattle(win));};
         menuController.OnSelection += ExecuteMenuSelection;
 
         DialogManager.Instance.OnShowDialog += () => 
@@ -118,7 +117,7 @@ public class GameController : MonoBehaviour
         battle.StartTrainerBattle(trainer.Party);
     }
 
-    void EndBattle(bool playerWin)
+    IEnumerator EndBattle(bool playerWin)
     {
         if(playerWin)
         {
@@ -126,9 +125,11 @@ public class GameController : MonoBehaviour
         }
         else
         {
-
+            //WhiteOut()
         }
         battle.gameObject.SetActive(false);
+        Party party = player.GetComponent<Party>();
+        yield return party.CheckForEvolutions();
         state = GameState.Overworld;
     }
 

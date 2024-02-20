@@ -78,6 +78,8 @@ public class Pokemon
     public bool Fainted{get{return fainted;}}
     public bool IsActive{get;set;}
 
+    bool leveledUp = false;  //Whether or not the pokemon leveled up this battle
+
 //Lasts when switched out but not outside of battle
     bool isTera = false;
     public bool IsTera{get{return isTera;}}
@@ -608,11 +610,49 @@ public class Pokemon
             return false;
         }
         level++;      
+        leveledUp = true;
         int prevHP = stats.HP;  
         CalculateStats();        
         curHP += stats.HP - prevHP;
         OnDataChange?.Invoke();
         return true;
+    }
+
+    public Evolution CheckForLvlUpEvo()
+    {
+        if(!leveledUp)
+        {
+            return null;
+        }
+        leveledUp = false;
+        return species.Evolutions.FirstOrDefault(evo => evo.MeetsEvoConditions(this) && evo.EvoTrigger == EvolutionTrigger.LevelUp);
+    }
+
+    public Evolution CheckForItemEvo(ItemBase item)
+    {
+        return species.Evolutions.FirstOrDefault(evo => evo.MeetsEvoConditions(this) && evo.EvoTrigger == EvolutionTrigger.LevelUp && item == evo.EvoItem);
+    }
+
+    public Evolution CheckForTradeEvo()
+    {
+        return species.Evolutions.FirstOrDefault(evo => evo.MeetsEvoConditions(this) && evo.EvoTrigger == EvolutionTrigger.Trade);
+    }
+
+    public void Evolve(Evolution evo)
+    {
+        int preEvoHP = stats.HP;
+        bool rename = nickname == species.SpeciesName;
+        species = evo.EvoSpecies;
+        if(rename)
+        {
+            nickname = species.SpeciesName;
+        }
+        //Update ability
+        SetTypes();
+        CalculateStats();
+        SetModelAndSprite();
+        curHP += stats.HP - preEvoHP;
+        OnDataChange?.Invoke();
     }
 
     public bool PPFull()

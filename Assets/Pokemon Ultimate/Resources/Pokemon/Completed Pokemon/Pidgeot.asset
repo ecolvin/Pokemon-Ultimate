@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Pidgeot
+  m_EditorClassIdentifier: 
+  speciesName: Pidgeot
+  description: By flapping its wings with all its might, Pidgeot can make a gust
+    of wind capable of bending tall trees.
+  classification: "Bird Pok\xE9mon"
+  dexNo: 18
+  type1: 1
+  type2: 10
+  ability1: Keen Eye
+  ability2: Tangled Feet
+  hiddenAbility: Big Pecks
+  baseStats:
+    hp: 83
+    atk: 80
+    def: 75
+    spa: 70
+    spd: 70
+    spe: 101
+  genderRatio: 0.5
+  eggGroup1: 4
+  eggGroup2: 0
+  hatchTime: 15
+  height: 1.5
+  weight: 39.5
+  baseHappiness: 50
+  catchRate: 45
+  baseXPYield: 216
+  levelingRate: 3
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 3
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: 0aa55dd8af6f85c4199f18ca485905e7, type: 3}
+  femaleSprite: {fileID: 21300000, guid: 0aa55dd8af6f85c4199f18ca485905e7, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: 8c209c7658b2e114baae7df80f3c9cb0, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: 8c209c7658b2e114baae7df80f3c9cb0, type: 3}
+  evolutions: []
+  learnset:
+  - moveBase: {fileID: 11400000, guid: 0a9565bad495595439cb5dbe4d04b1d3, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 5e5e9b11599518446944fff3dfdcdc52, type: 2}
+    levelLearned: 5
+  - moveBase: {fileID: 11400000, guid: 047ca1b2dd9239445b3dac41e5ae96f9, type: 2}
+    levelLearned: 9
+  - moveBase: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+    levelLearned: 13
+  - moveBase: {fileID: 11400000, guid: 3ad2d17b8a45b204e9c1d9f2344c66f4, type: 2}
+    levelLearned: 17
+  - moveBase: {fileID: 11400000, guid: ed0b0c49aef807d42bf5592a2f075fd4, type: 2}
+    levelLearned: 22
+  - moveBase: {fileID: 11400000, guid: c3c020e2982d02347bef94eee2252236, type: 2}
+    levelLearned: 27
+  - moveBase: {fileID: 11400000, guid: d2dbc2243880d8e4393eb8e98c57ef8f, type: 2}
+    levelLearned: 32
+  - moveBase: {fileID: 11400000, guid: b606416cb0c46a6408dcb91841515c34, type: 2}
+    levelLearned: 38
+  - moveBase: {fileID: 11400000, guid: ab7315f4690970b4f93c61858d6d410a, type: 2}
+    levelLearned: 44
+  - moveBase: {fileID: 11400000, guid: 73ae21090688a0d4eb6cea06f4ceea3f, type: 2}
+    levelLearned: 50
+  - moveBase: {fileID: 11400000, guid: 971e5a87361ed094bb250875b151cf5f, type: 2}
+    levelLearned: 56
+  - moveBase: {fileID: 11400000, guid: 681634448d73a2e4682c3f0a52992886, type: 2}
+    levelLearned: 62
+  - moveBase: {fileID: 11400000, guid: 0a9565bad495595439cb5dbe4d04b1d3, type: 2}
+    levelLearned: 68
+  tmLearnset:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 2d715642e301a034192931f5b5922499, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: b1e6facf55d12b14fb43a6209ba9fff8, type: 2}
+  - {fileID: 11400000, guid: f148f9aeb297d1141a6da2f42daf5b1c, type: 2}
+  - {fileID: 11400000, guid: e6d9c354d7d0f584aa263eeb0cf97704, type: 2}
+  - {fileID: 11400000, guid: 971e5a87361ed094bb250875b151cf5f, type: 2}
+  - {fileID: 11400000, guid: f0bc5d6494742a144a57c7a800760e11, type: 2}
+  - {fileID: 11400000, guid: 85e1d0afdd2b7ba4ba497cc14c528b05, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: aebb250345de2b1489061d60f1c6b360, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: ab7315f4690970b4f93c61858d6d410a, type: 2}
+  - {fileID: 11400000, guid: 2fa2e15b7fdb4934ca6f62a01c282d40, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 4ef67f3d06e8c01429ad849b27b528ae, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 2f6ef4f5ebb3f2c40b6881f054c6870d, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 470cba490d9d4a242a9fd908e0cb274e, type: 2}
+  - {fileID: 0}

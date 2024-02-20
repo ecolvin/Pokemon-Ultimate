@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Blastoise
+  m_EditorClassIdentifier: 
+  speciesName: Blastoise
+  description: It deliberately increases its body weight so it can withstand the
+    recoil of the water jets it fires.
+  classification: "Shellfish Pok\xE9mon"
+  dexNo: 9
+  type1: 3
+  type2: 0
+  ability1: Torrent
+  ability2: 
+  hiddenAbility: Rain Dish
+  baseStats:
+    hp: 79
+    atk: 83
+    def: 100
+    spa: 85
+    spd: 105
+    spe: 78
+  genderRatio: 0.875
+  eggGroup1: 1
+  eggGroup2: 2
+  hatchTime: 20
+  height: 1.6
+  weight: 85.5
+  baseHappiness: 50
+  catchRate: 45
+  baseXPYield: 239
+  levelingRate: 3
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 3
+    spe: 0
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: 6b2e5681950af794db25d7cc1c5bd945, type: 3}
+  femaleSprite: {fileID: 21300000, guid: 6b2e5681950af794db25d7cc1c5bd945, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: e0d497f325871ca4f98b5f62f915b039, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: e0d497f325871ca4f98b5f62f915b039, type: 3}
+  evolutions: []
+  learnset:
+  - moveBase: {fileID: 11400000, guid: 06d0ce76ab2c6c7468e6504b86a0fb6f, type: 2}
+    levelLearned: -1
+  - moveBase: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: bc79d2fe748c4684e841d8c06f4ec3ad, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: fe23d147ec324e3489316e53c90adfb3, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: 4819ab71684e982478e1f3701c5f704c, type: 2}
+    levelLearned: 9
+  - moveBase: {fileID: 11400000, guid: 80f0e31cdf625a04ba2c44e8289bb296, type: 2}
+    levelLearned: 12
+  - moveBase: {fileID: 11400000, guid: 0928a628f29ff90488a9487f92b17ce0, type: 2}
+    levelLearned: 15
+  - moveBase: {fileID: 11400000, guid: b1e6facf55d12b14fb43a6209ba9fff8, type: 2}
+    levelLearned: 20
+  - moveBase: {fileID: 11400000, guid: f148f9aeb297d1141a6da2f42daf5b1c, type: 2}
+    levelLearned: 25
+  - moveBase: {fileID: 11400000, guid: 382a1efe90262764cab5b304529cd66f, type: 2}
+    levelLearned: 30
+  - moveBase: {fileID: 11400000, guid: 0aca02c98d8bb2540a50b3df2d2c56a8, type: 2}
+    levelLearned: 35
+  - moveBase: {fileID: 11400000, guid: 507971c7aa6e90147826935125361f64, type: 2}
+    levelLearned: 42
+  - moveBase: {fileID: 11400000, guid: 0e3f050d91648f4409b3c1400f154c77, type: 2}
+    levelLearned: 49
+  - moveBase: {fileID: 11400000, guid: 5e7581e24e0780644a4fd60a6791e06c, type: 2}
+    levelLearned: 56
+  tmLearnset:
+  - {fileID: 11400000, guid: 2991b69003bedee448d8af1dfb0bb2b9, type: 2}
+  - {fileID: 11400000, guid: ff8680d55bf704642a8aa12a83c67065, type: 2}
+  - {fileID: 11400000, guid: b1e6facf55d12b14fb43a6209ba9fff8, type: 2}
+  - {fileID: 11400000, guid: 0928a628f29ff90488a9487f92b17ce0, type: 2}
+  - {fileID: 11400000, guid: a7ea1d8b6c2d59f418923cfd6a1fb79c, type: 2}
+  - {fileID: 11400000, guid: f0bc5d6494742a144a57c7a800760e11, type: 2}
+  - {fileID: 11400000, guid: f9c144208d2de6243abad543f60b4b74, type: 2}
+  - {fileID: 11400000, guid: 93dc0bb500ec1de4cb2c64f25d55d9d9, type: 2}
+  - {fileID: 11400000, guid: 92367bd7c2994da4cbadb6ba4858b343, type: 2}
+  - {fileID: 11400000, guid: 75eac2ac1ca2cca4e96870faa955fff4, type: 2}
+  - {fileID: 11400000, guid: b7dc2964f5d184946a78e7a20b8c8003, type: 2}
+  - {fileID: 11400000, guid: 2fa2e15b7fdb4934ca6f62a01c282d40, type: 2}
+  - {fileID: 11400000, guid: f148f9aeb297d1141a6da2f42daf5b1c, type: 2}
+  - {fileID: 11400000, guid: e158a141b116cec468114cf6549d8fa6, type: 2}
+  - {fileID: 11400000, guid: 13b6405b2084d19438cef91e7cf07f72, type: 2}
+  - {fileID: 11400000, guid: 7cf97f1684b0c744f98cb1ba85bd0a5b, type: 2}
+  - {fileID: 11400000, guid: da319c5f231fdd448b59f06e553fb4b2, type: 2}
+  - {fileID: 11400000, guid: f81f84a0a8fd8754fa31689b8e463826, type: 2}
+  - {fileID: 11400000, guid: 4ef67f3d06e8c01429ad849b27b528ae, type: 2}
+  - {fileID: 11400000, guid: 85e1d0afdd2b7ba4ba497cc14c528b05, type: 2}
+  - {fileID: 11400000, guid: c5e3f5843bff13647a32a4ee3fb78e7f, type: 2}
+  - {fileID: 11400000, guid: 90bc3e105b4242044b8ae57beeb1b617, type: 2}
+  - {fileID: 11400000, guid: 06d0ce76ab2c6c7468e6504b86a0fb6f, type: 2}
+  - {fileID: 11400000, guid: 54bc74c610eb6514993e41f72896a867, type: 2}

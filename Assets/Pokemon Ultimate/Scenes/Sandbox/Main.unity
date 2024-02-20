@@ -2853,15 +2853,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].level
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].level
-      value: 1
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[2].level
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[3].level
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].gender
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].ivs.hp
@@ -2869,11 +2877,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].nature
-      value: 53
+      value: 66
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].gender
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].ivs.hp
@@ -2881,11 +2889,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].nature
-      value: 66
+      value: 53
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].ability
-      value: Lightning Rod
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].isShiny
@@ -2914,14 +2922,14 @@ PrefabInstance:
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].species
       value: 
-      objectReference: {fileID: 11400000, guid: 5a3d8ed670939f44cb0a3b31255ca4e6, type: 2}
+      objectReference: {fileID: 11400000, guid: ef5dae337744616459e0d55d426d304e, type: 2}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].ability
-      value: 
+      value: Lightning Rod
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].isShiny
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].ivs.atk
@@ -2946,7 +2954,23 @@ PrefabInstance:
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].species
       value: 
+      objectReference: {fileID: 11400000, guid: 5a3d8ed670939f44cb0a3b31255ca4e6, type: 2}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[2].isShiny
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[2].species
+      value: 
+      objectReference: {fileID: 11400000, guid: 29a4b5c1b3bee394c8e3221b794dd40d, type: 2}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[3].isShiny
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[3].species
+      value: 
+      objectReference: {fileID: 11400000, guid: e266b18b564ec6d41b9d3efec965e1ca, type: 2}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].heldItem
       value: 
@@ -2957,7 +2981,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].teraType
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].heldItem
@@ -2965,44 +2989,52 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].isPlayer
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].teraType
-      value: 0
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[2].isPlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
+      propertyPath: partyPokemon.Array.data[3].isPlayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].moves.Array.data[0].move
       value: 
-      objectReference: {fileID: 11400000, guid: 33f6b67ccef9d3847b2142dbed2c4de4, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].moves.Array.data[1].move
       value: 
-      objectReference: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].moves.Array.data[2].move
       value: 
-      objectReference: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[0].moves.Array.data[3].move
       value: 
-      objectReference: {fileID: 11400000, guid: eee6645a351ec2f4c9bdd1ed1558cc19, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].moves.Array.data[0].move
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: 33f6b67ccef9d3847b2142dbed2c4de4, type: 2}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].moves.Array.data[1].move
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].moves.Array.data[2].move
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
     - target: {fileID: 3116474249515626937, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: partyPokemon.Array.data[1].moves.Array.data[3].move
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: eee6645a351ec2f4c9bdd1ed1558cc19, type: 2}
     - target: {fileID: 3116474249668003168, guid: 2b17ac85ad7dae2438101585bee61fe3, type: 3}
       propertyPath: m_RootOrder
       value: 5

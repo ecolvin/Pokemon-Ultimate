@@ -55,6 +55,7 @@ public class Encounter
 
 public enum TimePeriod
 {
+    All,
     Morning,
     Day,
     Dusk,

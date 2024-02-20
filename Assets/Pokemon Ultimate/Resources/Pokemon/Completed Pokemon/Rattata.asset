@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d495b6541d40dc4f915af0b9c132410, type: 3}
+  m_Name: Rattata
+  m_EditorClassIdentifier: 
+  speciesName: Rattata
+  description: It's cautious in the extreme, and its hardy vitality lets it live
+    in any kind of environment.
+  classification: Mouse Pokemon
+  dexNo: 19
+  type1: 1
+  type2: 0
+  ability1: Run Away
+  ability2: Guts
+  hiddenAbility: Hustle
+  baseStats:
+    hp: 30
+    atk: 56
+    def: 35
+    spa: 25
+    spd: 35
+    spe: 72
+  genderRatio: 0.5
+  eggGroup1: 5
+  eggGroup2: 0
+  hatchTime: 15
+  height: 0.3
+  weight: 3.5
+  baseHappiness: 50
+  catchRate: 255
+  baseXPYield: 51
+  levelingRate: 2
+  evYield:
+    hp: 0
+    atk: 0
+    def: 0
+    spa: 0
+    spd: 0
+    spe: 1
+  maleModel: {fileID: 0}
+  femaleModel: {fileID: 0}
+  maleModelShiny: {fileID: 0}
+  femaleModelShiny: {fileID: 0}
+  maleSprite: {fileID: 21300000, guid: b84b12c2e1078014fae7c71ae6814c15, type: 3}
+  femaleSprite: {fileID: 21300000, guid: ad9b090914ecbcf4fbc72f975e5a86a3, type: 3}
+  maleSpriteShiny: {fileID: 21300000, guid: 52c86acf9d75b5843b9a6da913b807ce, type: 3}
+  femaleSpriteShiny: {fileID: 21300000, guid: 29600ecb084f18142bdfc1cbcfd1bfd4, type: 3}
+  evolutions:
+  - evoSpecies: {fileID: 11400000, guid: 2a87c762c3f0ba84ca442d10036838c2, type: 2}
+    evoTrigger: 0
+    evoItem: {fileID: 0}
+    levelReq: 20
+    knownMove: {fileID: 0}
+    heldItem: {fileID: 0}
+    maxHappiness: 0
+    timePeriod: 0
+  learnset:
+  - moveBase: {fileID: 11400000, guid: 50214d4d8eb0e8f43b75d0bf2a3cd4f0, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: e48491b2f88b011479030e97e9390f71, type: 2}
+    levelLearned: 0
+  - moveBase: {fileID: 11400000, guid: b4be3d47a52111846bef05fc8da791f1, type: 2}
+    levelLearned: 4
+  - moveBase: {fileID: 11400000, guid: bae88a666fff43d45b827fafdfbbe51b, type: 2}
+    levelLearned: 7
+  - moveBase: {fileID: 11400000, guid: 80f0e31cdf625a04ba2c44e8289bb296, type: 2}
+    levelLearned: 10
+  - moveBase: {fileID: 11400000, guid: 3718ea16c52431442b532c759db8ce82, type: 2}
+    levelLearned: 13
+  - moveBase: {fileID: 11400000, guid: 2991b69003bedee448d8af1dfb0bb2b9, type: 2}
+    levelLearned: 16
+  - moveBase: {fileID: 11400000, guid: c762d8c3e899f904c86c908c403c741a, type: 2}
+    levelLearned: 19
+  - moveBase: {fileID: 11400000, guid: fc9f114ec4c3d5847aae4943096d8649, type: 2}
+    levelLearned: 22
+  - moveBase: {fileID: 11400000, guid: 45ba8ee2306e89b40bf77a3ceffb83c7, type: 2}
+    levelLearned: 25
+  - moveBase: {fileID: 11400000, guid: 3edb0878a6c94084e9bc342ce6ad5c63, type: 2}
+    levelLearned: 28
+  - moveBase: {fileID: 11400000, guid: ad4b7ef6c0d3b6f49b40bb82ac721365, type: 2}
+    levelLearned: 31
+  - moveBase: {fileID: 11400000, guid: 8d8fbb4dafae84b49a6e8e30e8f54d35, type: 2}
+    levelLearned: 34
+  tmLearnset:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 2d715642e301a034192931f5b5922499, type: 2}
+  - {fileID: 11400000, guid: 0277f8fc9ffa1424493f84bc65fef078, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: a309ed0e30278e54fa96d0a785796b62, type: 2}
+  - {fileID: 11400000, guid: b1e6facf55d12b14fb43a6209ba9fff8, type: 2}
+  - {fileID: 11400000, guid: f148f9aeb297d1141a6da2f42daf5b1c, type: 2}
+  - {fileID: 11400000, guid: 4d301487abb55344fba5c4bbb652067a, type: 2}
+  - {fileID: 11400000, guid: 0e3cedddcc67a4840a259d45d4342234, type: 2}
+  - {fileID: 11400000, guid: 07321f5381b96cd438a4293e637e9652, type: 2}
+  - {fileID: 11400000, guid: e158a141b116cec468114cf6549d8fa6, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: e6d9c354d7d0f584aa263eeb0cf97704, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f0bc5d6494742a144a57c7a800760e11, type: 2}
+  - {fileID: 11400000, guid: 85e1d0afdd2b7ba4ba497cc14c528b05, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: aebb250345de2b1489061d60f1c6b360, type: 2}
+  - {fileID: 11400000, guid: dd4a612b3a4e27f4d9d0fcec6df8c3f9, type: 2}
+  - {fileID: 11400000, guid: 2fa2e15b7fdb4934ca6f62a01c282d40, type: 2}
+  - {fileID: 11400000, guid: eee6645a351ec2f4c9bdd1ed1558cc19, type: 2}
+  - {fileID: 11400000, guid: 4ef67f3d06e8c01429ad849b27b528ae, type: 2}
+  - {fileID: 11400000, guid: d1cb482f634656b4ea9914a14e0c80cc, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

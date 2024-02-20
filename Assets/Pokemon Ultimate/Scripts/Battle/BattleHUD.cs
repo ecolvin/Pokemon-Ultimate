@@ -27,7 +27,7 @@ public class BattleHUD : MonoBehaviour
         {
             return;
         }
-        pokemonName.text = pokemon.Species.SpeciesName;
+        pokemonName.text = pokemon.Nickname;
         level.text = "Lv." + pokemon.Level;
         if(pokemon.Gender == PokemonGender.Male)
         {

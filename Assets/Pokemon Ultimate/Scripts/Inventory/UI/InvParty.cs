@@ -20,7 +20,9 @@ public class InvParty : MonoBehaviour
     void Awake()
     {
         pokemon = GetComponentsInChildren<PokemonInvUI>().ToList();
-        party = Party.GetParty().Pokemon;
+        Party p = Party.GetParty();
+        party = p.Pokemon;
+        p.OnUpdated += SetParty;
         SetParty();
     }   
 
@@ -57,13 +59,17 @@ public class InvParty : MonoBehaviour
     { 
         foreach(PokemonInvUI p in pokemon)
         {
-            //figure out if the item is useable
+            if(item.Useable(p.Pokemon))
+            {
+                p.UseableIcon.color = Color.green;
+                p.UseableText.text = "Can Use";
+            }
+            else
+            {
+                p.UseableIcon.color = Color.gray;
+                p.UseableText.text = "Cannot Use";
+            }
 
-            p.UseableIcon.color = Color.gray;
-            p.UseableText.text = "Cannot Use";
-
-            //useableIcon.color = Color.green;
-            //useableText.text = "Can Use";
         }
     }
 

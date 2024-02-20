@@ -114,7 +114,6 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            Debug.Log("It has no effect!");
             return null;
         }
     }

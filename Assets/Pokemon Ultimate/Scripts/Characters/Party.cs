@@ -84,4 +84,23 @@ public class Party : MonoBehaviour
         OnUpdated?.Invoke();
         return true;
     }
+
+    public IEnumerator CheckForEvolutions()
+    {
+        foreach(Pokemon p in pokemon)
+        {
+            Evolution evo = p.CheckForLvlUpEvo();
+            if(evo != null)
+            {
+                yield return EvolutionHandler.Instance.Evolve(p, evo);
+                OnUpdated?.Invoke();
+            }
+        }
+        yield return null;
+    }
+
+    public void UpdateParty()
+    {
+        OnUpdated?.Invoke();
+    }
 }

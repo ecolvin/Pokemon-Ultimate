@@ -482,12 +482,13 @@ public class InventoryUI : MonoBehaviour
             {
                 yield return UseTM();
             }
-            else if(maxQuantity > 1 && !battle && false)    //Check if the current item allows quantity
+            else if(maxQuantity > 1 && !battle && false)    //Check if the current item allows quantity (feature currently disabled)
             {
                 OpenQty();
             }
             else if(battle)
             {
+                //Make sure item is usable in battle and usable on the current pokemon (if we want to add this feature)
                 ClosePokemonSelection();
                 inventory.RemoveItem(itemSelection, 1);
                 onClose?.Invoke(itemSelection, party.Pokemon[selectedPokemon]);
@@ -526,12 +527,31 @@ public class InventoryUI : MonoBehaviour
     IEnumerator UseItem()
     {
         state = UIState.Busy;
-       
+        Pokemon poke = party.Pokemon[selectedPokemon];
+
         ItemBase usedItem = inventory.UseItem(selectedItem, party.Pokemon[selectedPokemon], selectedTab);
         if(usedItem != null)
-        {
-            //UPDATE TO DETERMINE DIALOG DYNAMICALLY!!!!
-            yield return DialogManager.Instance.ShowDialog($"{party.Pokemon[selectedPokemon]}'s HP was restored.");
+        {            
+            if(usedItem is EvolutionItem)
+            {
+                EvolutionItem evoItem = (EvolutionItem) usedItem;
+                Evolution evo = poke.CheckForItemEvo(usedItem);
+                if(evo != null)
+                {
+                    yield return EvolutionHandler.Instance.Evolve(poke, evo);
+                    partySprites.SetParty();
+                    RefreshItems();
+                }
+                else
+                {
+                    Debug.LogError("Matching evolution not found. Should not be reachable since inventory.UseItem() already checks for this!");
+                }
+            }
+            else
+            {   
+                //UPDATE TO DETERMINE DIALOG DYNAMICALLY!!!!
+                yield return DialogManager.Instance.ShowDialog($"{party.Pokemon[selectedPokemon]}'s HP was restored.");
+            }
         }
         else
         {

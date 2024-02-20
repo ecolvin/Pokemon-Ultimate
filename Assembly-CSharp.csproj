@@ -123,6 +123,8 @@
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Battle\MoveSelectionController.cs" />
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Saving System\ISaveable.cs" />
      <Compile Include="Assets\Pokemon Ultimate\Scripts\Pokemon\PokemonSpecies.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\Inventory\Item Types\EvolutionItem.cs" />
+     <Compile Include="Assets\Pokemon Ultimate\Scripts\UI\EvolutionHandler.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Pokemon", menuName = "Pokemon/Create new pokemon")]
@@ -32,7 +33,7 @@ public class PokemonSpecies : ScriptableObject
 
     [Header("Breeding Info")]
     [Tooltip("Percent chance of being male; Use a negative number if genderless")]
-    [SerializeField] [Range(-.01f, 1f)]float genderRatio;
+    [SerializeField] [Range(-.01f, 1f)]float genderRatio = .5f;
     public float GenderRatio{get{return genderRatio;}}
     [SerializeField] EggGroup eggGroup1;
     [SerializeField] EggGroup eggGroup2;
@@ -77,6 +78,9 @@ public class PokemonSpecies : ScriptableObject
     [SerializeField] Sprite femaleSpriteShiny;
     public Sprite FemaleSpriteShiny {get{return femaleSpriteShiny;}}
 
+    [SerializeField] List<Evolution> evolutions;
+    public List<Evolution> Evolutions => evolutions;
+
     [SerializeField] List<LearnableMove> learnset;
     public List<LearnableMove> Learnset{get => learnset;}
     [SerializeField] List<PokemonMoveBase> tmLearnset;
@@ -88,6 +92,75 @@ public class PokemonSpecies : ScriptableObject
     //TMs
     //Egg Moves
 }
+
+public enum EvolutionTrigger{ LevelUp, Item, Trade }
+
+[System.Serializable]
+public class Evolution
+{
+    [SerializeField] PokemonSpecies evoSpecies;
+    [SerializeField] EvolutionTrigger evoTrigger;
+    [SerializeField] EvolutionItem evoItem;
+
+    public PokemonSpecies EvoSpecies => evoSpecies;
+    public EvolutionTrigger EvoTrigger => evoTrigger;
+    public EvolutionItem EvoItem => evoItem;
+
+    [SerializeField] [Range(0, 100)] int levelReq;
+    [SerializeField] PokemonMoveBase knownMove;
+    [SerializeField] HoldItem heldItem;
+    [SerializeField] bool maxHappiness;
+    [SerializeField] TimePeriod timePeriod;
+
+    //[SerializeField] Location location; //Specific region
+
+    public bool MeetsEvoConditions(Pokemon pokemon)
+    {
+        if(pokemon.Level < levelReq)
+        {
+            return false;
+        }
+        if(knownMove != null && pokemon.Moves.FirstOrDefault(m => m.MoveBase == knownMove) == null)
+        {
+            return false;
+        }
+        if(heldItem != null && pokemon.HeldItem != heldItem)
+        {
+            return false;
+        }
+        if(maxHappiness && false) //Implement happiness for Pokemon
+        {
+            return false;
+        }
+        if(timePeriod != TimePeriod.All && false) // curTimeOfDay != timePeriod) //Implement time of day
+        {
+            return false;
+        }
+        /*
+        if(!in the right location)
+        {
+            return false;
+        }
+        */
+        return true;
+    }
+
+
+
+    /*Weird exceptions:
+    - Annihilape - Use Rage Fist 20x
+    - Region specific evolutions
+    - Tyrogue - Based on highest stat
+    - 
+    -
+    -
+    -
+    -
+    -
+    -
+    */
+}
+
 
 [System.Serializable]
 public class LearnableMove

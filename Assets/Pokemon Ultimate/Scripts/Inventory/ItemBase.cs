@@ -21,6 +21,11 @@ public class ItemBase : ScriptableObject
         return false;
     }
 
+    public virtual bool Useable(Pokemon target)
+    {
+        return false;
+    }
+
     public virtual bool CanUseInBattle => true;
     public virtual bool CanUseOutsideBattle => true;
 }

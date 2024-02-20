@@ -14,8 +14,6 @@ public class PartyHUD : MonoBehaviour
         {
             pokeSlots[i].gameObject.SetActive(true);
 
-            Debug.Log($"Pokemon = {p}");
-
             if(p.Fainted)
             {
                 pokeSlots[i].color = new Color(.25f,.25f,.25f,1f);
