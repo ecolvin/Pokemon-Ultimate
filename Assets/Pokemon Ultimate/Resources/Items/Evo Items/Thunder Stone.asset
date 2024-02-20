@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd4415dded3c89f43bb996d2d529934a, type: 3}
   m_Name: Thunder Stone
   m_EditorClassIdentifier: 
-  itemName: 
-  description: 
-  icon: {fileID: 0}
-  tab: 0
-  uiState: 0
-  usablePokemon: []
+  itemName: Thunder Stone
+  description: "A peculiar stone that can make certain species of Pok\xE9mon evolve.
+    It has a distinct thunderbolt pattern."
+  icon: {fileID: 842562916, guid: 9a6b4d88f6b254746813b1161a084de9, type: 3}
+  tab: 4
+  uiState: 2
+  usablePokemon:
+  - {fileID: 11400000, guid: 5a3d8ed670939f44cb0a3b31255ca4e6, type: 2}

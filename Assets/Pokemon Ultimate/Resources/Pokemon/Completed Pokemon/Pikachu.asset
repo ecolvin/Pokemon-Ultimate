@@ -57,7 +57,7 @@ MonoBehaviour:
   evolutions:
   - evoSpecies: {fileID: 11400000, guid: 5d3f2532c4682f44993d1db46f85f6f3, type: 2}
     evoTrigger: 1
-    evoItem: {fileID: 0}
+    evoItem: {fileID: 11400000, guid: 26eade01c627ff840b337cbdf7a808f3, type: 2}
     levelReq: 0
     knownMove: {fileID: 0}
     heldItem: {fileID: 0}
